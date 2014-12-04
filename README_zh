@@ -1,0 +1,62 @@
+====
+编译
+====
+
+Java 虚拟机应该用 oracle-jdk-bin-1.8 或 oracle-jdk-bin-1.7 ， jre 缺少必要的\
+库文件。
+
+
+问题
+====
+
+#. 编译系统是基于 python2 的，还不支持 python3 ，会遇到语法错误。在 \
+   Gentoo/Funtoo 下如果环境不对，可以这样临时地切换到 python2.7 ：
+
+	eselect python set python2.7
+	ln -sf /usr/bin/python2.7 /usr/bin/python
+
+#. ditaa 图还不能翻译为中文，因为渲染时的字体问题还未解决；
+
+
+编译步骤
+========
+这些文档从 ceph 源码中的 doc/ 目录翻译而来，结构未变，所以您仍然可以用原文档\
+的构建方法构建此文档。只需用此库的 ceph-doc 目录替换 ceph 库的 doc 目录，具体\
+步骤如下：
+
+#. 你得克隆本文档库（ git clone git://github.com/drunkard/docs_zh.git ），并\
+   克隆一个 ceph 源码树（ git clone git://github.com/ceph/ceph.git ）；
+
+#. 把源码树里的 doc 目录备份为 doc-orig ，然后把本文档库的 ceph-doc 目录链接为\
+   原 ceph 源码库的 doc ；
+
+#. 执行 ceph 库内 admin 目录下的 build-doc 开始构建文档；
+
+#. 执行 serve-doc ，这样就可以通过 http://localhost:8080/ 阅读文档了。
+
+
+========
+文档风格
+========
+
+仍然要尽量遵守原文档的书写风格，如缩进、不超过 80 列宽、等。
+
+有些风格是中文版特有的，如：
+
+- 中文和非中文用空格分隔；
+- 插入命令：新行以双冒号（ :: ）开始，然后是空行；之后是命令；
+- 引用和正文间加"\ "，这样不影响编译系统又不会额外增加空格；
+- 用反斜线"\"换行，这样不会额外增加空格；
+- 原文中用双引号引用的词语在中文文档里可去掉引号，因为原文引用它已经很显眼了；
+- 由于字体和程序的问题，在"终端下”能更好地对齐到 80 列；
+
+
+====
+更新
+====
+UPDATETO 文件内是 doc/ 目录下的最新 commit ，说明本次更新到了这里。之后的更新\
+可以对照原文和 doc/ 目录下的 commit 历史，免去了挨篇对照的繁琐。
+
+获取此 commit ID 的命令为：
+
+	git log -1 --pretty=oneline doc/ | cut -d ' ' -f 1
