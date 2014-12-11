@@ -60,3 +60,8 @@ UPDATETO 文件内是 doc/ 目录下的最新 commit ，说明本次更新到了
 获取此 commit ID 的命令为：
 
 	git log -1 --pretty=oneline doc/ | cut -d ' ' -f 1
+
+查看 doc/ 目录自上次更新以来的变更：
+
+	CEPH_REPO=/git/ceph
+	ID=`cat UPDATETO` && cd $CEPH_REPO && gitview ${ID}.. doc/ &
