@@ -1,6 +1,5 @@
-
-File layouts
-============
+文件布局
+========
 
 The layout of a file controls how its contents are mapped to Ceph RADOS objects.  You can
 read and write a file's layout using *virtual extended attributes* or xattrs.
@@ -57,11 +56,11 @@ Read individual layout fields:
     ceph.file.layout.stripe_count="1"
     $ getfattr -n ceph.file.layout.object_size file
     # file: file
-    ceph.file.layout.object_size="4194304"    
+    ceph.file.layout.object_size="4194304"
 
 .. note::
 
-    When reading layouts, the pool will usually be indicated by name.  However, in 
+    When reading layouts, the pool will usually be indicated by name.  However, in
     rare cases when pools have only just been created, the ID may be output instead.
 
 Directories do not have an explicit layout until it is customized.  Attempts to read
@@ -144,4 +143,18 @@ directories do not have layouts set:
     $ getfattr -n ceph.file.layout dir/childdir/grandchild
     # file: dir/childdir/grandchild
     ceph.file.layout="stripe_unit=4194304 stripe_count=4 object_size=4194304 pool=cephfs_data"
-    
+
+
+Adding a data pool to the MDS
+---------------------------------
+
+Before you can use a pool with CephFS you have to add it to the Metadata Servers.
+
+.. code-block:: bash
+
+    $ ceph mds add_data_pool cephfs_data_ssd
+    # Pool should now show up
+    $ ceph fs ls
+    .... data pools: [cephfs_data cephfs_data_ssd ]
+
+Make sure that your cephx keys allows the client to access this new pool.
