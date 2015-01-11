@@ -67,7 +67,7 @@ Notable Changes
 * mds: store backtrace for stray dir (Yan, Zheng)
 * mds: verify backtrace when fetching dirfrag (#9557 Yan, Zheng)
 * mon: add max pgs per osd warning (Sage Weil)
-* mon: fix *_ratio units and types (Sage Weil)
+* mon: fix \*_ratio units and types (Sage Weil)
 * mon: fix JSON dumps to dump floats as flots and not strings (Sage Weil)
 * mon: fix formatter 'pg stat' command output (Sage Weil)
 * msgr: async: several fixes (Haomai Wang)
