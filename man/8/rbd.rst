@@ -168,6 +168,13 @@
   （见下文）指定。此映像的差异格式包含了映像尺寸变更的元数据、起始和结束快\
   照，它高效地表达了被忽略或映像内的全 0 区域。
 
+:command:`merge-diff` [*first-diff-path*] [*second-diff-path*] [*merged-diff-path*]
+  把两个连续的增量差异合并为单个差异。前一个差异的末尾快照必须与后一个差异的\
+  起始快照相同。前一个差异可以是标准输入 - ，合并后的差异可以是标准输出 - ；\
+  这样就可以合并多个差异文件，像这样： 'rbd merge-diff first second - | rbd \
+  merge-diff - third result' 。注意，当前此命令只支持 stripe_count == 1 这样\
+  的源增量差异。
+
 :command:`import-diff` [*src-path*] [*image-name*]
   导入一映像的增量差异并应用到当前映像。如果此差异是在起始快照基础上生成的，\
   我们会先校验那个已存在快照再继续；如果指定了结束快照，我们先检查它是否存\
