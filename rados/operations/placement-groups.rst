@@ -188,8 +188,8 @@ increased.
 OSD 丢失会降级大约 4 个（即需恢复的归置组约为 75 / 19 ）而不是约 17 个归置\
 组，并且只有当第三个 OSD 恰好是包含可用副本的四分之一个 OSD 时、才会丢失数\
 据。换句话说，假设在恢复期间丢失一个 OSD 的概率是 0.0001% ，那么，在包含 10 \
-个 OSD 的集群中丢失 OSD 的概率是 8 * 0.0001% ，而在 20 个 OSD 的集群中将是 \
-2 * 0.0001% 。
+个 OSD 的集群中丢失 OSD 的概率是 17 * 10 * 0.0001% ，而在 20 个 OSD 的集群\
+中将是 4 * 20 * 0.0001% 。
 
 In a nutshell, more OSDs mean faster recovery and a lower risk of
 cascading failures leading to the permanent loss of a Placement
