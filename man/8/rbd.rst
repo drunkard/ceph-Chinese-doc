@@ -228,6 +228,9 @@
 :command:`showmapped`
   显示通过内核 rbd 模块映射过的 rbd 映像。
 
+:command:`status` [*image-name*]
+  显示映像状态，包括哪个客户端打开着它。
+
 :command:`lock` list [*image-name*]
   显示锁着映像的锁，第一列是 `lock remove` 可以使用的锁名。
 
