@@ -343,12 +343,11 @@ Then, disable the default site. ::
 	sudo a2dissite default
 
 
-Adjust Path Ownership/Permissions
-=================================
+调整路径的所有权、权限位
+========================
 
-On some distributions, you must change ownership for ``/var/log/httpd`` or 
-``/var/log/apache2`` and ``/var/run/ceph`` to ensure that Apache has permissions 
-to create a socket or log file. ::
+在某些发行版上，你必须更改 ``/var/run/ceph`` 的所有权以确保 Apache 有创建\
+套接字的写权限： ::
 
 	sudo chown apache:apache /path/to/file   
 
