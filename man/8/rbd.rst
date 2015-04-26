@@ -316,6 +316,15 @@ Map 选项
 
 * nocrc - 在写入数据时不计算 CRC32C 校验值。
 
+* cephx_require_signatures - 要求对 cephx 消息签名，即设置 MSG_AUTH 功能位\
+  （从 3.19 起默认开启）。
+
+* nocephx_require_signatures - 不要求对 cephx 消息签名（从 3.19 起）。
+
+* tcp_nodelay - 在客户端禁用 Nagle's 算法（从 4.0 起默认开启）。
+
+* notcp_nodelay - 在客户端启用 Nagle's 算法（从 4.0 起）。
+
 * osdkeepalive=x - OSD 保持连接的期限（默认为 5 秒）。
 
 * osd_idle_ttl=x - OSD 闲置 TTL （默认为 60 秒）。
