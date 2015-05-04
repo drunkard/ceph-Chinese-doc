@@ -204,6 +204,18 @@
 :command:`mv` [*src-image*] [*dest-image*]
   映像改名。注：不支持跨存储池。
 
+:command:`image-meta list` [*image-name*]
+  显示此映像持有的元数据。第一列是关键字、第二列是值。
+
+:command:`image-meta get` [*image-name*] [*key*]
+  获取关键字对应的元数据值。
+
+:command:`image-meta set` [*image-name*] [*key*] [*value*]
+  设置指定元数据关键字的值，会显示在 `metadata-list` 中。
+
+:command:`image-meta remove` [*image-name*] [*key*]
+  删除元数据关键字及其值。
+
 :command:`snap` ls [*image-name*]
   列出一映像内的快照。
 
