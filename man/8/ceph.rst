@@ -831,14 +831,18 @@ osd
 用法： ::
 
 	ceph osd pool get <poolname> size|min_size|crash_replay_interval|pg_num|
-	pgp_num|crush_ruleset|hit_set_type|hit_set_period|hit_set_count|hit_set_fpp
+	pgp_num|crush_ruleset|auid|write_fadvise_dontneed
 
-	ceph osd pool get <poolname> auid|target_max_objects|target_max_bytes
+以下命令只适用于分层存储池： ::
 
-	ceph osd pool get <poolname> cache_target_dirty_ratio|cache_target_full_ratio
+	ceph osd pool get <poolname> hit_set_type|hit_set_period|hit_set_count|hit_set_fpp|
+	target_max_objects|target_max_bytes|cache_target_dirty_ratio|
+	cache_target_full_ratio|cache_min_flush_age|cache_min_evict_age|
+	min_read_recency_for_promote
 
-	ceph osd pool get <poolname> cache_min_flush_age|cache_min_evict_age|
-	erasure_code_profile|min_read_recency_for_promote|write_fadvise_dontneed
+以下命令只适用于纠删码存储池： ::
+
+	ceph osd pool get <poolname> erasure_code_profile
 
 子命令 ``get-quota`` 获取存储池的对象或字节数限额。
 
