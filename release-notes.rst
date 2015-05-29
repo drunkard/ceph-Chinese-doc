@@ -2,6 +2,145 @@
  Release Notes
 ===============
 
+v9.0.0
+======
+
+This is the first development release for the Infernalis cycle, and
+the first Ceph release to sport a version number from the new
+numbering scheme.  The "9" indicates this is the 9th release cycle--I
+(for Infernalis) is the 9th letter.  The first "0" indicates this is a
+development release ("1" will mean release candidate and "2" will mean
+stable release), and the final "0" indicates this is the first such
+development release.
+
+A few highlights include:
+
+* a new 'ceph daemonperf' command to watch perfcounter stats in realtime
+* reduced MDS memory usage
+* many MDS snapshot fixes
+* librbd can now store options in the image itself
+* many fixes for RGW Swift API support
+* OSD performance improvements
+* many doc updates and misc bug fixes
+
+Notable Changes
+---------------
+
+* aarch64: add optimized version of crc32c (Yazen Ghannam, Steve Capper)
+* auth: reinit NSS after fork() (#11128 Yan, Zheng)
+* build: disable LTTNG by default (#11333 Josh Durgin)
+* build: fix ppc build (James Page)
+* build: install-deps: support OpenSUSE (Loic Dachary)
+* build: misc cmake fixes (Matt Benjamin)
+* ceph-disk: follow ceph-osd hints when creating journal (#9580 Sage Weil)
+* ceph-disk: handle re-using existing partition (#10987 Loic Dachary)
+* ceph-disk: improve parted output parsing (#10983 Loic Dachary)
+* ceph-disk: make suppression work for activate-all and activate-journal (Dan van der Ster)
+* ceph-disk: misc fixes (Alfredo Deza)
+* ceph-fuse, libcephfs: don't clear COMPLETE when trimming null (Yan, Zheng)
+* ceph-fuse, libcephfs: hold exclusive caps on dirs we "own" (#11226 Greg Farnum)
+* ceph-fuse: do not require successful remount when unmounting (#10982 Greg Farnum)
+* ceph: new 'ceph daemonperf' command (John Spray, Mykola Golub)
+* common: PriorityQueue tests (Kefu Chai)
+* common: add descriptions to perfcounters (Kiseleva Alyona)
+* common: fix LTTNG vs fork issue (Josh Durgin)
+* crush: fix has_v4_buckets (#11364 Sage Weil)
+* crushtool: fix order of operations, usage (Sage Weil)
+* debian: minor package reorg (Ken Dreyer)
+* doc: docuemnt object corpus generation (#11099 Alexis Normand)
+* doc: fix gender neutrality (Alexandre Maragone)
+* doc: fix install doc (#10957 Kefu Chai)
+* doc: fix sphinx issues (Kefu Chai)
+* doc: mds data structure docs (Yan, Zheng)
+* doc: misc updates (Nilamdyuti Goswami, Vartika Rai, Florian Haas, Loic Dachary, Simon Guinot, Andy Allan, Alistair Israel, Ken Dreyer, Robin Rehu, Lee Revell, Florian Marsylle, Thomas Johnson, Bosse Klykken, Travis Rhoden, Ian Kelling)
+* doc: swift tempurls (#10184 Abhishek Lekshmanan)
+* doc: switch doxygen integration back to breathe (#6115 Kefu Chai)
+* erasure-code: update ISA-L to 2.13 (Yuan Zhou)
+* gmock: switch to submodule (Danny Al-Gaaf, Loic Dachary)
+* hadoop: add terasort test (Noah Watkins)
+* java: fix libcephfs bindings (Noah Watkins)
+* libcephfs,ceph-fuse: fix request resend on cap reconnect (#10912 Yan, Zheng)
+* librados: define C++ flags from C constants (Josh Durgin)
+* librados: fix last_force_resent handling (#11026 Jianpeng Ma)
+* librados: fix memory leak from C_TwoContexts (Xiong Yiliang)
+* librados: fix striper when stripe_count = 1 and stripe_unit != object_size (#11120 Yan, Zheng)
+* librados: op perf counters (John Spray)
+* librados: pybind: fix write() method return code (Javier Guerra)
+* libradosstriper: fix leak (Danny Al-Gaaf)
+* librbd: add purge_on_error cache behavior (Jianpeng Ma)
+* librbd: misc aio fixes (#5488 Jason Dillaman)
+* librbd: misc rbd fixes (#11478 #11113 #11342 #11380 Jason Dillaman, Zhiqiang Wang)
+* librbd: readahead fixes (Zhiqiang Wang)
+* librbd: store metadata, including config options, in image (Haomai Wang)
+* mds: add 'damaged' state to MDSMap (John Spray)
+* mds: add nicknames for perfcounters (John Spray)
+* mds: disable problematic rstat propagation into snap parents (Yan, Zheng)
+* mds: fix mydir replica issue with shutdown (#10743 John Spray)
+* mds: fix out-of-order messages (#11258 Yan, Zheng)
+* mds: fix shutdown with strays (#10744 John Spray)
+* mds: fix snapshot fixes (Yan, Zheng)
+* mds: fix stray handling (John Spray)
+* mds: flush immediately in do_open_truncate (#11011 John Spray)
+* mds: improve dump methods (John Spray)
+* mds: misc journal cleanups and fixes (#10368 John Spray)
+* mds: new SessionMap storage using omap (#10649 John Spray)
+* mds: reduce memory consumption (Yan, Zheng)
+* mds: throttle purge stray operations (#10390 John Spray)
+* mds: tolerate clock jumping backwards (#11053 Yan, Zheng)
+* misc coverity fixes (Danny Al-Gaaf)
+* mon: do not deactivate last mds (#10862 John Spray)
+* mon: make osd get pool 'all' only return applicable fields (#10891 Michal Jarzabek)
+* mon: warn on bogus cache tier config (Jianpeng Ma)
+* msg/async: misc bug fixes and updates (Haomai Wang)
+* msg/simple: fix connect_seq assert (Haomai Wang)
+* msg/xio: misc fixes (#10735 Matt Benjamin, Kefu Chai, Danny Al-Gaaf, Raju Kurunkad, Vu Pham)
+* msg: unit tests (Haomai Wang)
+* objectcacher: misc bug fixes (Jianpeng Ma)
+* os/filestore: enlarge getxattr buffer size (Jianpeng Ma)
+* osd: EIO injection (David Zhang)
+* osd: add misc perfcounters (Xinze Chi)
+* osd: add simple sleep injection in recovery (Sage Weil)
+* osd: allow SEEK_HOLE/SEEK_DATA for sparse read (Zhiqiang Wang)
+* osd: avoid dup omap sets for in pg metadata (Sage Weil)
+* osd: clean up some constness, privateness (Kefu Chai)
+* osd: erasure-code: drop entries according to LRU (Andreas-Joachim Peters)
+* osd: fix negative degraded stats during backfill (Guang Yang)
+* osd: misc fixes (Ning Yao, Kefu Chai, Xinze Chi, Zhiqiang Wang, Jianpeng Ma)
+* pybind: pep8 cleanups (Danny Al-Gaaf)
+* qa: fix filelock_interrupt.py test (Yan, Zheng)
+* qa: improve ceph-disk tests (Loic Dachary)
+* qa: improve docker build layers (Loic Dachary)
+* rados: translate erno to string in CLI (#10877 Kefu Chai)
+* rbd: accept map options config option (Ilya Dryomov)
+* rbd: cli: fix arg parsing with --io-pattern (Dmitry Yatsushkevich)
+* rbd: fix error messages (#2862 Rajesh Nambiar)
+* rbd: update rbd man page (Ilya Dryomov)
+* rbd: update xfstests tests (Douglas Fuller)
+* rgw: add X-Timestamp for Swift containers (#10938 Radoslaw Zarzynski)
+* rgw: add missing headers to Swift container details (#10666 Ahmad Faheem, Dmytro Iurchenko)
+* rgw: add stats to headers for account GET (#10684 Yuan Zhou)
+* rgw: do not prefecth data for HEAD requests (Guang Yang)
+* rgw: don't clobber bucket/object owner when setting ACLs (#10978 Yehuda Sadeh)
+* rgw: don't use rgw_socket_path if frontend is configured (#11160 Yehuda Sadeh)
+* rgw: enforce Content-Lenth for POST on Swift cont/obj (#10661 Radoslaw Zarzynski)
+* rgw: fix handling empty metadata items on Swift container (#11088 Radoslaw Zarzynski)
+* rgw: fix log rotation (Wuxingyi)
+* rgw: generate Date header for civetweb (#10873 Radoslaw Zarzynski)
+* rgw: make init script wait for radosgw to stop (#11140 Dmitry Yatsushkevich)
+* rgw: make quota/gc threads configurable (#11047 Guang Yang)
+* rgw: pass in civetweb configurables (#10907 Yehuda Sadeh)
+* rgw: rectify 202 Accepted in PUT response (#11148 Radoslaw Zarzynski)
+* rgw: remove meta file after deleting bucket (#11149 Orit Wasserman)
+* rgw: swift: allow setting attributes with COPY (#10662 Ahmad Faheem, Dmytro Iurchenko)
+* rgw: swift: fix metadata handling on copy (#10645 Radoslaw Zarzynski)
+* rgw: swift: send Last-Modified header (#10650 Radoslaw Zarzynski)
+* rgw: update keystone cache with token info (#11125 Yehuda Sadeh)
+* rgw: update to latest civetweb, enable config for IPv6 (#10965 Yehuda Sadeh)
+* rocksdb: update to latest (Xiaoxi Chen)
+* rpm: loosen ceph-test dependencies (Ken Dreyer)
+
+
+
 v0.94.1 Hammer
 ==============
 
@@ -1671,6 +1810,66 @@ Notable Changes
 * use clock_gettime instead of gettimeofday (Jianpeng Ma)
 * vstart.sh: set up environment for s3-tests (Luis Pabon)
 
+
+v0.87.2 Giant
+=============
+
+This is the second (and possibly final) point release for Giant.
+
+We recommend all v0.87.x Giant users upgrade to this release.
+
+Notable Changes
+---------------
+
+* ceph-objectstore-tool: only output unsupported features when incompatible (#11176 David Zafman)
+* common: do not implicitly unlock rwlock on destruction (Federico Simoncelli)
+* common: make wait timeout on empty queue configurable (#10818 Samuel Just)
+* crush: pick ruleset id that matches and rule id (Xiaoxi Chen)
+* crush: set_choose_tries = 100 for new erasure code rulesets (#10353 Loic Dachary)
+* librados: check initialized atomic safely (#9617 Josh Durgin)
+* librados: fix failed tick_event assert (#11183 Zhiqiang Wang)
+* librados: fix looping on skipped maps (#9986 Ding Dinghua)
+* librados: fix op submit with timeout (#10340 Samuel Just)
+* librados: pybind: fix memory leak (#10723 Billy Olsen)
+* librados: pybind: keep reference to callbacks (#10775 Josh Durgin)
+* librados: translate operation flags from C APIs (Matthew Richards)
+* libradosstriper: fix write_full on ENOENT (#10758 Sebastien Ponce)
+* libradosstriper: use strtoll instead of strtol (Dongmao Zhang)
+* mds: fix assertion caused by system time moving backwards (#11053 Yan, Zheng)
+* mon: allow injection of random delays on writes (Joao Eduardo Luis)
+* mon: do not trust small osd epoch cache values (#10787 Sage Weil)
+* mon: fail non-blocking flush if object is being scrubbed (#8011 Samuel Just)
+* mon: fix division by zero in stats dump (Joao Eduardo Luis)
+* mon: fix get_rule_avail when no osds (#10257 Joao Eduardo Luis)
+* mon: fix timeout rounds period (#10546 Joao Eduardo Luis)
+* mon: ignore osd failures before up_from (#10762 Dan van der Ster, Sage Weil)
+* mon: paxos: reset accept timeout before writing to store (#10220 Joao Eduardo Luis)
+* mon: return if fs exists on 'fs new' (Joao Eduardo Luis)
+* mon: use EntityName when expanding profiles (#10844 Joao Eduardo Luis)
+* mon: verify cross-service proposal preconditions (#10643 Joao Eduardo Luis)
+* mon: wait for osdmon to be writeable when requesting proposal (#9794 Joao Eduardo Luis)
+* mount.ceph: avoid spurious error message about /etc/mtab (#10351 Yan, Zheng)
+* msg/simple: allow RESETSESSION when we forget an endpoint (#10080 Greg Farnum)
+* msg/simple: discard delay queue before incoming queue (#9910 Sage Weil)
+* osd: clear_primary_state when leaving Primary (#10059 Samuel Just)
+* osd: do not ignore deleted pgs on startup (#10617 Sage Weil)
+* osd: fix FileJournal wrap to get header out first (#10883 David Zafman)
+* osd: fix PG leak in SnapTrimWQ (#10421 Kefu Chai)
+* osd: fix journalq population in do_read_entry (#6003 Samuel Just)
+* osd: fix operator== for op_queue_age_hit and fs_perf_stat (#10259 Samuel Just)
+* osd: fix rare assert after split (#10430 David Zafman)
+* osd: get pgid ancestor from last_map when building past intervals (#10430 David Zafman)
+* osd: include rollback_info_trimmed_to in {read,write}_log (#10157 Samuel Just)
+* osd: lock header_lock in DBObjectMap::sync (#9891 Samuel Just)
+* osd: requeue blocked op before flush it was blocked on (#10512 Sage Weil)
+* osd: tolerate missing object between list and attr get on backfill (#10150 Samuel Just)
+* osd: use correct atime for eviction decision (Xinze Chi)
+* rgw: flush XML header on get ACL request (#10106 Yehuda Sadeh)
+* rgw: index swift keys appropriately (#10471 Hemant Bruman, Yehuda Sadeh)
+* rgw: send cancel for bucket index pending ops (#10770 Baijiaruo, Yehuda Sadeh)
+* rgw: swift: support X_Remove_Container-Meta-{key} (#01475 Dmytro Iurchenko)
+
+For more detailed information, see :download:`the complete changelog <changelog/v0.87.2.txt>`.
 
 v0.87.1 Giant
 =============
