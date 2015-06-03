@@ -111,19 +111,28 @@
 
    以只读方式映射到映像，等价于 -o ro 。
 
-.. option:: --image-features features
+.. option:: --image-feature feature
 
-   创建格式 2 的 RBD 映像时，指定要启用哪些功能。把想要的功能前面的数字累\
-   加起来就是参数值：
+   创建格式 2 的 RBD 映像时，指定要启用哪些功能。想要启用多个功能的话，可\
+   以多次重复使用此选项。当前支持下列功能：
 
-   +1: 支持分层
-   +2: 支持条带化 v2
-   +4: 支持独占锁
-   +8: 支持对象映射
+   layering: 支持分层
+   striping: 支持条带化 v2
+   exclusive-lock: 支持独占锁
+   object-map: 支持对象映射（依赖 exclusive-lock ）
+   fast-diff: 快速计算差异（依赖 object-map ）
+   deep-flatten: 支持快照扁平化操作
 
 .. option:: --image-shared
 
    指定该映像将被多个客户端同时使用。此选项将禁用那些依赖于独占所有权的功能。
+
+.. option:: --object-extents
+
+   把 diff 操作范围限定在完整的对象条带级别，而非对象内差异。当某一映像启\
+   用了 object-map 功能时，把 diff 操作限定到对象条带会显著地提高性能，因\
+   为通过检查驻留于内存中的对象映射就可以计算出差异，而无需针对映像内的各\
+   个对象查询 RADOS 。
 
 
 命令
@@ -177,7 +186,7 @@
 
   参数 --stripe-unit 和 --stripe-count 是可选的，但必须同时使用。
 
-:command:`export-diff` [*image-name*] [*dest-path*] [--from-snap *snapname*]
+:command:`export-diff` [*image-name*] [*dest-path*] [--from-snap *snapname*] [--object-extents]
   导出一映像的增量差异，用-导出到标准输出。若给了起始快照，就只包含与此快照\
   的差异部分；否则包含映像的所有数据部分；结束快照用 --snap 选项或 @snap \
   （见下文）指定。此映像的差异格式包含了映像尺寸变更的元数据、起始和结束快\
@@ -195,7 +204,7 @@
   我们会先校验那个已存在快照再继续；如果指定了结束快照，我们先检查它是否存\
   在、再应用变更，结束后再创建结束快照。
 
-:command:`diff` [*image-name*] [--from-snap *snapname*]
+:command:`diff` [*image-name*] [--from-snap *snapname*] [--object-extents]
   打印出从指定快照点起、或从映像创建点起，映像内的变动区域。输出的各行都包含\
   起始偏移量（按字节）、数据块长度（按字节）、还有 zero 或 data ，用来指示此\
   范围以前是 0 还是其它数据。
@@ -217,6 +226,10 @@
 
 :command:`image-meta remove` [*image-name*] [*key*]
   删除元数据关键字及其值。
+
+:command:`object-map` rebuild [*image-name*]
+  为指定映像重建无效的对象映射关系。指定映像快照时，将为此快照重建无效的对\
+  象映射关系。
 
 :command:`snap` ls [*image-name*]
   列出一映像内的快照。
@@ -249,7 +262,7 @@
 :command:`map` [*image-name*] [-o | --options *map-options* ] [--read-only]
   通过内核 rbd 模块把指定映像映射到某一块设备。
 
-:command:`unmap` [*device-path*]
+:command:`unmap` [*image-name*] | [*device-path*]
   取消通过内核 rbd 模块的映射。
 
 :command:`showmapped`
