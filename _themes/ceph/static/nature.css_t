@@ -278,6 +278,10 @@ div.admonition.important {
     color: #fff;
 }
 
+div.admonition.important a {
+    color: #E6E8E8;
+}
+
 div.tip tt.literal {
     background-color: #55aeba;
     color: #fff;
