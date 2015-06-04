@@ -505,11 +505,11 @@ osd
 
 	ceph osd blocked-by
 
-子命令 ``create`` 用于新建 OSD ， UUID 是可选的。
+子命令 ``create`` 用于新建 OSD ， UUID 和 ID 是可选的。
 
 用法： ::
 
-	ceph osd create {<uuid>}
+	ceph osd create {<uuid>} {<id>}
 
 子命令 ``crush`` 用于 CRUSH 管理，需额外指定子命令。
 
