@@ -66,7 +66,7 @@
 
 :描述: 存储池名称，必须唯一。
 :类型: String
-:是否必需: 必需。没指定的话读取默认值、或 Ceph 配置文件里的值。
+:是否必需: 必需。
 
 
 ``{pg-num}``
@@ -105,14 +105,15 @@
 
 ``[crush-ruleset-name]``
 
-:描述: 此存储池所用的 crush 规则集名字。若指定的规则集不存在，\ **副本**\ \
-       存储池的创建就会失败，原因为 -ENOENT ；但是\ **纠删码**\ 存储池会以\
-       此名字新建一个删除码规则集。
-
+:描述: 此存储池所用的 CRUSH 规则集名字。指定的规则集必须存在。
 :类型: String
 :是否必需: No.
-:默认值: **纠删码存储池**\ 为 "erasure-code" ；\ **副本**\ 存储池为 \
-         **osd_pool_default_crush_replicated_ruleset** 。
+:默认值: 对于多副本（ **replicated** ）存储池来说，其默认规则集由 \
+         ``osd pool default crush replicated ruleset`` 配置决定，此规则集\
+         必须存在。
+         对于用 ``erasure-code`` 编码的纠删码（ **erasure** ）存储池来说，\
+         不同的 ``{pool-name}`` 所使用的默认（ ``default`` ）\ \
+         `纠删码配置`_\ 是不同的，如果它不存在的话，会显式地创建它。
 
 
 ``[erasure-code-profile=profile]``
