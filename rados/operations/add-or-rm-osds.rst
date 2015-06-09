@@ -201,6 +201,23 @@ CRUSH 图。
 你会看到归置组状态从 ``active+clean`` 变为 ``active, some degraded objects`` 、\
 迁移完成后最终回到 ``active+clean`` 状态。（ Ctrl-c 中止）
 
+.. note:: 有时候，（通常是只有几台主机的“小”集群，比如小型测试集群）拿出\
+   （ ``out`` ）某个 OSD 可能会使 CRUSH 进入临界状态，这时某些 PG 一直卡\
+   在 ``active+remapped`` 状态。如果遇到了这种情况，你应该把此 OSD 标记\
+   为 ``in`` ，用这个命令： ::
+
+	``ceph osd in {osd-num}``
+
+   等回到最初的状态后，把它的权重设置为 0 ，而不是标记为 ``out`` ，用此\
+   命令： ::
+
+	``ceph osd crush reweight osd.{osd-num} 0``
+
+   执行后，你可以观察数据迁移过程，应该可以正常结束。把某一 OSD 标记为 \
+   ``out`` 和权重改为 0 的区别在于，前者，包含此 OSD 的桶、其权重没变；\
+   而后一种情况下，桶的权重变了（降低了此 OSD 的权重）。某些情况下， \
+   reweight 命令更适合“小”集群。
+
 
 停止 OSD
 --------

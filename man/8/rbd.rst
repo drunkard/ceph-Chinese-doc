@@ -359,6 +359,10 @@ Map 选项
 
 * notcp_nodelay - 在客户端启用 Nagle's 算法（从 4.0 起）。
 
+* mount_timeout=x - 执行 `rbd map` 和 `rbd unmap` 时所涉及的各操作步骤的\
+  超时值（默认为 60 秒）。特别是从 4.2 起，与集群间没有连接时，即认为 \
+  `rbd unmap` 操作超时了。
+
 * osdkeepalive=x - OSD 保持连接的期限（默认为 5 秒）。
 
 * osd_idle_ttl=x - OSD 闲置 TTL （默认为 60 秒）。

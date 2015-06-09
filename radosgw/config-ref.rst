@@ -277,6 +277,13 @@
 :默认值: ``admin``
 
 
+``rgw content length compat``
+
+:描述: 允许兼容设置了 CONTENT_LENGTH 和 HTTP_CONTENT_LENGTH 的 FCGI 请求。
+:类型: Boolean
+:默认值: ``false``
+
+
 辖区
 ====
 
