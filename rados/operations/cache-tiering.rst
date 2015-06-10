@@ -200,7 +200,7 @@
 
 例如，用下列命令配置在达到 1TB 时刷回或赶出： ::
 
-	ceph osd pool hot-storage target_max_bytes 1000000000000
+	ceph osd pool set hot-storage target_max_bytes 1000000000000
 
 
 用下列命令指定缓存对象的最大数量： ::
