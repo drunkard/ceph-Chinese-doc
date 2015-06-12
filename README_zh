@@ -2,6 +2,9 @@
 编译
 ====
 
+编译好的文档位于： https://github.com/drunkard/ceph-readable-doc/tree/master/output/html
+编译环境的配置比较麻烦，您不想折腾的话可以直接读上面编译好的。
+
 Java 虚拟机应该用 oracle-jdk-bin-1.8 或 oracle-jdk-bin-1.7 ， jre 缺少必要的\
 库文件。
 
