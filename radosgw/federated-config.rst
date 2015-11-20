@@ -13,7 +13,7 @@ Ceph 从 0.67 Dumpling 起支持加入 :term:`Ceph 对象网关`\ 联盟，可�
 - **域（ Zone ）：** 域是一个或多个 Ceph 对象网关例程的\ *逻辑*\ 分组。每个辖\
   区有一个主域处理客户端请求。
 
-.. important:: 只能写入辖区内的主域，你可以从二级个域读取对象。当前，网关程序\
+.. important:: 你可以从二级域读取对象，但只能写入辖区内的主域。当前，网关程序\
    不会禁止你写入二级域，但是，\ **别那样干！**
 
 
@@ -85,6 +85,7 @@ Ceph 存储集群。
 储池名的前缀，但你可以用自己喜欢的命名规则。例如：
 
 
+- ``.us-east.rgw``
 - ``.us-east.rgw.root``
 - ``.us-east.rgw.control``
 - ``.us-east.rgw.gc``
@@ -99,7 +100,9 @@ Ceph 存储集群。
 - ``.us-east.users.swift``
 - ``.us-east.users.uid``
 
+|
 
+- ``.us-west.rgw``
 - ``.us-west.rgw.root``
 - ``.us-west.rgw.control``
 - ``.us-west.rgw.gc``
@@ -397,7 +400,7 @@ Apache 、 FastCGI 、 Ceph 对象网关守护进程（ ``radosgw`` ），还有
    把以下实例的内容复制到文本编辑器。本配置里的存储池名字用辖区名和域名作为前\
    缀。关于网关存储池见\ `配置参考——存储池`_\ ，关于域请参考\ `配置参考——域`_\ 。 ::
 
-	{ "domain_root": ".us-east.domain.rgw",
+	{ "domain_root": ".us-east.rgw",
 	  "control_pool": ".us-east.rgw.control",
 	  "gc_pool": ".us-east.rgw.gc",
 	  "log_pool": ".us-east.log",
@@ -411,7 +414,8 @@ Apache 、 FastCGI 、 Ceph 对象网关守护进程（ ``radosgw`` ），还有
 	  "placement_pools": [
 	    { "key": "default-placement",
 	      "val": { "index_pool": ".us-east.rgw.buckets.index",
-	               "data_pool": ".us-east.rgw.buckets"}
+	               "data_pool": ".us-east.rgw.buckets",
+	               "data_extra_pool": ".us-east.rgw.buckets.extra"}
 	    }
 	  ]
 	}
@@ -449,8 +453,8 @@ Apache 、 FastCGI 、 Ceph 对象网关守护进程（ ``radosgw`` ），还有
 Ceph 对象网关的域用户存储在域存储池中，所以配置完域之后还必须创建域用户。为各\
 用户填充 ``access_key`` 和 ``secret_key`` 字段，然后再次更新域配置信息。 ::
 
-	radosgw-admin user create --uid="us-east" --display-name="Region-US Zone-East" --name client.radosgw.us-east-1 --system
-	radosgw-admin user create --uid="us-west" --display-name="Region-US Zone-West" --name client.radosgw.us-west-1 --system
+	radosgw-admin user create --uid="us-east" --display-name="Region-US Zone-East" --name client.radosgw.us-east-1 --system --gen-access-key --gen-secret
+	radosgw-admin user create --uid="us-west" --display-name="Region-US Zone-West" --name client.radosgw.us-west-1 --system --gen-access-key --gen-secret
 
 
 .. note:: 按照以上步骤配置二级辖区时，需把 ``us-`` 替换为 ``eu-`` 。在各辖区\
@@ -466,7 +470,7 @@ Ceph 对象网关的域用户存储在域存储池中，所以配置完域之后
 #. 打开 ``us-east.json`` 域配置文件，把创建域用户时输出的 ``access_key`` 和 \
    ``secret_key`` 的内容粘帖进配置文件的 ``system_key`` 字段。 ::
 
-	{ "domain_root": ".us-east.domain.rgw",
+	{ "domain_root": ".us-east.rgw",
 	  "control_pool": ".us-east.rgw.control",
 	  "gc_pool": ".us-east.rgw.gc",
 	  "log_pool": ".us-east.log",
@@ -483,7 +487,8 @@ Ceph 对象网关的域用户存储在域存储池中，所以配置完域之后
 	  "placement_pools": [
 	    { "key": "default-placement",
 	      "val": { "index_pool": ".us-east.rgw.buckets.index",
-	               "data_pool": ".us-east.rgw.buckets"}
+	               "data_pool": ".us-east.rgw.buckets",
+	               "data_extra_pool": ".us-east.rgw.buckets.extra"}
 	    }
 	  ]
 	}
@@ -613,14 +618,14 @@ Ceph 对象网关的域用户存储在域存储池中，所以配置完域之后
 
 #. `更新域配置`_\ ，用 ``eu`` 取代 ``us`` 。
 
-#. 在二级辖区里，从主辖区创建各个域。 ::
+#. 在（所有？）二级辖区里，创建主辖区的各个域。 ::
 
 	radosgw-admin zone set --rgw-zone=us-east --infile us-east.json --name client.radosgw.eu-east-1
 	radosgw-admin zone set --rgw-zone=us-east --infile us-east.json --name client.radosgw.eu-west-1
 	radosgw-admin zone set --rgw-zone=us-west --infile us-west.json --name client.radosgw.eu-east-1
 	radosgw-admin zone set --rgw-zone=us-west --infile us-west.json --name client.radosgw.eu-west-1
 
-#. 在主辖区里，从二级辖区创建各个域。 ::
+#. 在主辖区里，创建二级辖区的各个域。 ::
 
 	radosgw-admin zone set --rgw-zone=eu-east --infile eu-east.json --name client.radosgw.us-east-1
 	radosgw-admin zone set --rgw-zone=eu-east --infile eu-east.json --name client.radosgw.us-west-1
@@ -672,7 +677,7 @@ Ceph 存储集群）；配置文件（如 ``cluster-data-sync.conf`` ）里的�
 	dest_secret_key: W3HuUor7Gl1Ee93pA2pq2wFk1JMQ7hTrSDecYExl
 	log_file: /var/log/radosgw/radosgw-sync-us-east-west.log
 
-要启动数据同步代理，在终端内执行以下命令： ::
+（在哪里执行）要启动数据同步代理，在终端内执行以下命令： ::
 
 	radosgw-agent -c region-data-sync.conf
 
