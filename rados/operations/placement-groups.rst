@@ -298,8 +298,11 @@ would require significantly more resources and time for peering.
 
 	ceph osd pool set {pool-name} pg_num {pg_num}
 
-你增加归置组数量后、还必须增加用于归置的归置组（ ``pgp_num`` ）数量，这样才会开始重\
-均衡。 ``pgp_num`` 应等于 ``pg_num`` ，可用下列命令增加用于归置的归置组数量： ::
+你增加归置组数量后、还必须增加用于归置的归置组（ ``pgp_num`` ）数量，这样\
+才会开始重均衡。 ``pgp_num`` 数值才是 CRUSH 算法采用的用于归置的归置组数量。\
+虽然 ``pg_num`` 的增加引起了归置组的分割，但是只有当用于归置的归置组（即 \
+``pgp_num`` ）增加以后，数据才会被迁移到新归置组里。 ``pgp_num`` 的数值应\
+等于 ``pg_num`` 。可用下列命令增加用于归置的归置组数量： ::
 
 	ceph osd pool set {pool-name} pgp_num {pgp_num}
 

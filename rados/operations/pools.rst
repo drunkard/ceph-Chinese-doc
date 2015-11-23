@@ -46,8 +46,11 @@
 创建存储池
 ==========
 
-创建存储池前先看看\ `存储池、归置组和 CRUSH 配置参考`_\ 。你最好在配置文件里重置默\
-认归置组数量，因为默认值并不理想。例如： ::
+创建存储池前先看看\ `存储池、归置组和 CRUSH 配置参考`_\ 。你最好在配置文件\
+里重置默认归置组数量，因为默认值并不理想。关于归置组数量请参考\
+`设置归置组数量`_\ 。
+
+例如： ::
 
 	osd pool default pg num = 100
 	osd pool default pgp num = 100
@@ -502,3 +505,4 @@ Ceph 会列出存储池，且高亮 ``replicated size`` 属性。默认情况下
 
 .. _存储池、归置组和 CRUSH 配置参考: ../../configuration/pool-pg-config-ref
 .. _Bloom 过滤器: http://en.wikipedia.org/wiki/Bloom_filter
+.. _设置归置组数量: ../placement-groups#set-the-number-of-placement-groups

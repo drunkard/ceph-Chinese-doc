@@ -56,9 +56,9 @@
      非是分拆的模块）。此格式增加了克隆支持，使得扩展更容易，还允许以后增加\
      新功能。
 
-.. option:: --size size-in-mb
+.. option:: --size size-in-M/G/T
 
-   指定新 rbd 映像的尺寸， MB 。
+   指定新 rbd 映像的尺寸，单位可以是 M/G/T 。
 
 .. option:: --order bits
 

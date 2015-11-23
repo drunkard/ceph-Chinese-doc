@@ -34,8 +34,8 @@
 
 	ceph tell {daemon-type}.{daemon id or *} injectargs --{name} {value} [--{name} {value}]
 
-用 ``osd`` 、 ``mon`` 或 ``mds`` 替代 ``{daemon-type}`` 。你可以用星号（ ``*`` ）\
-把配置应用到同类型的所有守护进程，或者指定具体守护进程的标识号（即其名字或字母）。例\
+用 ``osd`` 、 ``mon`` 或 ``mds`` 替代 ``{daemon-type}`` 。你可以用星号\
+（ ``*`` ）把配置应用到同类型的所有守护进程，或者指定具体守护进程的 ID 。例\
 如，要给名为 ``ods.0`` 的 ``ceph-osd`` 守护进程提高调试级别，用下列命令： ::
 
 	ceph tell osd.0 injectargs --debug-osd 0/5
