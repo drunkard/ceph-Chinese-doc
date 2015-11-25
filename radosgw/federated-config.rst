@@ -338,7 +338,7 @@ Apache 、 FastCGI 、 Ceph 对象网关守护进程（ ``radosgw`` ），还有
 
    把下列实例的内容复制进文本编辑器，把 ``is_master`` 设置为 ``true`` ，用终\
    结点的全资域名替换 ``{fqdn}`` 。这样，主域就是 ``us-east`` ，另外 \
-   ``zones`` 列表中还会有 ``us-west`` 。详情见\ `配置参考—— region`_ 。 ::
+   ``zones`` 列表中还会有 ``us-west`` 。详情见\ `配置参考——region`_ 。 ::
 
 	{ "name": "us",
 	  "api_name": "us",

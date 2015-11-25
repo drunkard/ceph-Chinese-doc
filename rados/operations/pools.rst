@@ -317,6 +317,19 @@
 :默认值: ``.4``
 
 
+.. _cache_target_dirty_high_ratio:
+
+``cache_target_dirty_high_ratio``
+
+:描述: 缓存存储池内包含的已修改（脏的）对象达到此比例时，缓存层代理就会\
+       更快地把脏对象刷回到后端存储池。
+
+:类型: Double
+:默认值: ``.6``
+
+
+.. _cache_target_full_ratio:
+
 ``cache_target_full_ratio``
 
 :描述: 缓存存储池包含的干净对象达到多少比例时，缓存代理就把它们赶出缓存存储池。
@@ -433,6 +446,13 @@
 
 :描述: 缓存存储池内的变更（脏的）对象达到此百分比时，缓存分级代理就把它们刷\
        回后端存储池。
+
+:类型: Double
+
+
+``cache_target_dirty_high_ratio``
+
+:描述: 见 cache_target_dirty_high_ratio_
 
 :类型: Double
 
