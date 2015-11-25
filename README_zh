@@ -42,6 +42,9 @@ Java 虚拟机应该用 oracle-jdk-bin-1.8 或 oracle-jdk-bin-1.7 ， jre 缺少
 文档风格
 ========
 
+本项目的更新是对照着 Ceph 项目原文和 doc/ 目录相关的 commit 历史进行的，\
+这样就无需挨篇对照。
+
 仍然要尽量遵守原文档的书写风格，如缩进、不超过 80 列宽、等。
 
 有些风格是中文版特有的，如：
@@ -51,20 +54,27 @@ Java 虚拟机应该用 oracle-jdk-bin-1.8 或 oracle-jdk-bin-1.7 ， jre 缺少
 - 引用和正文间加"\ "，这样不影响编译系统又不会额外增加空格；
 - 用反斜线"\"换行，这样不会额外增加空格；
 - 原文中用双引号引用的词语在中文文档里可去掉引号，因为原文引用它已经很显眼了；
-- 由于字体和程序的问题，在"终端下”能更好地对齐到 80 列；
+- 由于字体和程序的问题，在"终端下”能更好地对齐到 80 列，比如在 \
+  gnome-terminal + vim 下；
+- 为防止中文版和英文版文档的行数差得太多，中文版断行要提前，比如提前 \
+  8-10 个字符，也就是 4-5 个汉字；
 
 
-====
-更新
-====
-UPDATETO 文件内是 doc/ 目录下的最新 commit ，说明本次更新到了这里。之后的更新\
-可以对照原文和 doc/ 目录下的 commit 历史，免去了挨篇对照的繁琐。
+========
+更新步骤
+========
 
-获取此 commit ID 的命令为：
+以下只是大致步骤，路径不同时还需修改脚本：
 
-	git log -1 --pretty=oneline doc/ | cut -d ' ' -f 1
+	mkdir /git && cd /git
+	git clone https://github.com/ceph/ceph.git
+	git clone https://github.com/{你的github用户名}/ceph-Chinese-doc.git
+	cd /git/ceph-Chinese-doc/ && ./update-doc.sh
+	# update-doc.sh 脚本用了 git 和 gitview 命令，最好先检查下安装了没。
+	# 对照着 gitview 里的 commit 历史开始更新中文文档！从最下面开始！！！
 
-查看 doc/ 目录自上次更新以来的变更：
+	# 更新一或多个 commit 后提交到 git 库：
+	./commit-updated.sh
+	git push origin
 
-	CEPH_REPO=/git/ceph
-	ID=`cat UPDATETO` && cd $CEPH_REPO && gitview ${ID}.. doc/ &
+然后可以在 github 上向我反馈您的更新 :-)
