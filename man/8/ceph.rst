@@ -793,7 +793,7 @@ osd
 
 用法： ::
 
-	ceph osd metadata <int[0-]>
+	ceph osd metadata {int[0-]} (default all)
 
 子命令 ``out`` 把指定 OSD <id> [<id>...] 的状态设置为 out 。
 
