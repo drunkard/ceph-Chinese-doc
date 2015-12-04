@@ -1317,7 +1317,7 @@ version
 
    Ceph 集群名字。
 
-.. option:: --admin-daemon ADMIN_SOCKET
+.. option:: daemon ADMIN_SOCKET, daemon DAEMON_NAME, --admin-socket ADMIN_SOCKET, --admin-socket DAEMON_NAME
 
    提交管理套接字命令。
 
