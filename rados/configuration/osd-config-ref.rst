@@ -4,17 +4,19 @@
 
 .. index:: OSD; configuration
 
-你可以通过配置文件调整 OSD ，但靠默认值和极少的配置 OSD 守护进程就能运行。最简 OSD \
-配置需设置 ``osd journal size`` 和 ``osd host`` ，其他几乎都能用默认值。
+你可以通过配置文件调整 OSD ，但靠默认值和极少的配置 OSD 守护进程\
+就能运行。最简 OSD 配置需设置 ``osd journal size`` 和 ``host`` ，\
+其他几乎都能用默认值。
 
-OSD 用递增数字标识，按惯例以 ``0`` 开始，如下： ::
+Ceph 的 OSD 守护进程用递增的数字作标识，按惯例以 ``0`` 开始，\
+如下： ::
 
 	osd.0
 	osd.1
 	osd.2
 
-在配置文件里， ``[osd]`` 段下的配置适用于所有 OSD ；要添加针对特定 OSD 的选项（如 \
-``osd host`` ），把它放到那个 OSD 段下即可，如：
+在配置文件里， ``[osd]`` 段下的配置适用于所有 OSD ；要添加针对特\
+定 OSD 的选项（如 ``host`` ），把它放到那个 OSD 段下即可，如：
 
 .. code-block:: ini
 
@@ -22,10 +24,10 @@ OSD 用递增数字标识，按惯例以 ``0`` 开始，如下： ::
 		osd journal size = 1024
 
 	[osd.0]
-		osd host = osd-host-a
+		host = osd-host-a
 
 	[osd.1]
-		osd host = osd-host-b
+		host = osd-host-b
 
 
 .. index:: OSD; config settings
