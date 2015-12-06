@@ -1,6 +1,6 @@
 #!/bin/bash
 # Where we synced with ceph mainline:
-CUR=387d7800359154950431d0984c756f43f21dd9b4
+CUR=8178e7e0065da00c7d8065a77e13330057a369a5
 
 MYPATH="${0%/*}"
 CEPH_REPO=/git/ceph
