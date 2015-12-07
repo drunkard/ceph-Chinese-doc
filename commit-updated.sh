@@ -21,9 +21,16 @@ commit_zh_code() {
 		echo "$FUNCNAME: cd $ZH_CODE failed"
 		return 1
 	}
+	# check if updated cursor
+	if [ `git -C $ZH_CODE diff update-doc.sh |grep -c CUR=` -ne 2 ]; then
+		echo "$FUNCNAME: update-doc.sh not changed, please update CUR="
+		return 2
+	fi
 	git commit -a --signoff -m "$CODE_MSG"
-	if [ $? -ne 0 ]; then
-		echo "$FUNCNAME: commit failed"
+	if [ $? -eq 0 ]; then
+		echo -e "$FUNCNAME: commit ok in git repo: $ZH_CODE\n"
+	else
+		echo -e "$FUNCNAME: commit failed in git repo: $ZH_CODE\n"
 		return 1
 	fi
 }
@@ -39,8 +46,10 @@ commit_zh_readable() {
 	fi
 	git -C $ZH_READABLE add output/ && \
 	git -C $ZH_READABLE commit --signoff -m "$READABLE_MSG" output/
-	if [ $? -ne 0 ]; then
-		echo "$FUNCNAME: commit failed"
+	if [ $? -eq 0 ]; then
+		echo -e "$FUNCNAME: commit ok in repo: $ZH_READABLE\n"
+	else
+		echo -e "$FUNCNAME: commit failed in repo: $ZH_READABLE\n"
 		return 1
 	fi
 }
