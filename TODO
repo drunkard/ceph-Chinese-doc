@@ -3,6 +3,8 @@ TODO for Chinese
 
 纠正联盟配置文档中的错误之处，并提交给上游；
 
+重新断行，不超过67
+
 
 TODO for English
 ================
@@ -17,3 +19,21 @@ Internal mechanism of federated radosgw config, or the lowest(needed pools
 at least) configuration for it.
 
 Missed config option in doc, compares to list of 'ceph daemon osd.0 config show'
+
+option warnings fix:
+
+	/git/ceph/doc/man/8/ceph-deploy.rst:146: WARNING: option reference target not found: --mkfs
+	/git/ceph/doc/man/8/ceph-disk.rst:84: WARNING: option reference target not found: --activate-key
+	/git/ceph/doc/man/8/ceph-disk.rst:91: WARNING: option reference target not found: --mark-init
+	/git/ceph/doc/man/8/ceph-disk.rst:104: WARNING: option reference target not found: --no-start-daemon
+	/git/ceph/doc/man/8/ceph-disk.rst:107: WARNING: option reference target not found: --reactivate
+	/git/ceph/doc/man/8/ceph-disk.rst:127: WARNING: option reference target not found: --activate-key
+	/git/ceph/doc/man/8/ceph-disk.rst:127: WARNING: option reference target not found: --mark-init
+	/git/ceph/doc/man/8/ceph-disk.rst:148: WARNING: option reference target not found: --activate-key
+	/git/ceph/doc/man/8/ceph-disk.rst:148: WARNING: option reference target not found: --mark-init
+	/git/ceph/doc/man/8/ceph-disk.rst:198: WARNING: option reference target not found: --reactivate
+	/git/ceph/doc/man/8/ceph-disk.rst:212: WARNING: option reference target not found: --mark-out
+	/git/ceph/doc/man/8/ceph-disk.rst:216: WARNING: option reference target not found: --deactivate-by-id
+	/git/ceph/doc/man/8/ceph-disk.rst:235: WARNING: option reference target not found: --zap
+	/git/ceph/doc/man/8/ceph-disk.rst:242: WARNING: option reference target not found: --destroy-by-id
+
