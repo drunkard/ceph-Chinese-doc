@@ -34,6 +34,10 @@ Linux 内核驱动和 rbd 存储驱动使用 RBD 。 RBD 映像是简单的块�
 
    连接到指定监视器，无需通过 ceph.conf 查找。
 
+.. option:: --cluster cluster name
+
+   使用非默认的集群名字，即不是 *ceph* 的集群名。
+
 .. option:: -p pool-name, --pool pool-name
 
    在指定存储池下操作，大多数命令都得指定。
@@ -434,6 +438,10 @@ libceph （每个客户端例程）选项：
 启用 cephx 时通过内核映射一映像： ::
 
 	rbd map mypool/myimage --id admin --keyfile secretfile
+
+要通过内核把某一映像映射到没用默认名字 *ceph* 的集群： ::
+
+	rbd map mypool/myimage --cluster *cluster name*
 
 取消映像映射： ::
 
