@@ -1,0 +1,13 @@
+#!/bin/bash
+
+fn=release-notes.rst
+en=/git/ceph/doc-en/$fn
+zh=/repo/ceph-Chinese-doc/$fn
+if cp $en $zh; then
+	sed -i -e 's/\(\ \|\t\)*$//g' $zh || \
+		echo 'sed failed'
+else
+	echo "copy failed"
+fi
+
+git diff $zh
