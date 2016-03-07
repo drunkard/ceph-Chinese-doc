@@ -48,14 +48,14 @@
 红帽包管理工具（RPM）
 ---------------------
 
-在 Red Hat （rhel6、rhel7）、CentOS （el6、el7）和 Fedora 19-20 （f19-f20） 上执行下列步骤：
+在 Red Hat （rhel6、rhel7）、CentOS （el6、el7）和 Fedora 19-20 （f19 - f20） 上执行下列步骤：
 
 #. 在 RHEL7 上，用 ``subscription-manager`` 注册你的目标机器，确认你的订阅， \
-   并使能用于安装依赖包的“Extras”软件仓库。例如 ： ::
+   并启用安装依赖包的“Extras”软件仓库。例如 ： ::
    
 	sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
    
-#. 在 RHEL6 上，安装并使能 Extra Packages for Enterprise Linux (EPEL) 软件仓库。 \
+#. 在 RHEL6 上，安装并启用 Extra Packages for Enterprise Linux (EPEL) 软件仓库。 \
    请查阅 `EPEL wiki`_ 获取更多信息。
    
 #. 在 CentOS 上，可以执行下列命令： ::
