@@ -5,7 +5,7 @@
 .. raw:: html
 
 	<style type="text/css">div.body h3{margin:5px 0px 0px 0px;}</style>
-	<table cellpadding="10"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><tbody valign="top"><tr><td><h3>步骤一：飞前</h3>
+	<table cellpadding="10"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><tbody valign="top"><tr><td><h3>步骤一：预检</h3>
 
 在部署 Ceph 存储集群之前，需要对 :term:`Ceph 客户端`\ 和 :term:`Ceph 节点`\ 进行一些基本的配置，你也可以加入 Ceph 社区以寻求帮助。
 
