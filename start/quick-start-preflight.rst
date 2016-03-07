@@ -5,8 +5,8 @@
 .. versionadded:: 0.60
 
 谢谢您尝试 Ceph ！我们建议安装一个 ``ceph-deploy`` 管理节点和一\
-个三节点的 :term:`Ceph 存储集群`\ 来研究 Ceph 的基本特性。这篇 \
-**预检**\ 会帮你准备一个 ``ceph-deploy`` 管理节点、以及三个\
+个三节点的 :term:`Ceph 存储集群`\ 来研究 Ceph 的基本特性。这篇 **预检** 会\
+帮你准备一个 ``ceph-deploy`` 管理节点、以及三个\
 \ Ceph 节点（或虚拟机），以此构成 Ceph 存储集群。在进行下一步之前，请参\
 见\ `操作系统推荐`_\ 以确认你安装了合适的 Linux 发行版。如果你在\
 整个生产集群中只部署了单一 Linux 发行版的同一版本，那么在排查生产环境中\
@@ -58,8 +58,8 @@
 #. 在 RHEL6 上，安装并使能 Extra Packages for Enterprise Linux (EPEL) 软件仓库。 \
    请查阅 `EPEL wiki`_ 获取更多信息。
    
-#. 在 CentOS 上，可以执行下列命令：
-   
+#. 在 CentOS 上，可以执行下列命令： ::
+
 	sudo yum install -y yum-utils && sudo yum-config-manager --add-repo https://dl.fedoraproject.org/pub/epel/7/x86_64/ && sudo yum install --nogpgcheck -y epel-release && sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 && sudo rm /etc/yum.repos.d/dl.fedoraproject.org*
 
 #. 把软件包源加入软件仓库。用文本编辑器创建一个 YUM (Yellowdog \
