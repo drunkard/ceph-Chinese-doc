@@ -1,23 +1,23 @@
 ==========
- 飞前检查
+ 预检
 ==========
 
 .. versionadded:: 0.60
 
 谢谢您尝试 Ceph ！我们建议安装一个 ``ceph-deploy`` 管理节点和一\
-个三节点的 :term:`Ceph 存储集群`\ 来发掘 Ceph 的基本特性。这篇\
-**飞前检查**\ 会帮你准备一个 ``ceph-deploy`` 管理节点、以及三个\
-\ Ceph 节点（或虚拟机），以此构成 Ceph 存储集群。动手之前，请参\
-见\ `操作系统推荐`_\ 确认你安装了合适的 Linux 发行版。如果你在\
-整个生产集群中只部署了一种 Linux 发行版的同一版本，那么比较容易\
-找到问题根源。
+个三节点的 :term:`Ceph 存储集群`\ 来研究 Ceph 的基本特性。这篇\
+**预检**\ 会帮你准备一个 ``ceph-deploy`` 管理节点、以及三个\
+\ Ceph 节点（或虚拟机），以此构成 Ceph 存储集群。在进行下一步之前，请参\
+见\ `操作系统推荐`_\ 以确认你安装了合适的 Linux 发行版。如果你在\
+整个生产集群中只部署了单一 Linux 发行版的同一版本，那么在排查生产环境中\
+遇到的问题时就会容易一点。
 
 在下面的描述中\ :term:`节点`\ 代表一台机器。
 
 .. include:: quick-common.rst
 
 
-Ceph 部署工具的安装
+安装 Ceph 部署工具
 ===================
 
 把 Ceph 仓库添加到 ``ceph-deploy`` 管理节点，然后安装 ``ceph-deploy`` 。
@@ -25,13 +25,13 @@ Ceph 部署工具的安装
 高级包管理工具（APT）
 ---------------------
 
-在 Debian 和 Ubuntu 发行版上，可以执行下列步骤：
+在 Debian 和 Ubuntu 发行版上，执行下列步骤：
 
-#. 添加发布密钥： ::
+#. 添加 release key ： ::
 
 	wget -q -O- 'https://download.ceph.com/keys/release.asc' | sudo apt-key add -
 
-#. 添加Ceph软件包源，用稳定版Ceph（如 ``cuttlefish`` 、 \
+#. 添加Ceph软件包源，用Ceph稳定版（如 ``cuttlefish`` 、 \
    ``dumpling`` 、 ``emperor`` 、 ``firefly`` 等等）替换掉 \
    ``{ceph-stable-release}`` 。例如： ::
 
@@ -48,21 +48,33 @@ Ceph 部署工具的安装
 红帽包管理工具（RPM）
 ---------------------
 
-在 Red Hat （rhel6、rhel7）、CentOS （el6、el7）和 Fedora 19-21 \
-(f19-f21) 上执行下列步骤：
+在 Red Hat （rhel6、rhel7）、CentOS （el6、el7）和 Fedora 19-20\
+(f19-f20) 上执行下列步骤：
 
-#. 把软件包源加入软件库，用文本编辑器创建一个 YUM (Yellowdog \
+#. 在 RHEL7 上，用 ``subscription-manager`` 注册你的目标机器，确认你的订阅， \
+   并使能用于安装依赖包的“Extras”软件仓库。例如 ： ::
+   
+   sudo subscription-manager repos --enable=rhel-7-server-extras-rpms
+   
+#. 在 RHEL6 上，安装并使能 Extra Packages for Enterprise Linux (EPEL) 软件仓库。 \
+   请查阅 `EPEL wiki`_ 获取更多信息。
+   
+#. 在 CentOS 上，可以执行下列命令：
+   
+   sudo yum install -y yum-utils && sudo yum-config-manager --add-repo https://dl.fedoraproject.org/pub/epel/7/x86_64/ && sudo yum install --nogpgcheck -y epel-release && sudo rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7 && sudo rm /etc/yum.repos.d/dl.fedoraproject.org*
+
+#. 把软件包源加入软件仓库。用文本编辑器创建一个 YUM (Yellowdog \
    Updater, Modified) 库文件，其路径为 \
    ``/etc/yum.repos.d/ceph.repo`` 。例如： ::
 
 	sudo vim /etc/yum.repos.d/ceph.repo
 
-   把如下内容粘帖进去，用最新稳定版 Ceph 名字替换 \
-   ``{ceph-stable-release}`` （如 ``firefly`` ）、用你的发行版\
+   把如下内容粘帖进去，用 Ceph 的最新主稳定版名字替换 \
+   ``{ceph-stable-release}`` （如 ``firefly`` ），用你的Linux发行版\
    名字替换 ``{distro}`` （如 ``el6`` 为 CentOS 6 、 ``el7`` \
    为 CentOS 7 、 ``rhel6`` 为 Red Hat 6.5 、 ``rhel7`` 为 \
    Red Hat 7 、 ``fc19`` 是 Fedora 19 、 ``fc20`` 是 Fedora \
-   20 。最后保存到 ``/etc/yum.repos.d/ceph.repo`` 文件。 ::
+   20 ）。最后保存到 ``/etc/yum.repos.d/ceph.repo`` 文件中。 ::
 
 	[ceph-noarch]
 	name=Ceph noarch packages
@@ -308,3 +320,4 @@ SELinux 设置为 ``Permissive`` ： ::
 .. _时钟: ../../rados/configuration/mon-config-ref#clock
 .. _NTP: http://www.ntp.org/
 .. _Infernalis 版: ../../release-notes/#v9-1-0-infernalis-release-candidate
+.. _EPEL wiki: https://fedoraproject.org/wiki/EPEL
