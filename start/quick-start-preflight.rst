@@ -4,8 +4,8 @@
 
 .. versionadded:: 0.60
 
-谢谢您尝试 Ceph ！我们建议安装一个 ``ceph-deploy`` 管理节点和一\
-个三节点的 :term:`Ceph 存储集群`\ 来研究 Ceph 的基本特性。这篇 **预检** 会\
+谢谢您尝试 Ceph ！我们建议安装一个 ``ceph-deploy`` 管理\ :term:`节点`\ 和一\
+个三节点的\ :term:`Ceph 存储集群`\ 来研究 Ceph 的基本特性。这篇\ **预检**\ 会\
 帮你准备一个 ``ceph-deploy`` 管理节点、以及三个\
 \ Ceph 节点（或虚拟机），以此构成 Ceph 存储集群。在进行下一步之前，请参\
 见\ `操作系统推荐`_\ 以确认你安装了合适的 Linux 发行版。如果你在\
@@ -104,14 +104,14 @@ Ceph 节点安装
 安装 NTP
 --------
 
-我们建议把 NTP 服务安装到所有 Ceph 节点上（特别是 Ceph 监视器\
-节点），以免因时钟漂移导致故障，详情见\ `时钟`_\ 。
+我们建议在所有 Ceph 节点上安装 NTP 服务（特别是 Ceph Monitor 节点），\
+以免因时钟漂移导致故障，详情见\ `时钟`_\ 。
 
-在 CentOS / RHEL 上可执行： ::
+在 CentOS / RHEL 上，执行： ::
 
 	sudo yum install ntp ntpdate ntp-doc
 
-在 Debian / Ubuntu 上可执行： ::
+在 Debian / Ubuntu 上，执行： ::
 
 	sudo apt-get install ntp
 
@@ -138,21 +138,21 @@ Ceph 节点安装
 创建部署 Ceph 的用户
 --------------------
 
-``ceph-deploy`` 工具必须以普通用户登录，且此用户拥有无密码使用 \
-``sudo`` 的权限，因为它需要安装软件及配置文件，中途不能输入密码。
+``ceph-deploy`` 工具必须以普通用户登录 Ceph 节点，且此用户拥有无密码使用 \
+``sudo`` 的权限，因为它需要在安装软件及配置文件的过程中，不必输入密码。
 
 较新版的 ``ceph-deploy`` 支持用 ``--username`` 选项提供可无密码\
 使用 ``sudo`` 的用户名（包括 ``root`` ，虽然\ **不建议**\ 这样\
-做）。要用 ``ceph-deploy --username {username}`` 命令，指定的用\
+做）。使用 ``ceph-deploy --username {username}`` 命令时，指定的用\
 户必须能够通过无密码 SSH 连接到 Ceph 节点，因为 ``ceph-deploy`` \
-不支持中途输入密码。
+中途不会提示输入密码。
 
-我们建议在集群内的\ **所有** Ceph 节点上都给 ``ceph-deploy`` 创\
-建一个普通用户（但\ **不要**\ 用 “ceph” 这个名字），全集群统一的\
+我们建议在集群内的\ **所有** Ceph 节点上给 ``ceph-deploy`` 创\
+建一个特定的用户，但\ **不要**\ 用 “ceph” 这个名字。全集群统一的\
 用户名可简化操作（非必需），然而你应该避免使用知名用户名，因为黑\
-帽子们会用它做暴力破解（如 ``root`` 、 ``admin`` 、 \
-``{productname}`` ）。后续步骤描述了如何创建无 ``sudo`` 密码的用\
-户，你要用自己取的名字取代 ``{username}`` 。
+客们会用它做暴力破解（如 ``root`` 、 ``admin`` 、 ``{productname}`` ）。\
+后续步骤描述了如何创建无 ``sudo`` 密码的用\
+户，你要用自己取的名字替换 ``{username}`` 。
 
 .. note:: 从 `Infernalis 版`_\ 起，用户名 "ceph" 保留给了 Ceph \
    守护进程。如果 Ceph 节点上已经有了 "ceph" 用户，升级前必须先\
@@ -174,11 +174,11 @@ Ceph 节点安装
 -------------------
 
 正因为 ``ceph-deploy`` 不支持输入密码，你必须在管理节点上生成 \
-SSH 密钥并把其公钥散布到各 Ceph 节点。 ``ceph-deploy`` 会尝试给\
-初始监视器们生成 SSH 密钥对。
+SSH 密钥并把其公钥分发到各 Ceph 节点。 ``ceph-deploy`` 会尝试给\
+初始 monitors 生成 SSH 密钥对。
 
-#. 生成 SSH 密钥对，但不要用 ``sudo`` 或 ``root`` 用户。口令为\
-   空： ::
+#. 生成 SSH 密钥对，但不要用 ``sudo`` 或 ``root`` 用户。提示 \
+   "Enter passphrase" 时，直接回车，口令即为空： ::
 
 	ssh-keygen
 
@@ -196,9 +196,9 @@ SSH 密钥并把其公钥散布到各 Ceph 节点。 ``ceph-deploy`` 会尝试�
 	ssh-copy-id {username}@node2
 	ssh-copy-id {username}@node3
 
-#. （ 推荐做法）修改 ``ceph-deploy`` 管理节点上的 \
+#. （推荐做法）修改 ``ceph-deploy`` 管理节点上的 \
    ``~/.ssh/config`` 文件，这样 ``ceph-deploy`` 就能用你所建的\
-   用户名登录 Ceph 节点了，无需每次执行 ``ceph-deploy`` 都指定 \
+   用户名登录 Ceph 节点了，而无需每次执行 ``ceph-deploy`` 都要指定 \
    ``--username {username}`` 。这样做同时也简化了 ``ssh`` 和 \
    ``scp`` 的用法。把 ``{username}`` 替换成你创建的用户名。 ::
 
@@ -216,11 +216,11 @@ SSH 密钥并把其公钥散布到各 Ceph 节点。 ``ceph-deploy`` 会尝试�
 引导时联网
 ----------
 
-Ceph 的各 OSD 进程通过网络互联并向监视器集群报告，如果网络默认为 \
-``off`` ，那么 Ceph 集群就不能在启动时就上线，直到打开网络。
+Ceph 的各 OSD 进程通过网络互联并向 Monitors 上报自己的状态。如果\
+网络默认为 ``off`` ，那么 Ceph 集群在启动时就不能上线，直到你打开网络。
 
-某些发行版（如 CentOS ）默认关闭网络接口，故此需确保网卡在系统启\
-动时都能启动，这样 Ceph 守护进程才能通过网络互联。例如，在 Red \
+某些发行版（如 CentOS ）默认关闭网络接口。故此需确保网卡在系统启\
+动时都能启动，这样 Ceph 守护进程才能通过网络通信。例如，在 Red \
 Hat 和 CentOS 上，需进入 ``/etc/sysconfig/network-scripts`` 目录\
 并确保 ``ifcfg-{iface}`` 文件中的 ``ONBOOT`` 设置成了 ``yes`` 。
 
@@ -228,12 +228,12 @@ Hat 和 CentOS 上，需进入 ``/etc/sysconfig/network-scripts`` 目录\
 确保联通性
 ----------
 
-用 ``ping`` 短主机名（ ``hostname -s`` ）的方式确认网络没问题，\
+用 ``ping`` 短主机名（ ``hostname -s`` ）的方式确认网络联通性。\
 解决掉可能存在的主机名解析问题。
 
 .. note:: 主机名应该解析为网络 IP 地址，而非回环接口 IP 地址（即\
    主机名应该解析成非 ``127.0.0.1`` 的IP地址）。如果你的管理节点\
-   同时也是一个 Ceph 节点，也要确认它能正确解析主机名和 IP 地址\
+   同时也是一个 Ceph 节点，也要确认它能正确解析自己的主机名和 IP 地址\
    （即非回环 IP 地址）。
 
 
