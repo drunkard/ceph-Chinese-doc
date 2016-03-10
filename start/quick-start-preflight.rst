@@ -219,7 +219,7 @@ SSH 密钥并把其公钥分发到各 Ceph 节点。 ``ceph-deploy`` 会尝试�
 Ceph 的各 OSD 进程通过网络互联并向 Monitors 上报自己的状态。如果\
 网络默认为 ``off`` ，那么 Ceph 集群在启动时就不能上线，直到你打开网络。
 
-某些发行版（如 CentOS ）默认关闭网络接口。故此需确保网卡在系统启\
+某些发行版（如 CentOS ）默认关闭网络接口。所以需要确保网卡在系统启\
 动时都能启动，这样 Ceph 守护进程才能通过网络通信。例如，在 Red \
 Hat 和 CentOS 上，需进入 ``/etc/sysconfig/network-scripts`` 目录\
 并确保 ``ifcfg-{iface}`` 文件中的 ``ONBOOT`` 设置成了 ``yes`` 。
@@ -237,29 +237,29 @@ Hat 和 CentOS 上，需进入 ``/etc/sysconfig/network-scripts`` 目录\
    （即非回环 IP 地址）。
 
 
-放通所需端口
+开放所需端口
 ------------
 
-Ceph 监视器之间默认用 ``6789`` 端口通信， OSD 之间默认用 \
+Ceph Monitors 之间默认使用 ``6789`` 端口通信， OSD 之间默认用 \
 ``6800:7300`` 这个范围内的端口通信。详情见\ `网络配置参考`_\ 。 \
-Ceph OSD 能利用多个网络连接与客户端、监视器、其他副本 OSD 、其它\
-心跳 OSD 分别进行通信。
+Ceph OSD 能利用多个网络连接进行与客户端、monitors、其他 OSD 间的复制\
+和心跳的通信。
 
-某些发行版（如 RHEL ）的默认防火墙配置非常严格，你得调整防火墙，\
-允许相应的入栈请求，这样客户端才能与 Ceph 节点通信。
+某些发行版（如 RHEL ）的默认防火墙配置非常严格，你可能需要调整防火墙，\
+允许相应的入站请求，这样客户端才能与 Ceph 节点上的守护进程通信。
 
-对于 RHEL 7 上的 ``firewalld`` ，要对公共域放通 Ceph 监视器所使\
-用的 ``6789`` 端口、以及 OSD 所使用的 ``6800:7300`` ，并且要配置\
+对于 RHEL 7 上的 ``firewalld`` ，要对公共域开放 Ceph Monitors 使\
+用的 ``6789`` 端口和 OSD 使用的 ``6800:7300`` 端口范围，并且要配置\
 为永久规则，这样重启后规则仍有效。例如： ::
 
 	sudo firewall-cmd --zone=public --add-port=6789/tcp --permanent
 
-若用 ``iptables`` 命令，要放通 Ceph 监视器所用的 ``6789`` 端口和 \
-OSD 所用的 ``6800:7300`` 端口范围，命令如下： ::
+若使用 ``iptables`` ，要开放 Ceph Monitors 使用的 ``6789`` 端口和 \
+OSD 使用的 ``6800:7300`` 端口范围，命令如下： ::
 
 	sudo iptables -A INPUT -i {iface} -p tcp -s {ip-address}/{netmask} --dport 6789 -j ACCEPT
 
-配置好 ``iptables`` 之后要保存配置，这样重启之后才依然有效。\
+在每个节点上配置好 ``iptables`` 之后要一定要保存，这样重启之后才依然有效。\
 例如： ::
 
 	/sbin/service iptables save
@@ -268,11 +268,10 @@ OSD 所用的 ``6800:7300`` 端口范围，命令如下： ::
 终端（ TTY ）
 -------------
 
-在 CentOS 和 RHEL 上执行 ``ceph-deploy`` 命令时，如果你的 Ceph \
-节点默认设置了 ``requiretty`` 那就会遇到报错。可以这样禁用它，\
-执行 ``sudo visudo`` ，找到 ``Defaults requiretty`` 选项，把它\
-改为 ``Defaults:ceph !requiretty`` 或者干脆注释掉，这样 \
-``ceph-deploy`` 就可以用之前创建的用户（\
+在 CentOS 和 RHEL 上执行 ``ceph-deploy`` 命令时可能会报错。如果你的 Ceph \
+节点默认设置了 ``requiretty`` ，执行 ``sudo visudo`` 禁用它，\
+并找到 ``Defaults requiretty`` 选项，把它改为 ``Defaults:ceph !requiretty`` \
+或者直接注释掉，这样 ``ceph-deploy`` 就可以用之前创建的用户（\
 `创建部署 Ceph 的用户`_ ）连接了。
 
 .. note:: 编辑配置文件 ``/etc/sudoers`` 时，必须用 \
@@ -282,21 +281,21 @@ OSD 所用的 ``6800:7300`` 端口范围，命令如下： ::
 SELinux
 -------
 
-在 CentOS 和 RHEL 上， SELinux 默认开启为 ``Enforcing`` 。为简化\
+在 CentOS 和 RHEL 上， SELinux 默认为 ``Enforcing`` 开启状态。为简化\
 安装，我们建议把 SELinux 设置为 ``Permissive`` 或者完全禁用，也\
 就是在加固系统配置前先确保集群的安装、配置没问题。用下列命令把 \
 SELinux 设置为 ``Permissive`` ： ::
 
 	sudo setenforce 0
 
-要使 SELinux 配置永久生效（如果它确是问题根源），需修改其配置文件 \
+要使 SELinux 配置永久生效（如果它的确是问题根源），需修改其配置文件 \
 ``/etc/selinux/config`` 。
 
 
-优先级或首选项
+优先级/首选项
 --------------
 
-确保你的包管理器安装了优先级或首选项包、且已启用。在 CentOS 上\
+确保你的包管理器安装了优先级/首选项包且已启用。在 CentOS 上\
 你也许得安装 EPEL ，在 RHEL 上你也许得启用可选软件库。 ::
 
 	sudo yum install yum-plugin-priorities
@@ -310,7 +309,7 @@ SELinux 设置为 ``Permissive`` ： ::
 总结
 ====
 
-快速入门的飞前部分到此结束，请继续\ `存储集群快速入门`_\ 。
+快速入门的预检部分到此结束，请继续\ `存储集群快速入门`_\ 。
 
 
 .. _存储集群快速入门: ../quick-ceph-deploy
