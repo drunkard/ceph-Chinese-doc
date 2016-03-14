@@ -2,13 +2,13 @@
  贡献 Ceph 文档
 ================
 
-帮助 Ceph 项目的\ **最简单的方法**\ 之一就是贡献文档，随着 Ceph 用户量的增长和\
-开发的迅速推进，越来越多的人在更新文档、增加新条目。即使是修正拼写错误或增加说\
-明这样的小贡献也会提升 Ceph 项目的品质。
+帮助 Ceph 项目\ **最简单的方法**\ 就是贡献文档。随着 Ceph 用户量的增长和\
+开发的迅速推进，越来越多的人在更新文档、增加新条目。即使是修正拼写错误或澄清说\
+明这样的小贡献也会有助于提升 Ceph 项目的品质。
 
 Ceph 文档源码位于 Ceph 源码库的 ``ceph/doc`` 目录下，由 Python Sphinx 渲染成 \
 HTML 和手册页。 http://ceph.com/docs 链接默认展示 ``master`` 分支，也可以查看\
-较早分支（如 ``argonaut`` ）或者未来分支（如 ``next`` ）的文档，同样可以查看\
+较早分支（如 ``argonaut`` ）或者未来分支（如 ``next`` ）的文档，以及\
 正在改进的分支，只需把 ``master`` 改成你想看的分支即可。
 
 
@@ -16,39 +16,39 @@ HTML 和手册页。 http://ceph.com/docs 链接默认展示 ``master`` 分支�
 ========
 
 贡献文档和贡献源码的过程基本相同，唯一不同的就是你编译的是文档源码而不是程序源\
-码。大致顺序如下：
+码。大致步骤如下：
 
 #. `获取源代码`_
-#. `进入分支`_
+#. `选择分支`_
 #. `开始更改`_
 #. `构建文档源码`_
 #. `提交变更`_
 #. `推送变更`_
-#. `发出接收请求`_
+#. `发出 Pull 请求`_
 #. `通知相关人员`_
 
 
 获取源代码
 ----------
 
-Ceph 文档位于和源码同一仓库内的 ``ceph/doc`` 目录下，关于 github 和 Ceph 的详\
+Ceph 文档位于和 Ceph 源码同一仓库内的 ``ceph/doc`` 目录下，关于 github 和 Ceph 的详\
 细情况见\ :ref:`Get Involved`\ 。
 
 最常用的贡献方法是\ `分支并拉入`_\ 。为此，必须先做到：
 
-#. 在本地安装 git 。在 Debian/Ubuntu 下用此命令： ::
+#. 在本地安装 git 。在 Debian/Ubuntu 下执行： ::
 
 	sudo apt-get install git
 
-   在 Fedora 下用此命令： ::
+   在 Fedora 下执行： ::
 
 	sudo yum install git
 
-   在 CentOS/RHEL 下用此命令： ::
+   在 CentOS/RHEL 下执行： ::
 
 	sudo yum install git
 
-#. 在 ``.gitconfig`` 配置文件里写好自己的名字和邮件地址。 ::
+#. 在 ``.gitconfig`` 配置文件里配置自己的名字和邮件地址。 ::
 
 	[user]
 	   email = {your-email-address}
@@ -64,57 +64,56 @@ Ceph 文档位于和源码同一仓库内的 ``ceph/doc`` 目录下，关于 git
 
 #. 创建 Ceph 项目的分支，参见 https://github.com/ceph/ceph 。
 
-#. 把已分支项目克隆到本机。
+#. 把你的分支项目克隆到本机。
 
 
 Ceph 文档按主要组件来分类组织。
 
-- **Ceph 存储集群：**\ Ceph 存储集群文档位于 ``doc/rados`` 目录下；
+- **Ceph 存储集群：**\ Ceph 存储集群文档位于 ``doc/rados`` 目录下。
 
-- **Ceph 块设备：**\ Ceph 块设备文档位于 ``doc/rbd`` 目录下；
+- **Ceph 块设备：**\ Ceph 块设备文档位于 ``doc/rbd`` 目录下。
 
-- **Ceph 对象存储：**\ Ceph 对象存储文档位于 ``doc/radosgw`` 目录下；
+- **Ceph 对象存储：**\ Ceph 对象存储文档位于 ``doc/radosgw`` 目录下。
 
-- **Ceph 文件系统：**\ Ceph 文件系统文档位于 ``doc/cephfs`` 目录下；
+- **Ceph 文件系统：**\ Ceph 文件系统文档位于 ``doc/cephfs`` 目录下。
 
-- **安装（快速）：**\ 快速入门文档位于 ``doc/start`` 目录下；
+- **安装（快速）：**\ 快速入门文档位于 ``doc/start`` 目录下。
 
-- **安装（手动）：**\ 手动安装文档位于 ``doc/install`` 目录下；
+- **安装（手动）：**\ 手动安装文档位于 ``doc/install`` 目录下。
 
 - **手册页：**\ 手册源码位于 ``doc/man`` 目录下；
 
 - **开发者：**\ 开发者文档位于 ``doc/dev`` 目录下；
 
-- **图片：**\ 如果你想上传文档，如 JPEG 或 PNG 文件，应该放到 ``doc/images`` \
-  目录下。
+- **图片：**\ 如果你想上传图片，如 JPEG 或 PNG 文件，应该放到 ``doc/images`` 目录下。
 
 
-进入分支
+选择分支
 --------
 
-如果只是细小的变更，像修正排版错误、或换一种措辞，直接提交到 ``master`` 分支即\
-可；为当前版本的功能提供文档时也应该提交到 ``master`` 分支。 ``master`` 是最常\
+如果只是细小的变更，像修正排版错误、或澄清措辞，直接提交到 ``master`` 分支即\
+可。为当前版本的功能提供文档时也应该提交到 ``master`` 分支。 ``master`` 是最常\
 用的分支。 ::
 
 	git checkout master
 
-给未来版本提供文档时应该提交到 ``next`` 分支， ``next`` 分支是第二常用的分支。 ::
+对未来版本的文档作出修改时应该提交到 ``next`` 分支， ``next`` 分支是第二常用的分支。 ::
 
 	git checkout next
 
-你在为尚未发布的功能写文档时，如果这部分文档和已追踪的某个问题有关，或者想在它\
-被合并到 ``master`` 分支前看看它在 ceph.com 网站上的预览，你应该另外创建个分\
-支。为标识这是个只包含文档的更新，按惯例用 ``wip-doc`` 作前缀，按这个格式 \
-``wip-doc-{your-branch-name}`` 。如果此分支和 http://tracker.ceph.com/issues \
+当你在为尚未发布的功能写文档时，如果这部分文档和已追踪的某个问题有关，或者想在它\
+被合并到 ``master`` 分支前看看它在 ceph.com 网站上的预览效果，你应该新建一个分\
+支。为标识这是个只包含文档的更新，按惯例用 ``wip-doc`` 作前缀，采用 \
+``wip-doc-{your-branch-name}`` 的格式。如果此分支和 http://tracker.ceph.com/issues \
 里的某个问题相关，分支名最好包含问题编号，例如，如果某文档分支是为 #4000 这个\
 问题写的，按惯例这个分支名就是 ``wip-doc-4000`` ，对应的问题追踪 URL 就是 \
 http://tracker.ceph.com/issues/4000 。
 
-.. note:: 请不要把贡献的文档和源码混合到同一个 pull 请求里，因为文档由编辑审\
-   阅、而源码由工程师审阅。您分别提交文档和源码时，合并进度会很快，我们也不用\
-   让您重新提交。
+.. note:: 请不要把文档贡献和源码贡献混在同一个 pull 请求里。因为文档由编辑审\
+   阅，而源码由工程师审阅。您分别提交文档和源码贡献时，会加快合并进度，我们也不用\
+   让您重新分开提交。
 
-创建分支前，确保本地和远程都没有同名的。 ::
+创建分支前，确保本地和远程仓库都不存在同名分支。 ::
 
 	git branch -a | grep wip-doc-{your-branch-name}
 
@@ -127,20 +126,20 @@ http://tracker.ceph.com/issues/4000 。
 --------
 
 修改文档很简单，打开 restructuredText 文件、修改、保存即可。相关的语法请参考 \
-`文档风格手册`_ 。
+`文档风格指南`_ 。
 
 新增文档要在 ``doc`` 目录或其子目录下新建 restructuredText 文件，并以 \
 ``*.rst`` 作后缀。还必须包含对它的引用：如超链接或目录条目。某个顶极目录中的 \
-``index.rst`` 文件通常也包含一个 TOC ，你可以在这里添加新文件名。所有文档都必\
+``index.rst`` 文件通常包含一个 TOC ，你可以在这里添加新文件名。所有文档都必\
 须有标题，详情见\ `标题`_\ 。
 
-你新建的文档不会自动被 ``git`` 跟踪，如果想把它加进仓库，必须用 \
+你新建的文档不会自动被 ``git`` 跟踪。如果想把它加进仓库，必须用 \
 ``git add {path-to-filename}`` 命令。比如，在 Ceph 仓库的顶极目录下，把 \
 ``example.rst`` 文件加到 ``rados`` 子目录下，可以这样： ::
 
 	git add doc/rados/example.rst
 
-要删除一文档，应该用 ``git rm {path-to-filename}`` ，比如： ::
+要删除某个文档，应该用 ``git rm {path-to-filename}`` ，比如： ::
 
 	git rm doc/rados/example.rst
 
@@ -150,7 +149,7 @@ http://tracker.ceph.com/issues/4000 。
 构建文档源码
 ------------
 
-要想构建文档，先进入 ``ceph`` 库目录： ::
+要想构建文档，先进入 ``ceph`` 仓库目录： ::
 
 	cd ceph
 
@@ -158,21 +157,21 @@ http://tracker.ceph.com/issues/4000 。
 
 	admin/build-doc
 
-在 Fedora 上执行此命令构建文档： ::
+在 Fedora 上执行： ::
 
 	admin/build-doc
 
-在 CentOS/RHEL 上执行此命令构建文档： ::
+在 CentOS/RHEL 上执行： ::
 
 	admin/build-doc
 
-执行 ``admin/build-doc`` 之后，它会在 ``ceph`` 下创建一个 ``build-doc`` 目录。\
-你也许还得在 ``ceph/build-doc`` 下创建个目录用于 Javadoc 的输出。 ::
+执行 ``admin/build-doc`` 后会在 ``ceph`` 下创建一个 ``build-doc`` 目录。\
+你也许还得在 ``ceph/build-doc`` 下新建一个目录用于存放 Javadoc 的输出。 ::
 
 	mkdir -p output/html/api/libcephfs-java/javadoc
 
-``build-doc`` 构建脚本可能会产生警告和报错，有关语法的错误\ **必须**\ 修复才能\
-提交，警告\ **应该**\ 尽量消除。
+构建脚本 ``build-doc`` 可能会输出警告和报错。在提交更改之前，\ **必须**\ 修复\
+文档中的错误，\ **应该**\ 尽量消除和语法相关的警告。
 
 .. important:: 你必须核实\ **所有超链接**\ ，损坏的超链接会中止构建过程。
 
@@ -190,7 +189,7 @@ Ceph 用 Python Sphinx 构建文档，此软件一般都没安装。首次构建
 个用于 doxygen 的 XML 树，这个过程比较耗时.
 
 Python Sphinx 的依赖软件包根据发行版不同而有所区别。首次构建文档时，如果你没安\
-装必要工具，构建脚本会提示你。要运行 Sphinx 并成功构建文档，至少要安装下面这些\
+装这些依赖包，构建脚本会提示你。要运行 Sphinx 并成功构建文档，至少要安装下面这些\
 软件包：
 
 .. raw:: html
@@ -252,7 +251,7 @@ Python Sphinx 的依赖软件包根据发行版不同而有所区别。首次构
 	</td></tr></tbody></table>
 
 
-缺少的依赖都要安装，基于 Debian/Ubuntu 发行版的系统可以用此命令安装： ::
+安装每一个缺少的依赖，基于 Debian/Ubuntu 发行版的系统可以用此命令安装： ::
 
 	sudo apt-get install gcc python-dev python-pip python-virtualenv libxml2-dev libxslt-dev doxygen graphviz ant ditaa
 	sudo apt-get install python-sphinx
@@ -264,8 +263,8 @@ Python Sphinx 的依赖软件包根据发行版不同而有所区别。首次构
    sudo yum install python-jinja2 python-pygments python-docutils python-sphinx
    sudo yum install jericho-html ditaa
 
-在 CentOS/RHEL 发行版上，最好安装 ``epel`` (Extra Packages for Enterprise \
-Linux) 软件库，因为它提供了很多默认软件库所没有的软件包。可执行此命令安装 \
+在 CentOS/RHEL 发行版上，最好安装 ``epel`` （ Extra Packages for Enterprise \
+Linux ）软件库，因为它提供了很多默认软件库所没有的软件包。可执行此命令安装 \
 ``epel`` ： ::
 
 
@@ -277,8 +276,8 @@ Linux) 软件库，因为它提供了很多默认软件库所没有的软件包�
 	sudo yum install gcc python-devel python-pip python-virtualenv libxml2-devel libxslt-devel doxygen graphviz ant
 	sudo pip install html2text
 
-对于 CentOS/RHEL 发行版，其余软件包不包含在默认及 ``epel`` 软件库内，所以得到 \
-http://rpmfind.net/ 找，然后到合适的镜像下载并安装它们，比如： ::
+对于 CentOS/RHEL 发行版，其余软件包不包含在默认及 ``epel`` 软件仓库内，所以得到 \
+http://rpmfind.net/ 找，然后去合适的镜像下载并安装它们，比如： ::
 
 	wget ftp://rpmfind.net/linux/centos/7.0.1406/os/x86_64/Packages/python-jinja2-2.7.2-2.el7.noarch.rpm
 	sudo yum install python-jinja2-2.7.2-2.el7.noarch.rpm
@@ -310,7 +309,7 @@ CentOS/RHEL7 下 `ditaa`_ 依赖下列软件包：
 	wget ftp://rpmfind.net/linux/fedora/linux/releases/20/Everything/x86_64/os/Packages/d/ditaa-0.9-10.r74.fc20.noarch.rpm
 	sudo yum install ditaa-0.9-10.r74.fc20.noarch.rpm
 
-.. important:: 不要安装含 ``fc21`` 的 ``ditaa`` rpm包，因为它使用\
+.. important:: 不要安装 ``fc21`` 版本的 ``ditaa`` rpm包，因为它使用\
    的 ``JRE`` 比 CentOS/RHEL7 自带的新，这样会导致冲突并抛出异常 \
    ``Exception`` ，程序也因此不能运行。
 
@@ -325,12 +324,12 @@ Ceph文档的提交虽然简单，却遵循着严格的惯例：
 
 - 一次提交\ **应该**\ 只涉及一个文件（方便回退），也\ **可以**\ \
   一次提交有关联的多个文件。不相干的变更\ **不应该**\ 放到同一提\
-  交内；
-- 每个提交都\ **必须**\ 有注释；
-- 提交的注释\ **必须**\ 以 ``doc:`` 打头（应严格遵守）；
-- 注释摘要\ **必须**\ 只有一行（应严格遵守）；
-- 额外的注释\ **可以**\ 写到摘要下面空一行的地方，但应该简单明了；
-- 提交\ **可以**\ 包含 ``Fixes: #{bug number}`` 字样；
+  交内。
+- 每个提交都\ **必须**\ 有注释。
+- 提交的注释\ **必须**\ 以 ``doc:`` 打头（应严格遵守）。
+- 注释摘要\ **必须**\ 只有一行（应严格遵守）。
+- 额外的注释\ **可以**\ 写到摘要下面空一行的地方，但应该简单明了。
+- 提交\ **可以**\ 包含 ``Fixes: #{bug number}`` 字样。
 - 提交\ **必须**\ 包含 \
   ``Signed-off-by: Firstname Lasname <email>`` （应严格遵守）。
 
@@ -344,7 +343,7 @@ Ceph文档的提交虽然简单，却遵循着严格的惯例：
 	Signed-off-by: John Doe <john.doe@gmail.com>
 
 
-下面的注释里有到 BUG 的引用。 ::
+下面的注释里有包含 BUG 的引用。 ::
 
 	doc: Fixes a spelling error and a broken hyperlink.
 
@@ -403,29 +402,29 @@ Ceph文档的提交虽然简单，却遵循着严格的惯例：
 	git push
 
 
-发出接收请求
+发出 Pull 请求
 ------------
 
-前面已经说过了，你可以依照\ `分支并拉入`_\ 方法共享文档。
+前面已经说过了，你可以依照\ `分支并拉入`_\ 方法贡献文档。
 
 
 通知相关人员
 ------------
 
-发出接收请求后，还需通知相关人员。通常，文档的接收请求应该发给 `John Wilkins`_ 。
+发出 Pull 请求后，还需通知相关人员。通常，文档的接收请求应该发给 `John Wilkins`_ 。
 
 
-文档风格手册
+文档风格指南
 ============
 
-Ceph 文档项目的目标之一就是可读性，包括 restructuredText 和渲染后的 HTML 页面\
-的可读性。进入 Ceph 源码库，随便找个文档查看其源码，你会发现它们在终端下就像已\
+Ceph 文档项目的目标之一就是文档的可读性，包括原始的 restructuredText 和渲染后\
+的 HTML 页面。进入 Ceph 源码库，随便找个文档查看其源码，你会发现它在终端下就像已\
 经渲染过的 HTML 页面一样清晰明了。另外，也许你还看到 ``ditaa`` 格式的图表渲染\
-的很漂亮。 ::
+的也很漂亮。 ::
 
 	cat doc/architecture.rst | less
 
-为了维持一致性，请遵守下面的风格手册。
+为了维持一致性，请遵守下面的风格指南。
 
 
 标题
@@ -434,10 +433,10 @@ Ceph 文档项目的目标之一就是可读性，包括 restructuredText 和渲
 #. **文档标题：** 标题行的前/后各加一行 ``=`` ，且标题行首、行尾各有一个空格，\
    详情见\ `文档标题`_\ 。
 
-#. **段落标题：** 段标题行下是一行 ``=`` ，且标题行首、行尾都没有空格；段标题\
-   前应该有两个空行（除非前面是内嵌引用）。详情见\ `小节`_\ 。
+#. **章节标题：** 章节标题行下是一行 ``=`` ，且行首、行尾都没有空格。章节标题\
+   前应该有两个空行（除非前面是内嵌引用）。详情见\ `章节`_\ 。
 
-#. **小节标题：** 小节标题行下是一行 ``-`` ，且行首、行尾都没有空格；段标题前\
+#. **小节标题：** 小节标题行下是一行 ``-`` ，且行首、行尾都没有空格。小节标题前\
    应该有两个空行（除非前面是内嵌引用）。
 
 
@@ -445,29 +444,29 @@ Ceph 文档项目的目标之一就是可读性，包括 restructuredText 和渲
 ----
 
 通常，我们把正文限制在 80 列之内，这样它在任何标准终端内都可以正确显示，行首、\
-行尾都不能有空格。我们应该尽可能维持此惯例，包括文本、项目、文字文本（允许例\
+行尾都不能有空格。我们应该尽可能维持此惯例，包括文本、项目、引文文本（允许例\
 外）、表格、和 ``ditaa`` 图形。
 
 #. **段落：** 段落前后各有一空行，且宽度不超过 80 字符，这样文档源码就可以在任\
    何标准终端正确显示。
 
-#. **引文文本：** 要创建引文文本（如展示命令行用法），前一段应以 ``::`` 结尾；\
+#. **引文文本：** 要创建引文文本（如展示命令行用法），前一段应以 ``::`` 结尾，\
    或者先加一个空行、然后在新行上输入 ``::`` 、之后再加一个空行。之后以 TAB \
-   （首选）或 3 个空格缩进，开始输入引文了。
+   （首选）或 3 个空格缩进，开始输入引文。
 
 #. **缩进文本：** 像要点这样的缩进文本（如： ``- some text`` ）可能会延伸很多\
    行，后续行应该延续和首行缩进（数字、圆点等）相同的起始列。
 
-   缩进文本也可以包含引文。这时，缩进文本仍然用空格标记、引文仍用 TAB 标记。按\
+   缩进文本也可以包含引文。这时，缩进文本应该用空格标记、引文用 TAB 标记。按\
    照这个惯例，你就可以额外增加缩进段落，并在其中嵌入引文示例（引文段前加空\
    行，行前用空格缩进）。
 
-#. **编号项目：** 需编号的列表应该在行首用 ``#`` 标识以实现自动编号，而不是手\
+#. **编号列表：** 需编号的列表应该在行首用 ``#`` 标识以实现自动编号，而不是手\
    动标识，这样在条目顺序变更时就不用重新编号了。
 
 #. **代码示例：** Ceph 文档中可以用 ``.. code-block::<language>`` 按语种对源码\
-   进行高亮显示，对源代码应该这样标记。然而，使用这个标签时将导致编号项目从 1 \
-   开始重新编号，详情见\ `显示代码示例`_\ 。
+   进行高亮显示，这是对源码的首选标记方法。然而，如果在编号列表中使用这个标签，\
+   将导致从 1 开始重新编号。详情见\ `显示代码示例`_\ 。
 
 
 段落分级标记
@@ -475,30 +474,30 @@ Ceph 文档项目的目标之一就是可读性，包括 restructuredText 和渲
 
 Ceph 文档项目用\ `段落分级标记`_\ 来高亮显示要点。
 
-#. **Tip:** 提示：用 ``.. tip::`` 指令标识额外信息，以助读者或操作员脱困。
+#. **Tip 提示：** 用 ``.. tip::`` 指令标识额外信息，以助读者或操作员脱困。
 
-#. **Note:** 注：用 ``.. note::`` 指令来高亮显示一个要点。
+#. **Note 注：** 用 ``.. note::`` 指令来高亮显示一个要点。
 
-#. **Important:** 重要：用 ``.. important::`` 指令来高亮显示重要依赖或警告（如\
+#. **Important 重要：** 用 ``.. important::`` 指令来高亮显示重要要求或警告（如\
    可能导致数据丢失的事情）。尽量少用，因为它会渲染成红色背景。
 
-#. **Version Added:** 版本新增：用 ``..versionadded::`` 指令来标识新增功能或配\
+#. **Version Added 版本新增：** 用 ``..versionadded::`` 指令来标识新增功能或配\
    置选项，这样用户才能知道此选项适用的最低版本。
 
-#. **Version Changed:** 版本变更：用 ``.. versionchanged::`` 指令标识用法或配\
+#. **Version Changed 版本变更：** 用 ``.. versionchanged::`` 指令标识用法或配\
    置选项的变更。
 
-#. **Deprecated:** 已过时：用 ``.. deprecated::`` 指令标识不再推荐或将被移除的 \
+#. **Deprecated 已过时：** 用 ``.. deprecated::`` 指令标识不再推荐或将被移除的 \
    CLI 用法、功能、或配置选项。
 
-#. **Topic:** 论题：用 ``.. topic::`` 指令来封装位于文档主体之外的文本。详情\
+#. **Topic 论题：** 用 ``.. topic::`` 指令来封装位于文档主体之外的文本。详情\
    见 `topic 指令`_\ 。
 
 
 TOC 和超链接
 ------------
 
-所有文档都必须被链接到其他文档或列表内，否则构建时会被警告。
+所有文档都必须被链接到其他文档或列表内，否则构建文档时会被警告。
 
 Ceph 项目采用 ``.. toctree::`` 指令（详情见 `TOC 树`_\ ）。渲染时，最好用 \
 ``:maxdepth:`` 参数把 TOC 修饰得简洁些。
@@ -518,7 +517,7 @@ Ceph 文档内的链接可以这样写：反引号（重音符号）、之后跟
 .. _github: http://github.com
 .. _ditaa: http://ditaa.sourceforge.net/
 .. _文档标题: http://docutils.sourceforge.net/docs/user/rst/quickstart.html#document-title-subtitle
-.. _小节: http://docutils.sourceforge.net/docs/user/rst/quickstart.html#sections
+.. _章节: http://docutils.sourceforge.net/docs/user/rst/quickstart.html#sections
 .. _交叉引用任意位置: http://sphinx-doc.org/markup/inline.html#ref-role
 .. _TOC 树: http://sphinx-doc.org/markup/toctree.html
 .. _显示代码示例: http://sphinx-doc.org/markup/code.html
