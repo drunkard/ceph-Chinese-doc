@@ -15,12 +15,12 @@
 ==============
 
 要想把块设备加入某节点，你得先在 :term:`Ceph 存储集群`\ 中创建一个\
-映像，用下列命令： ::
+映像，使用下列命令： ::
 
 	rbd create --size {megabytes} {pool-name}/{image-name}
 
 例如，要在 ``swimmingpool`` 这个存储池中创建一个名为 ``bar`` 、大小\
-为 1GB 的映像，执行下列命令： ::
+为 1GB 的映像，执行： ::
 
 	rbd create --size 1024 swimmingpool/bar
 
@@ -36,12 +36,12 @@
 罗列块设备映像
 ==============
 
-要罗列 ``rbd`` 存储池中的块设备，用下列命令（即 ``rbd`` 是默认存储\
+要列出 ``rbd`` 存储池中的块设备，可以用下列命令（即 ``rbd`` 是默认存储\
 池名字）： ::
 
 	rbd ls
 
-用下列命令罗列某个特定存储池中的块设备，用存储池名字替换掉 \
+用下列命令罗列某个特定存储池中的块设备，用存储池的名字替换 \
 ``{poolname}`` ： ::
 
 	rbd ls {poolname}
@@ -54,7 +54,7 @@
 检索映像信息
 ============
 
-用下列命令检索某特定映像的信息，用 ``{image-name}`` 替换映像名字： ::
+用下列命令检索某个特定映像的信息，用映像名字替换 ``{image-name}`` ： ::
 
 	rbd info {image-name}
 
@@ -62,8 +62,8 @@
 
 	rbd info foo
 
-用下列命令检索某存储池内一映像的信息，用 ``{image-name}`` 替换掉映\
-像名字、用 ``{pool-name}`` 替换掉存储池名字： ::
+用下列命令检索某存储池内的映像的信息，用映像名字替换 \
+``{image-name}`` 、用存储池名字替换 ``{pool-name}`` ： ::
 
 	rbd info {pool-name}/{image-name}
 
@@ -72,20 +72,21 @@
 	rbd info swimmingpool/bar
 
 
-调整块设备映像尺寸
+调整块设备映像大小
 ==================
 
-:term:`Ceph 块设备`\ 映像是瘦接口设备，只有在你开始写入数据时它们才\
+:term:`Ceph 块设备`\ 映像是精简配置，只有在你开始写入数据时它们才\
 会占用物理空间。然而，它们都有最大容量，就是你设置的 ``--size`` 选\
-项。如果你想增加（或减小） Ceph 块设备映像的最大尺寸，用下列命令： ::
+项。如果你想增加（或减小） Ceph 块设备映像的最大尺寸，执行下列命令： ::
 
-	rbd resize --size 2048 foo
+	rbd resize --size 2048 foo (to increase)
+	rbd resize --size 2048 foo --allow-shrink (to decrease)
 
 
 删除块设备映像
 ==============
 
-用下列命令删除块设备，用 ``{image-name}`` 替换映像名字： ::
+可用下列命令删除块设备，用映像名字替换 ``{image-name}`` ： ::
 
 	rbd rm {image-name}
 
@@ -93,8 +94,8 @@
 
 	rbd rm foo
 
-用下列命令从某存储池中删除一个块设备，用 ``{image-name}`` 替换要删\
-除的映像名、用 ``{pool-name}`` 替换存储池名字： ::
+用下列命令从某存储池中删除一个块设备，用要删除的映像名字替换 \
+``{image-name}`` 、用存储池名字替换 ``{pool-name}`` ： ::
 
 	rbd rm {pool-name}/{image-name}
 
