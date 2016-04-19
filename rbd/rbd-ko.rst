@@ -4,13 +4,13 @@
 
 .. index:: Ceph Block Device; kernel module
 
-.. important:: 要用内核模块操作，必须有一个运行着的 Ceph 集群。
+.. important:: 要用内核模块操作，必须有一个在运行的 Ceph 集群。
 
 
 获取映像列表
 ============
 
-要挂载映像设备，先罗列映像。 ::
+要挂载块设备映像，先罗列出所有的映像。 ::
 
 	rbd list
 
