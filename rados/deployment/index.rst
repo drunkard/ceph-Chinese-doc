@@ -18,7 +18,7 @@
 
 .. toctree:: 
 
-	飞前检查 <preflight-checklist>
+	预检 <preflight-checklist>
 	安装 Ceph <ceph-deploy-install>
 
 .. raw:: html
