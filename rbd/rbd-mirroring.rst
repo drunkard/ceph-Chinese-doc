@@ -1,253 +1,220 @@
-===============
- RBD Mirroring
-===============
+=========
+ RBD 镜像
+=========
 
 .. index:: Ceph Block Device; mirroring
 
-RBD images can be asynchronously mirrored between two Ceph clusters. This
-capability uses the RBD journaling image feature to ensure crash-consistent
-replication between clusters. Mirroring is configured on a per-pool basis
-within peer clusters and can be configured to automatically mirror all
-images within a pool or only a specific subset of images. Mirroring is
-configured using the ``rbd`` command. The ``rbd-mirror`` daemon is responsible
-for pulling image updates from the remote, peer cluster and applying them to
-the image within the local cluster.
+可以在两个 Ceph 集群中异步备份 RBD images。该能力利用了 RBD image 的日志特性，\
+以确保集群间的副本崩溃一致性。镜像功能需要在同伴集群（ peer clusters ）中的每一\
+个对应的 pool 上进行配置，可设定自动备份某个存储池内的所有 images 或仅备份 \
+images 的一个特定子集。用 ``rbd`` 命令来配置镜像功能。 ``rbd-mirror`` 守护进程\
+负责从远端集群拉取 image 的更新，并写入本地集群的对应 image 中。
 
-.. note:: RBD mirroring requires the Ceph Jewel release or later.
+.. note:: RBD 镜像功能需要 Ceph Jewel 或更新的发行版本。
 
-.. important:: To use RBD mirroring, you must have two Ceph clusters, each
-   running the ``rbd-mirror`` daemon.
+.. important:: 要使用 RBD 镜像功能，你必须有 2 个 Ceph 集群， 每个集群都要运行 \
+   ``rbd-mirror`` 守护进程。
 
-Pool Configuration
-==================
+存储池配置
+==========
 
-The following procedures demonstrate how to perform the basic administrative
-tasks to configure mirroring using the ``rbd`` command. Mirroring is
-configured on a per-pool basis within the Ceph clusters.
+下面的程序说明了如何执行一些基本的管理工作，来用 ``rbd`` 命令配置镜像功能。\
+镜像功能是在 Ceph 集群内的存储池级别上配置的。
 
-The pool configuration steps should be performed on both peer clusters. These
-procedures assume two clusters, named "local" and "remote", are accessible from
-a single host for clarity.
+配置存储池的步骤需要在 2 个同伴集群内都执行一遍。为清楚起见，下面的步骤假定\
+这两个集群分别叫做“本地（local）”和“远端（remote）”，而且单主机对这 2 个集群\
+都拥有访问权。
 
-See the `rbd`_ manpage for additional details of how to connect to different
-Ceph clusters.
+如何连接不同的 Ceph 集群，详情可参考 \ `rbd`_\  手册页。 
 
-.. note:: The cluster name in the following examples corresponds to a Ceph
-   configuration file of the same name (e.g. /etc/ceph/remote.conf).  See the
-   `ceph-conf`_ documentation for how to configure multiple clusters.
+.. note:: 在下面的例子中，集群名称和 Ceph 配置文件的名称相同（比如 /etc/ceph\
+   /remote.conf）。可参考 \ `ceph-conf`_\  文档来配置多集群环境。
 
-Enable Mirroring
-----------------
+启用镜像功能
+------------
 
-To enable mirroring on a pool with ``rbd``, specify the ``mirror pool enable``
-command, the pool name, and the mirroring mode::
+使用 ``rbd`` 启用某个存储池的镜像功能，需要指定 ``mirror pool enable`` \
+命令，存储池名和镜像模式： ::
 
         rbd mirror pool enable {pool-name} {mode}
 
-The mirroring mode can either be ``pool`` or ``image``:
+镜像模式可以是 ``pool`` 或 ``image``：
 
-* **pool**:  When configured in ``pool`` mode, all images in the pool with the
-  journaling feature enabled are mirrored.
-* **image**: When configured in ``image`` mode, mirroring needs to be
-  `explicitly enabled`_ on each image.
+* **pool**：当设定为 ``pool`` 模式，存储池中所有开启了日志特性的 images 都会被备份。
+* **image**：当设定为 ``image`` 模式，需要对每个 image \ `显式启用`_\ 镜像功能。
 
-For example::
+例如： ::
 
         rbd --cluster local mirror pool enable image-pool pool
         rbd --cluster remote mirror pool enable image-pool pool
 
-Disable Mirroring
------------------
+禁用镜像功能
+------------
 
-To disable mirroring on a pool with ``rbd``, specify the ``mirror pool disable``
-command and the pool name::
+使用 ``rbd`` 禁用某个存储池的镜像功能，需要指定 ``mirror pool disable`` 命令\
+和存储池名： ::
 
         rbd mirror pool disable {pool-name}
 
-When mirroring is disabled on a pool in this way, mirroring will also be
-disabled on any images (within the pool) for which mirroring was enabled
-explicitly.
+当采用这种方式禁用某个存储池的镜像功能时，存储池内的任一个 image 的镜像功能也\
+会被禁用，即使曾显式启用过。
 
-For example::
+例如： ::
 
         rbd --cluster local mirror pool disable image-pool
         rbd --cluster remote mirror pool disable image-pool
 
-Add Cluster Peer
-----------------
+添加同伴集群
+------------
 
-In order for the ``rbd-mirror`` daemon to discover its peer cluster, the peer
-needs to be registered to the pool. To add a mirroring peer Ceph cluster with
-``rbd``, specify the ``mirror pool peer add`` command, the pool name, and a
-cluster specification::
+为了使 ``rbd-mirror`` 守护进程发现它的同伴集群，需要向存储池注册。使用 ``rbd`` \
+添加同伴 Ceph 集群，需要指定 ``mirror pool peer add`` 命令、存储池名和集群说明： ::
 
         rbd mirror pool peer add {pool-name} {client-name}@{cluster-name}
 
-For example::
+例如： ::
 
         rbd --cluster local mirror pool peer add image-pool client.remote@remote
         rbd --cluster remote mirror pool peer add image-pool client.local@local
 
-Remove Cluster Peer
--------------------
+移除同伴集群
+------------
 
-To remove a mirroring peer Ceph cluster with ``rbd``, specify the
-``mirror pool peer remove`` command, the pool name, and the peer UUID
-(available from the ``rbd mirror pool info`` command)::
+使用 ``rbd`` 移除同伴 Ceph 集群，指定 ``mirror pool peer remove`` 命令、存储池名\
+和同伴的 UUID（可通过 ``rbd mirror pool info`` 命令获取）： ::
 
         rbd mirror pool peer remove {pool-name} {peer-uuid}
 
-For example::
+例如： ::
 
         rbd --cluster local mirror pool peer remove image-pool 55672766-c02b-4729-8567-f13a66893445
         rbd --cluster remote mirror pool peer remove image-pool 60c0e299-b38f-4234-91f6-eed0a367be08
 
-Image Configuration
-===================
+Image 配置
+==========
 
-Unlike pool configuration, image configuration only needs to be performed against
-a single mirroring peer Ceph cluster.
+不同于存储池配置，image 配置只需针对单个 Ceph 集群操作。
 
-Mirrored RBD images are designated as either primary or non-primary. This is a
-property of the image and not the pool. Images that are designated as
-non-primary cannot be modified.
+镜像 RBD image 被指定为主镜像或者副镜像。这是 image 而非存储池的特性。被指定为副\
+镜像的 image 不能被修改。
 
-Images are automatically promoted to primary when mirroring is first enabled on
-an image (either implicitly if the pool mirror mode was **pool** and the image
-has the journaling image feature enabled, or `explicitly enabled`_ by the
-``rbd`` command).
+当一个 image 首次启用镜像功能时（存储池的镜像模式设为 **pool** 且启用了该 image \
+的日志特性，或者通过 ``rbd`` 命令\ `显式启用`_\ ），它会自动晋升为主镜像。
 
-Enable Image Journaling Support
--------------------------------
+启用 Image 的日志支持
+---------------------
 
-RBD mirroring uses the RBD journaling feature to ensure that the replicated
-image always remains crash-consistent. Before an image can be mirrored to
-a peer cluster, the journaling feature must be enabled. The feature can be
-enabled at image creation time by providing the
-``--image-feature exclusive-lock,journaling`` option to the ``rbd`` command.
+RBD 镜像功能使用了 RBD 日志特性，来保证 image 副本间的崩溃一致性。在备份 image 到\
+另一个同伴集群前，必须启用日志特性。该特性可在使用 ``rbd`` 命令创建 image 时通过\
+指定 ``--image-feature exclusive-lock,journaling`` 选项来启用。
 
-Alternatively, the journaling feature can be dynamically enabled on
-pre-existing RBD images. To enable journaling with ``rbd``, specify
-the ``feature enable`` command, the pool and image name, and the feature name::
+或者，可以动态启用已有 image 的日志特性。使用 ``rbd`` 开启日志特性，需要指定 \
+``feature enable`` 命令，存储池名，image 名和特性名： ::
 
         rbd feature enable {pool-name}/{image-name} {feature-name}
 
-For example::
+例如： ::
 
         rbd --cluster local feature enable image-pool/image-1 journaling
 
-.. note:: The journaling feature is dependent on the exclusive-lock feature. If
-   the exclusive-lock feature is not already enabled, it should be enabled prior
-   to enabling the journaling feature.
+.. note:: 日志特性依赖于独占锁（exclusive-lock）特性。如果没有启用独占锁，则必须\
+   在启用日志特性之前先启用独占锁。
 
-.. tip:: You can enable journaling on all new images by default by adding
-   ``rbd default features = 125`` to your Ceph configuration file.
+.. tip:: 你可以通过在 Ceph 配置文件中增加 ``rbd default features = 125`` ，使得所\
+   有新建 image 默认启用日志特性。
 
-Enable Image Mirroring
-----------------------
+启用 Image 镜像功能
+-------------------
 
-If the mirroring is configured in ``image`` mode for the image's pool, then it
-is necessary to explicitly enable mirroring for each image within the pool.
-To enable mirroring for a specific image with ``rbd``, specify the
-``mirror image enable`` command along with the pool and image name::
+如果把某个存储池的镜像功能配置为 ``image`` 模式，还需要对存储池中的每一个 image ，\
+明确启用镜像功能。通过 ``rbd`` 启用某个特定 image 的镜像功能，要指定 \
+``mirror image enable`` 命令、存储池名和 image 名： ::
 
         rbd mirror image enable {pool-name}/{image-name}
 
-For example::
+例如： ::
 
         rbd --cluster local mirror image enable image-pool/image-1
 
-Disable Image Mirroring
------------------------
+禁用 Image 镜像功能
+-------------------
 
-To disable mirroring for a specific image with ``rbd``, specify the
-``mirror image disable`` command along with the pool and image name::
+通过 ``rbd`` 禁用某个特定 image 的镜像功能，要指定 ``mirror image disable`` 命令、\
+存储池名和 image 名： ::
 
         rbd mirror image disable {pool-name}/{image-name}
 
-For example::
+例如： ::
 
         rbd --cluster local mirror image disable image-pool/image-1
 
-Image Promotion and Demotion
-----------------------------
+Image 的升级与降级
+------------------
 
-In a failover scenario where the primary designation needs to be moved to the
-image in the peer Ceph cluster, access to the primary image should be stopped
-(e.g. power down the VM or remove the associated drive from a VM), demote the
-current primary image, promote the new primary image, and resume access to the
-image on the alternate cluster.
+在需要把主名称转移到同伴 Ceph 集群这样一个故障切换场景中，应该停止所有对主 image \
+的访问（比如关闭 VM 的电源或移除 VM 的相关驱动），当前的主 image 降级为副，\
+原副 image 升级为主，然后在备份集群上恢复对该 image 访问。
 
-.. note:: RBD only provides the necessary tools to facilitate an orderly
-   failover of an image. An external mechanism is required to coordinate the
-   full failover process (e.g. closing the image before demotion).
+.. note:: RBD 仅提供了一些必要的工具来帮助 image 有序的故障切换。还需要一种外部机制来\
+   协调整个故障切换流程（比如在降级之前关闭 image）。
 
-To demote an image to non-primary with ``rbd``, specify the
-``mirror image demote`` command along with the pool and image name::
+通过 ``rbd`` 降级主 image，需要指定 ``mirror image demote`` 命令、存储池名和 image \
+名： ::
 
         rbd mirror image demote {pool-name}/{image-name}
 
-For example::
+例如： ::
 
         rbd --cluster local mirror image demote image-pool/image-1
 
-To promote an image to primary with ``rbd``, specify the ``mirror image promote``
-command along with the pool and image name::
+通过 ``rbd`` 升级副 image，需要指定 ``mirror image promote`` 命令、存储池名和 image \
+名： ::
 
         rbd mirror image promote {pool-name}/{image-name}
 
-For example::
+例如： ::
 
         rbd --cluster remote mirror image promote image-pool/image-1
 
-.. tip:: Since the primary / non-primary status is per-image, it is possible to
-   have two clusters split the IO load and stage failover / failback.
+.. tip:: 由于主 / 副状态是对于每个 image 而言的，故可以让两个集群拆分 IO 负载来进行\
+   故障切换 / 故障自动恢复。
 
-.. note:: Promotion can be forced using the ``--force`` option. Forced
-   promotion is needed when the demotion cannot be propagated to the peer
-   Ceph cluster (e.g. Ceph cluster failure, communication outage). This will
-   result in a split-brain scenario between the two peers and the image will no
-   longer be in-sync until a `force resync command`_ is issued.
+.. note:: 可以使用 ``--force`` 选项来强制升级。当降级要求不能被正确传播到同伴 Ceph \
+   集群的时候（比如 Ceph 集群故障，通信中断），就需要强制升级。这会导致两个集群间的\
+   脑裂，而且在调用\ `强制重新同步命令`_\ 之前，image 将不会自动同步。
 
-Force Image Resync
-------------------
+强制 Image 重新同步
+-------------------
 
-If a split-brain event is detected by the ``rbd-daemon``, it will not attempt
-to mirror the affected image until corrected. To resume mirroring for an image,
-first `demote the image`_ determined to be out-of-date and then request a resync
-to the primary image. To request an image resync with ``rbd``, specify the
-``mirror image resync`` command along with the pool and image name::
+如果 ``rbd-daemon`` 探测到了脑裂事件，它在此情况得到纠正之前，是不会尝试去备份受到影\
+响的 image。为了恢复对 image 的镜像备份，首先判定\ `降级 image`_\  已经过时，然后向主 \
+image 请求重新同步。 通过 ``rbd`` 重新同步 image，需要指定 ``mirror image resync`` 命\
+令、存储池名和 image 名： ::
 
         rbd mirror image resync {pool-name}/{image-name}
 
-For example::
+例如： ::
 
         rbd mirror image resync image-pool/image-1
 
-.. note:: The ``rbd`` command only flags the image as requiring a resync. The
-   local cluster's ``rbd-mirror`` daemon process is responsible for performing
-   the resync asynchronously.
+.. note:: 此条 ``rbd`` 命令仅标记了某 image 需要重新同步。本地集群的 ``rbd-mirror`` \
+   守护进程会异步实施真正的重新同步过程。
 
-rbd-mirror Daemon
-=================
+rbd-mirror 守护进程
+===================
 
-The two ``rbd-mirror`` daemons are responsible for watching image journals on the
-remote, peer cluster and replaying the journal events against the local
-cluster. The RBD image journaling feature records all modifications to the
-image in the order they occur. This ensures that a crash-consistent mirror of
-the remote image is available locally.
+有两个 ``rbd-mirror`` 守护进程负责监控远端同伴集群的 image 日志，并针对本地集群进行\
+日志重放。RBD image 日志特性会按发生的顺序记录下对该 image 的所有修改。这保证了远端 \
+image 的崩溃一致性镜像在本地是可用的。
 
-The ``rbd-mirror`` daemon is available within the optional ``rbd-mirror``
-distribution package.
+通过安装可选发行包 ``rbd-mirror`` 来获取 ``rbd-mirror`` 守护进程。
 
-.. important:: Each ``rbd-mirror`` daemon requires the ability to connect
-   to both clusters simultaneously.
-.. warning:: Only run a single ``rbd-mirror`` daemon per Ceph cluster. A
-   future Ceph release will add support for horizontal scale-out of the
-   ``rbd-mirror`` daemon.
+.. important:: 每一个 ``rbd-mirror`` 守护进程需要同时连接本地和远程集群。
+.. warning:: 每个 Ceph 集群只能运行一个 ``rbd-mirror`` 守护进程。将来的 Ceph 发行版\
+   将会支持对 ``rbd-mirror`` 守护进程进行水平扩展。
 
 .. _rbd: ../../man/8/rbd
 .. _ceph-conf: ../../rados/configuration/ceph-conf/#running-multiple-clusters
-.. _explicitly enabled: #enable-image-mirroring
-.. _force resync command: #force-image-resync
-.. _demote the image: #image-promotion-and-demotion
+.. _显式启用: #启用-image-镜像功能
+.. _强制重新同步命令: #强制-image-重新同步
+.. _降级 image: #image-的升级与降级
