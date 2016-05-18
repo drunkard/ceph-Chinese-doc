@@ -10,13 +10,13 @@
 实例：创建一映像并写入
 ======================
 
-要使用 `rbd` ，必须先连接 RADOS 并打开 IO 上下文： ::
+要使用 `rbd` ，必须先连接 RADOS 并打开一个 IO 上下文： ::
 
     cluster = rados.Rados(conffile='my_ceph.conf')
     cluster.connect()
     ioctx = cluster.open_ioctx('mypool')
 
-然后实例化 :class:rbd.RBD 对象，用它来创建映像： ::
+然后实例化一个 :class:rbd.RBD 对象，用它来创建映像： ::
 
     rbd_inst = rbd.RBD()
     size = 4 * 1024**3  # 4 GiB
@@ -29,9 +29,9 @@
     image.write(data, 0)
 
 上面的代码向映像前面写入了 600 字节的 foo 字符串。注意数据不能是 :type:unicode ， \
-librbd 不能如何处理大于 :c:type:char 的字符串。
+librbd 不知道如何处理大于 :c:type:char 宽度的字符。
 
-最后，关闭映像、 IO 上下文、和到 RADOS 的连接。 ::
+最后，应该要关闭映像、 IO 上下文和 RADOS 的连接。 ::
 
     image.close()
     ioctx.close()
@@ -58,8 +58,8 @@ librbd 不能如何处理大于 :c:type:char 的字符串。
         cluster.shutdown()
 
 这样做有些繁琐，所以 :class:`Rados` 、 :class:`Ioctx` 和 :class:`Image` 类可以当\
-上下文管理器来用，它能自动关闭（见 :pep:`343` ）。当上下文管理器用时，上面的实例可\
-以写成： ::
+上下文管理器来用，它能自动关闭（见 :pep:`343` ）。作为上下文管理器使用时，上面的\
+例子可以写成： ::
 
     with rados.Rados(conffile='my_ceph.conf') as cluster:
         with cluster.open_ioctx('mypool') as ioctx:
