@@ -5,7 +5,7 @@
 .. index:: Ceph Block Device; RBD Replay
 
 RBD 重放是个用于捕捉和重放 Rados 块设备（ RBD ）载荷的工具集。要捕捉 RBD 载\
-荷，必须在客户端安装 ``lttng-tools`` ，且客户端上的 ``librbd`` 必须在 Giant \
+荷，必须在客户端安装 ``lttng-tools`` ，且客户端上的 ``librbd`` 必须在 v0.87（Giant）\
 版以上。
 
 捕捉、重放需三步：
