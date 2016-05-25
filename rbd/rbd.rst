@@ -41,7 +41,7 @@ abbr:`KVM (kernel virtual machines)` （如 `Qemu`_ 、 `OpenStack`_ \
 	命令 <rados-rbd-cmds>
 	内核模块 <rbd-ko>
 	快照 <rbd-snapshot>
-	RBD镜像 <rbd-mirroring>
+	RBD 镜像 <rbd-mirroring>
 	QEMU <qemu-rbd>
 	libvirt <libvirt>
 	缓存选项 <rbd-config-ref/>
