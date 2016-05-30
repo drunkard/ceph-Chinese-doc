@@ -1,8 +1,8 @@
-============
- 块设备入门
-============
+===============
+ 块设备快速入门
+===============
 
-要实践本手册，你必须先完成\ `存储集群入门`_ ，并确保 :term:`Ceph 存储集群`\ 处\
+要实践本手册，你必须先完成\ `存储集群快速入门`_ ，并确保 :term:`Ceph 存储集群`\ 处\
 于 ``active + clean`` 状态，这样才能使用 :term:`Ceph 块设备`\ 。
 
 .. note:: Ceph 块设备也叫 :term:`RBD` 或 :term:`RADOS` 块设备。
@@ -23,7 +23,7 @@
 安装 Ceph
 =========
 
-#. 确认下你的内核版本没问题，详情见\ `操作系统推荐`_\ 。
+#. 确认你使用了合适的内核版本，详情见\ `操作系统推荐`_\ 。
    ::
 
 	lsb_release -a
@@ -41,23 +41,23 @@
 	ceph-deploy admin ceph-client
 
    ``ceph-deploy`` 工具会把密钥环复制到 ``/etc/ceph`` 目录，要确保此密钥环文件\
-   可读（如 ``sudo chmod +r /etc/ceph/ceph.client.admin.keyring`` ）。
+   有读权限（如 ``sudo chmod +r /etc/ceph/ceph.client.admin.keyring`` ）。
 
 
 配置块设备
 ==========
 
-#. 在 ``ceph-client`` 节点上创建一个块设备映像。
+#. 在 ``ceph-client`` 节点上创建一个块设备 image 。
    ::
 
 	rbd create foo --size 4096 [-m {mon-IP}] [-k /path/to/ceph.client.admin.keyring]
 
-#. 在 ``ceph-client`` 节点上，把映像映射为块设备。
+#. 在 ``ceph-client`` 节点上，把 image 映射为块设备。
    ::
 
 	sudo rbd map foo --name client.admin [-m {mon-IP}] [-k /path/to/ceph.client.admin.keyring]
 
-#. 在 ``ceph-client`` 节点上，创建文件系统后就可以使用了。
+#. 在 ``ceph-client`` 节点上，创建文件系统后就可以使用块设备了。
    ::
 
 	sudo mkfs.ext4 -m0 /dev/rbd/rbd/foo
@@ -74,7 +74,7 @@
 
 详情见\ `块设备`_ 。
 
-.. _存储集群入门: ../quick-ceph-deploy
+.. _存储集群快速入门: ../quick-ceph-deploy
 .. _块设备: ../../rbd/rbd
 .. _FAQ: http://wiki.ceph.com/FAQs/How_Can_I_Give_Ceph_a_Try%3F
 .. _操作系统推荐: ../os-recommendations
