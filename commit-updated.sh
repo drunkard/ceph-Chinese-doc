@@ -1,7 +1,8 @@
 #!/bin/bash
-MAINLINE=/git/ceph
-ZH_CODE=/repo/ceph-Chinese-doc
-ZH_READABLE=/repo/ceph-readable-doc
+BASE_DIR="/git"
+MAINLINE=${BASE_DIR}/ceph
+ZH_CODE=${BASE_DIR}/DRUNKARD/ceph-Chinese-doc
+ZH_READABLE=${BASE_DIR}/DRUNKARD/ceph-readable-doc
 
 MAINLINE_HEAD_ID=`awk -F'=' '{if($1=="CUR") print $2}' $ZH_CODE/update-doc.sh`
 ZH_CODE_HEAD_ID=`git -C $ZH_CODE log -1 --pretty=%H`

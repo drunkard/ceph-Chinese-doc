@@ -1,8 +1,9 @@
 #!/bin/bash
 
+BASE_DIR="/git"
 fn=release-notes.rst
-en=/git/ceph/doc-en/$fn
-zh=/repo/ceph-Chinese-doc/$fn
+en=$BASE_DIR/ceph/doc-en/$fn
+zh=$BASE_DIR/DRUNKARD/ceph-Chinese-doc/$fn
 if cp $en $zh; then
 	sed -i -e 's/\(\ \|\t\)*$//g' $zh || \
 		echo 'sed failed'
