@@ -4,11 +4,12 @@ BASE_DIR="/git"
 fn=release-notes.rst
 en=$BASE_DIR/ceph/doc-en/$fn
 zh=$BASE_DIR/DRUNKARD/ceph-Chinese-doc/$fn
-if cp $en $zh; then
-	sed -i -e 's/\(\ \|\t\)*$//g' $zh || \
+if [ -f $en ] && cp $en $zh; then
+	sed -i -e 's/\(\ \|\t\)*$//g' $zh || {
 		echo 'sed failed'
+		exit 1
+	}
+	git diff $zh
 else
 	echo "copy failed"
 fi
-
-git diff $zh
