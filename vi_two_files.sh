@@ -16,7 +16,7 @@ open_files() {
 		return 1
 	}
 
-	vim -O $cn_doc $en_doc
+	vim +"set colorcolumn=64" -O $cn_doc $en_doc
 }
 
 if [ $# -ge 1 ]; then
