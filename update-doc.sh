@@ -6,5 +6,5 @@ MYPATH="${0%/*}"
 CEPH_REPO=/git/ceph
 if cd $CEPH_REPO; then
 	echo "There's `git log --oneline ${CUR}.. doc/ | wc -l` commits to sync"
-	gitview ${CUR}.. -- doc/ &
+	gitview --reverse --date-order ${CUR}.. -- doc/ &
 fi
