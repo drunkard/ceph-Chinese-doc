@@ -47,7 +47,7 @@ commit_zh_readable() {
 		fi
 	fi
 	git -C $ZH_READABLE add html/ man/ && \
-	git -C $ZH_READABLE commit --signoff -m "$READABLE_MSG" output/
+	git -C $ZH_READABLE commit --signoff -m "$READABLE_MSG" html/ man/
 	if [ $? -eq 0 ]; then
 		echo -e "$FUNCNAME: commit ok in repo: $ZH_READABLE\n"
 	else
