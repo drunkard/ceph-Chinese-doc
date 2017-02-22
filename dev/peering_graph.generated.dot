@@ -22,6 +22,7 @@ digraph G {
 					GetLog;
 					GetMissing;
 					WaitUpThru;
+					Down;
 					Incomplete;
 				}
 				subgraph cluster4 {
@@ -81,6 +82,7 @@ WaitRemoteBackfillReserved -> Backfilling [label="AllBackfillsReserved",];
 Backfilling -> Recovered [label="Backfilled",];
 Initial -> Stray [label="MInfoRec",];
 Stray -> RepNotRecovering [label="MInfoRec",lhead=cluster5,];
+GetInfo -> Down [label="IsDown",];
 RepRecovering -> RepNotRecovering [label="RecoveryDone",];
 RepNotRecovering -> RepNotRecovering [label="RecoveryDone",];
 RepRecovering -> RepNotRecovering [label="RemoteReservationRejected",];
