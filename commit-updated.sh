@@ -37,15 +37,16 @@ commit_zh_code() {
 }
 
 commit_zh_readable() {
-	if [ -d $MAINLINE/build-doc ] && cd $MAINLINE/build-doc; then
-		if rsync -avrR output/ $ZH_READABLE/; then
+	if [ -d $MAINLINE/build-doc/output ] && cd $MAINLINE/build-doc/output; then
+		# ./ includes current sub-directories: html/ man/
+		if rsync -avrR ./ $ZH_READABLE/; then
 			echo -e "synced with most recent build\n"
 		else
 			echo -e "$FUNCNAME: sync failed"
 			return 2
 		fi
 	fi
-	git -C $ZH_READABLE add output/ && \
+	git -C $ZH_READABLE add html/ man/ && \
 	git -C $ZH_READABLE commit --signoff -m "$READABLE_MSG" output/
 	if [ $? -eq 0 ]; then
 		echo -e "$FUNCNAME: commit ok in repo: $ZH_READABLE\n"
