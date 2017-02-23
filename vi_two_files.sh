@@ -16,6 +16,7 @@ open_files() {
 		return 1
 	}
 
+	echo 'vim +"set colorcolumn=64" -O' $cn_doc $en_doc
 	vim +"set colorcolumn=64" -O $cn_doc $en_doc
 }
 
