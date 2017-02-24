@@ -4,7 +4,7 @@ MAINLINE=${BASE_DIR}/ceph
 ZH_CODE=${BASE_DIR}/DRUNKARD/ceph-Chinese-doc
 ZH_READABLE=${BASE_DIR}/DRUNKARD/ceph-readable-doc
 
-MAINLINE_HEAD_ID=`awk -F'=' '{if($1=="CUR") print $2}' $ZH_CODE/update-doc.sh`
+MAINLINE_HEAD_ID=`awk -F'=' '{if($1=="SYNC_START") print $2}' $ZH_CODE/update-doc.sh`
 ZH_CODE_HEAD_ID=`git -C $ZH_CODE log -1 --pretty=%H`
 
 CODE_MSG="doc: sync with mainline
@@ -23,10 +23,6 @@ commit_zh_code() {
 		return 1
 	}
 	# check if updated cursor
-	if [ `git -C $ZH_CODE diff update-doc.sh |grep -c CUR=` -ne 2 ]; then
-		echo "$FUNCNAME: update-doc.sh not changed, please update CUR="
-		return 2
-	fi
 	git commit -a --signoff -m "$CODE_MSG"
 	if [ $? -eq 0 ]; then
 		echo -e "$FUNCNAME: commit ok in git repo: $ZH_CODE\n"

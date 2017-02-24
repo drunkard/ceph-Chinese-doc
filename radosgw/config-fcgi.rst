@@ -1,11 +1,16 @@
-=====================
- Ceph 对象网关的配置
-=====================
+==========================================
+ 基于 Apache/FastCGI 的 Ceph 对象网关配置
+==========================================
 
-要配置 Ceph 对象网关需要一个运行着的 Ceph 存储集群，还有启用了 FastCGI 模块\
-的 Apache 网页服务器。
+要配置 Ceph 对象网关需要一个运行着的 Ceph 存储集群。因为它\
+内嵌了一个网页服务器（ civetweb ），所以 Ceph 对象网关不需\
+要外部网页服务器也能运行；但是仍然可以通过配置了 FastCGI
+模块的 Apache 网页服务器运行。
 
-Ceph 对象网关是 Ceph 存储集群的一个客户端，作为 Ceph 存储集群的客户端，它需要：
+.. note:: CGI 有潜在的安全风险。
+
+Ceph 对象网关是 Ceph 存储集群的一个客户端，作为 Ceph 存储集\
+群的客户端，它需要：
 
 - A name for the gateway instance. We use ``gateway`` in this guide.
 - A storage cluster user name with appropriate permissions in a keyring.
@@ -39,30 +44,10 @@ the node containing the gateway instance.
 
 关于 Ceph 认证请参考\ `用户管理`_\ 。
 
-#. 给这个网关创建一个密钥环： ::
-
-	sudo ceph-authtool --create-keyring /etc/ceph/ceph.client.radosgw.keyring
-	sudo chmod +r /etc/ceph/ceph.client.radosgw.keyring
-
-
 #. Generate a Ceph Object Gateway user name and key for each instance. For
    exemplary purposes, we will use the name ``gateway`` after ``client.radosgw``:: 
 
-	sudo ceph-authtool /etc/ceph/ceph.client.radosgw.keyring -n client.radosgw.gateway --gen-key
-
-
-#. Add capabilities to the key. See `配置参考——存储池`_ for details
-   on the effect of write permissions for the monitor and creating pools. ::
-
-	sudo ceph-authtool -n client.radosgw.gateway --cap osd 'allow rwx' --cap mon 'allow rwx' /etc/ceph/ceph.client.radosgw.keyring
-
-
-#. Once you have created a keyring and key to enable the Ceph Object Gateway 
-   with access to the Ceph Storage Cluster, add the key to your 
-   Ceph Storage Cluster. For example::
-
-	sudo ceph -k /etc/ceph/ceph.client.admin.keyring auth add client.radosgw.gateway -i /etc/ceph/ceph.client.radosgw.keyring
-
+        sudo ceph auth get-or-create client.radosgw.gateway osd 'allow rwx' mon 'allow rwx' -o /etc/ceph/ceph.client.radosgw.keyring
 
 #. Distribute the keyring to the node with the gateway instance. ::
 
@@ -70,7 +55,8 @@ the node containing the gateway instance.
 	ssh {hostname}
 	sudo mv ceph.client.radosgw.keyring /etc/ceph/ceph.client.radosgw.keyring
 
-   .. note:: 如果 ``admin node`` 就是 ``gateway host`` ，那第 5 步就没必要。
+   .. note:: 如果 ``admin node`` 就是 ``gateway host`` ，那第
+      2 步就没必要。
 
 
 创建存储池
