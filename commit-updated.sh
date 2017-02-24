@@ -23,6 +23,10 @@ commit_zh_code() {
 		return 1
 	}
 	# check if updated cursor
+	if [ `git -C $ZH_CODE diff update-doc.sh |grep -c SYNC_START=` -ne 2 ]; then
+		echo "$FUNCNAME: update-doc.sh not changed, please update SYNC_START="
+		return 2
+	fi
 	git commit -a --signoff -m "$CODE_MSG"
 	if [ $? -eq 0 ]; then
 		echo -e "$FUNCNAME: commit ok in git repo: $ZH_CODE\n"
