@@ -2,7 +2,7 @@
 # Where we synced with ceph mainline. Note by date is more reliable than
 # commit ID, because there's too many criss-cross branches which is hard
 # for us to sync by branch/commit ID.
-SYNC_START=2015-12-23
+SYNC_START=2016-01-20
 
 MYPATH="${0%/*}"
 CEPH_REPO=/git/ceph
