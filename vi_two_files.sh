@@ -7,10 +7,16 @@ open_files() {
 	cn_doc="$CN_PATH/$1"
 	en_doc="$EN_PATH/$1"
 
-	[ -e $cn_doc ] || {
-		echo "中文版文档不存在: $1"
-		return 1
-	}
+	if [ ! -e $cn_doc ]; then
+		if [ -e $en_doc ]; then
+			echo "中文版不存在，复制一个过来 ..."
+			mkdir -p `dirname $cn_doc`
+			cp -v $en_doc $cn_doc
+		else
+			echo "中文版、英文版文档都不存在: $1"
+			return 1
+		fi
+	fi
 	[ -e $en_doc ] || {
 		echo "英文版文档不存在: $1"
 		return 1
