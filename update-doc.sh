@@ -4,9 +4,14 @@
 # for us to sync by branch/commit ID.
 SYNC_START=2016-01-20
 
+if ! /usr/bin/which tig &>/dev/null; then
+	echo "Need command line tool: tig"
+	exit 127
+fi
+
 MYPATH="${0%/*}"
 CEPH_REPO=/git/ceph
 if cd $CEPH_REPO; then
 	echo "There's `git log --oneline --since=${SYNC_START} doc/ | wc -l` commits to sync"
-	gitview --reverse --date-order --since=${SYNC_START} -- doc/ &
+	tig --date-order --reverse --since=${SYNC_START} -- doc/
 fi
