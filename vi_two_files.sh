@@ -20,8 +20,17 @@ open_files() {
 	vim +"set colorcolumn=64" -O $cn_doc $en_doc
 }
 
+remove_prefix() {
+	local str="$@"
+	if grep -qe ^[ab]/doc/ <<< "$str"; then
+		str=`sed -e 's:^[ab]/doc/::' <<< "$str"`
+	fi
+	echo -n "$str"
+}
+
 if [ $# -ge 1 ]; then
 	for f in $@; do
+		f=`remove_prefix "$f"`
 		open_files "$f"
 	done
 else
