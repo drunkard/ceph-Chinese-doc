@@ -22,8 +22,8 @@ open_files() {
 		return 1
 	}
 
-	echo 'vim +"set colorcolumn=64" -O' $cn_doc $en_doc
-	vim +"set colorcolumn=64" -O $cn_doc $en_doc
+	echo 'vim -O +"set colorcolumn=64"' $cn_doc $en_doc
+	vim -O +"set colorcolumn=64" $cn_doc $en_doc
 }
 
 remove_prefix() {
