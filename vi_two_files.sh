@@ -22,6 +22,10 @@ open_files() {
 		return 1
 	}
 
+	# Convert to relative path
+	cn_doc=`realpath --relative-to=$CN_PATH $cn_doc`
+	en_doc=`realpath --relative-to=$CN_PATH $en_doc`
+
 	cat <<-EOF
 	vim -O +"set colorcolumn=64" $cn_doc $en_doc	# 垂直分割
 	vim -o +"set colorcolumn=64" $cn_doc $en_doc	# 水平分割
