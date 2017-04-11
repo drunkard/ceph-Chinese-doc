@@ -12,6 +12,6 @@ fi
 MYPATH="${0%/*}"
 CEPH_REPO=/git/ceph
 if cd $CEPH_REPO; then
-	echo "There's `git log --oneline --since=${SYNC_START} doc/ | wc -l` commits to sync"
+	# echo "There's `git log --oneline --since=${SYNC_START} doc/ | wc -l` commits to sync"
 	tig --date-order --reverse --since=${SYNC_START} -- doc/
 fi
