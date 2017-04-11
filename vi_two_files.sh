@@ -22,7 +22,10 @@ open_files() {
 		return 1
 	}
 
-	echo 'vim -O +"set colorcolumn=64"' $cn_doc $en_doc
+	cat <<-EOF
+	vim -O +"set colorcolumn=64" $cn_doc $en_doc	# 垂直分割
+	vim -o +"set colorcolumn=64" $cn_doc $en_doc	# 水平分割
+	EOF
 	vim -O +"set colorcolumn=64" $cn_doc $en_doc
 }
 
