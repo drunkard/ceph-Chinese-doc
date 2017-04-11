@@ -30,6 +30,8 @@ remove_prefix() {
 	local str="$@"
 	if grep -qe ^[ab]/doc/ <<< "$str"; then
 		str=`sed -e 's:^[ab]/doc/::' <<< "$str"`
+	elif grep -qe ^doc/ <<< "$str"; then
+		str=`sed -e 's:^doc/::' <<< "$str"`
 	fi
 	echo -n "$str"
 }
