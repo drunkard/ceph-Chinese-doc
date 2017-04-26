@@ -34,6 +34,7 @@ digraph G {
 					WaitRemoteBackfillReserved;
 					WaitLocalBackfillReserved;
 					NotBackfilling;
+					NotRecovering;
 					Recovering;
 					WaitRemoteRecoveryReserved;
 					WaitLocalRecoveryReserved;
@@ -53,6 +54,7 @@ digraph G {
 	}
 GetInfo -> WaitActingChange [label="NeedActingChange",ltail=cluster2,];
 Clean -> WaitLocalRecoveryReserved [label="DoRecovery",];
+NotRecovering -> WaitLocalRecoveryReserved [label="DoRecovery",];
 Activating -> WaitLocalRecoveryReserved [label="DoRecovery",];
 Reset -> Start [label="ActMap",lhead=cluster1,];
 Recovered -> Clean [label="GoClean",];
@@ -92,6 +94,7 @@ RepWaitBackfillReserved -> RepNotRecovering [label="RemoteReservationRejected",]
 GetLog -> Incomplete [label="IsIncomplete",];
 WaitLocalBackfillReserved -> WaitRemoteBackfillReserved [label="LocalBackfillReserved",];
 GetInfo -> Activating [label="Activate",ltail=cluster3,lhead=cluster4,];
+WaitLocalRecoveryReserved -> NotRecovering [label="RecoveryTooFull",];
 GetInfo -> GetLog [label="GotInfo",];
 Start -> Reset [label="AdvMap",ltail=cluster1,];
 GetInfo -> Reset [label="AdvMap",ltail=cluster3,];
