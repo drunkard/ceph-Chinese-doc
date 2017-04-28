@@ -1,7 +1,15 @@
 #!/bin/bash
 
+CEPH_GIT="/git/ceph"
 CN_PATH=$(dirname `realpath $0`)
-EN_PATH="/git/ceph/doc-en"
+if [ -L $CEPH_GIT/doc ]; then
+	EN_PATH="$CEPH_GIT/doc-en"
+elif [ ! -L $CEPH_GIT/doc -a -d $CEPH_GIT/doc ]; then
+	EN_PATH="$CEPH_GIT/doc"
+else
+	echo "Unknown ceph/doc directory type, please check by hand"
+	exit 2
+fi
 
 open_files() {
 	cn_doc="$CN_PATH/$1"
