@@ -3,7 +3,7 @@
 =================
 
 *shec* 插件封装了 `multiple SHEC
-<https://wiki.ceph.com/Planning/Blueprints/Hammer/Shingled_Erasure_Code_(SHEC)>`_
+<http://tracker.ceph.com/projects/ceph/wiki/Shingled_Erasure_Code_(SHEC)>`_
 库。与 Reed Solomon 编码相比，它能使 Ceph 更高效地恢复数据。
 
 

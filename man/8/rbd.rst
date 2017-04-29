@@ -34,7 +34,7 @@
 
    连接到指定监视器，无需通过 ceph.conf 查找。
 
-.. option:: --cluster cluster name
+.. option:: --cluster cluster-name
 
    使用非默认的集群名字，即不是 *ceph* 的集群名。
 
@@ -52,7 +52,7 @@
 
 .. option:: --image-format format-id
 
-   选择用哪个对象布局，默认为 1 。
+   选择用哪个对象布局，默认为 2 。
 
    * format 1 - （已废弃）新建 rbd 映像时使用最初的格式。此\
      格式兼容所有版本的 librbd 和内核模块，但是不支持较新的\
@@ -478,7 +478,7 @@ libceph （每个客户端例程）选项：
 
 要通过内核把某一映像映射到没用默认名字 *ceph* 的集群： ::
 
-	rbd map mypool/myimage --cluster *cluster name*
+	rbd map mypool/myimage --cluster cluster-name
 
 取消映像映射： ::
 

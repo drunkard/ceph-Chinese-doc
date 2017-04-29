@@ -55,6 +55,7 @@ abbr:`KVM (kernel virtual machines)` （如 `QEMU`_ 、依赖 libvirt \
 	rbd-replay-prep 手册页 <../../man/8/rbd-replay-prep>
 	rbd-replay 手册页 <../../man/8/rbd-replay>
 	rbd-replay-many 手册页 <../../man/8/rbd-replay-many>
+	rbdmap 手册页 <../../man/8/rbdmap>
 	librbd 的 Python 接口 <librbdpy>
 
 

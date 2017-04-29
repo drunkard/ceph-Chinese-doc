@@ -323,7 +323,7 @@ MDS 子系统
 
 也可以更直接地获取： ::
 
-	$ ./ceph quorum_status
+	ceph quorum_status
 
 	2011-12-14 10:44:20.417705 mon {- [quorum_status]
 	2011-12-14 10:44:20.431890 mon.0 -} 

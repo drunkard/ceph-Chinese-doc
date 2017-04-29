@@ -47,7 +47,7 @@ mount 助手程序的惯例是前两个选项分别为要挂载的设备和目�
 :command:`osdtimeout`
   整数（秒）。默认：60
 
-:command:`osdkeepalivetimeout`
+:command:`osdkeepalive`
   整数。默认：5
 
 :command:`mount_timeout`

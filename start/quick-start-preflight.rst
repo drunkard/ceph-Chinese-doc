@@ -34,7 +34,7 @@ Debian/Ubuntu
 #. 添加 Ceph 软件包源，用稳定版 Ceph （如 ``hammer`` 、
    ``jewel`` 等等）替换掉 ``{ceph-stable-release}`` 。例如： ::
 
-	echo deb http://download.ceph.com/debian-{ceph-stable-release}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+	echo deb https://download.ceph.com/debian-{ceph-stable-release}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 
 #. 更新你的仓库，并安装 ``ceph-deploy`` ： ::
 
@@ -75,7 +75,7 @@ RHEL/CentOS
 
 	[ceph-noarch]
 	name=Ceph noarch packages
-	baseurl=http://download.ceph.com/rpm-{ceph-release}/{distro}/noarch
+	baseurl=https://download.ceph.com/rpm-{ceph-release}/{distro}/noarch
 	enabled=1
 	gpgcheck=1
 	type=rpm-md

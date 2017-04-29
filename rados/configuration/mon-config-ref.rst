@@ -487,20 +487,6 @@ provider 落后于 leader ）， provider 能终结和 requester 间的同步。
 :默认值: ``0.05``
 
 
-``paxos trim tolerance``
-
-:描述: 修复前容忍的其他提议数量。
-:类型: Integer
-:默认值: ``30``
-
-
-``paxos trim disabled max versions``
-
-:描述: 允许不修复就通过的最大版本数。
-:类型: Integer
-:默认值: ``100``
-
-
 ``mon lease``
 
 :描述: 监视器版本租期（秒）。

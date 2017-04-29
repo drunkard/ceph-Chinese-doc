@@ -97,11 +97,11 @@ Ceph 二进制包，必须先配置库。
 
 适合 Debian/Ubuntu 的包位于： ::
 
-	http://download.ceph.com/debian-{release-name}
+	https://download.ceph.com/debian-{release-name}
 
 适合 CentOS/RHEL 和其他发行版（通过 YUM 安装）的包位于： ::
 
-	http://download.ceph.com/rpm-{release-name}
+	https://download.ceph.com/rpm-{release-name}
 
 Ceph 的主要发布包括：
 
@@ -131,32 +131,32 @@ Debian 二进制包
 用命令 ``lsb_release -sc`` 可获取短代码名，然后用它替换下列命令\
 里的 ``{codename}`` 。 ::
 
-	sudo apt-add-repository 'deb http://download.ceph.com/debian-jewel/ {codename} main'
+	sudo apt-add-repository 'deb https://download.ceph.com/debian-jewel/ {codename} main'
 
 对于早期 Linux 发行版，你可以执行下列命令： ::
 
-	echo deb http://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+	echo deb https://download.ceph.com/debian-jewel/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 
 对于早期 Ceph 发布，可用 Ceph 发布名替换 ``{release-name}`` 。用\
 命令 ``lsb_release -sc`` 可获取短代码名，然后用它替换下列命令里\
 的 ``{codename}`` 。 ::
 
-	sudo apt-add-repository 'deb http://download.ceph.com/debian-{release-name}/ {codename} main'
+	sudo apt-add-repository 'deb https://download.ceph.com/debian-{release-name}/ {codename} main'
 
 对较老的 Linux 发行版，用发布名替换 ``{release-name}`` 。 ::
 
-	echo deb http://download.ceph.com/debian-{release-name}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+	echo deb https://download.ceph.com/debian-{release-name}/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 
 要在 ARM 处理器上运行 Ceph 的话，需要 Google 的内存剖析工具\
 （ ``google-perftools`` ）， Ceph 库里有： \
-http://download.ceph.com/packages/google-perftools/debian 。 ::
+https://download.ceph.com/packages/google-perftools/debian 。 ::
 
-	echo deb http://download.ceph.com/packages/google-perftools/debian  $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/google-perftools.list
+	echo deb https://download.ceph.com/packages/google-perftools/debian  $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/google-perftools.list
 
 对于开发版，把我们的软件库加入 APT 源。这里 \
 `Debian 测试版软件库`_ 是已支持的 Debian/Ubuntu 列表。 ::
 
-	echo deb http://download.ceph.com/debian-testing/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+	echo deb https://download.ceph.com/debian-testing/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
 
 .. tip:: 对国际用户来说，你也许可以从比较近的镜像下载 Ceph 。\
    请参考 `Ceph 镜像`_\ 。
@@ -169,13 +169,13 @@ RPM 二进制包
 Ceph 库：创建 ``ceph.repo`` 。在下例中，需要用 Ceph 主要发布名\
 （如 ``hammer`` 、 ``jewel`` 等等）替换 ``{ceph-release}`` 、\
 用 Linux 发行版名（ ``el7`` 等等）替换 ``{distro}`` 。你可以到
-http://download.ceph.com/rpm-{ceph-release}/ 看看 Ceph 支持哪\
+https://download.ceph.com/rpm-{ceph-release}/ 看看 Ceph 支持哪\
 些发行版。有些 Ceph 包（如 EPEL ）必须优先于标准包，所以你必须\
 确保设置了 ``priority=2`` 。 ::
 
 	[ceph]
 	name=Ceph packages for $basearch
-	baseurl=http://download.ceph.com/rpm-{ceph-release}/{distro}/$basearch
+	baseurl=https://download.ceph.com/rpm-{ceph-release}/{distro}/$basearch
 	enabled=1
 	priority=2
 	gpgcheck=1
@@ -184,7 +184,7 @@ http://download.ceph.com/rpm-{ceph-release}/ 看看 Ceph 支持哪\
 
 	[ceph-noarch]
 	name=Ceph noarch packages
-	baseurl=http://download.ceph.com/rpm-{ceph-release}/{distro}/noarch
+	baseurl=https://download.ceph.com/rpm-{ceph-release}/{distro}/noarch
 	enabled=1
 	priority=2
 	gpgcheck=1
@@ -193,7 +193,7 @@ http://download.ceph.com/rpm-{ceph-release}/ 看看 Ceph 支持哪\
 
 	[ceph-source]
 	name=Ceph source packages
-	baseurl=http://download.ceph.com/rpm-{ceph-release}/{distro}/SRPMS
+	baseurl=https://download.ceph.com/rpm-{ceph-release}/{distro}/SRPMS
 	enabled=0
 	priority=2
 	gpgcheck=1
@@ -205,7 +205,7 @@ http://download.ceph.com/rpm-{ceph-release}/ 看看 Ceph 支持哪\
 
 	[ceph]
 	name=Ceph packages for $basearch/$releasever
-	baseurl=http://download.ceph.com/rpm-testing/{distro}/$basearch
+	baseurl=https://download.ceph.com/rpm-testing/{distro}/$basearch
 	enabled=1
 	priority=2
 	gpgcheck=1
@@ -214,7 +214,7 @@ http://download.ceph.com/rpm-{ceph-release}/ 看看 Ceph 支持哪\
 
 	[ceph-noarch]
 	name=Ceph noarch packages
-	baseurl=http://download.ceph.com/rpm-testing/{distro}/noarch
+	baseurl=https://download.ceph.com/rpm-testing/{distro}/noarch
 	enabled=1
 	priority=2
 	gpgcheck=1
@@ -223,7 +223,7 @@ http://download.ceph.com/rpm-{ceph-release}/ 看看 Ceph 支持哪\
 
 	[ceph-source]
 	name=Ceph source packages
-	baseurl=http://download.ceph.com/rpm-testing/{distro}/SRPMS
+	baseurl=https://download.ceph.com/rpm-testing/{distro}/SRPMS
 	enabled=0
 	priority=2
 	gpgcheck=1
@@ -239,11 +239,11 @@ http://download.ceph.com/rpm-{ceph-release}/ 看看 Ceph 支持哪\
 ``{distro}`` 替换成你的 Linux 发行版名字，把 ``{release}`` 换\
 成 Ceph 的某个发布名。 ::
 
-	su -c 'rpm -Uvh http://download.ceph.com/rpms/{distro}/x86_64/ceph-{release}.el7.noarch.rpm'
+	su -c 'rpm -Uvh https://download.ceph.com/rpms/{distro}/x86_64/ceph-{release}.el7.noarch.rpm'
 
 你可以从这个地址直接下载 RPM ： ::
 
-	http://download.ceph.com/rpm-testing
+	https://download.ceph.com/rpm-testing
 
 .. tip:: 对国际用户来说，你也许可以从比较近的镜像下载 Ceph 。\
    请参考 `Ceph 镜像`_\ 。
@@ -394,7 +394,7 @@ Ceph 依赖这些第三方库。
 用自己的 Linux 发行版代号替换 ``{distro}`` 、用自己的 CPU 架构替\
 换 ``{arch}`` 。 ::
 
-	wget -q http://download.ceph.com/debian-{release}/pool/main/c/ceph/ceph_{version}{distro}_{arch}.deb
+	wget -q https://download.ceph.com/debian-{release}/pool/main/c/ceph/ceph_{version}{distro}_{arch}.deb
 
 
 RPM 二进制包
@@ -402,7 +402,7 @@ RPM 二进制包
 
 Ceph 依赖一些第三方库。执行下列命令添加 EPEL 库： ::
 
-	su -c 'rpm -Uvh http://download.ceph.com/rpm-firefly/{distro}/noarch/ceph-{version}.{distro}.noarch.rpm'
+	su -c 'rpm -Uvh https://download.ceph.com/rpm-firefly/{distro}/noarch/ceph-{version}.{distro}.noarch.rpm'
 
 Ceph依赖下列包：
 
@@ -416,24 +416,24 @@ Ceph依赖下列包：
 库包会在本地系统上安装 Ceph 库配置文件，这样 ``yum`` 就可以使\
 用这些配置文件自动安装了。用自己的发行版名字替换 ``{distro}`` 。 ::
 
-	su -c 'rpm -Uvh http://download.ceph.com/rpm-jewel/{distro}/noarch/ceph-{version}.{distro}.noarch.rpm'
+	su -c 'rpm -Uvh https://download.ceph.com/rpm-jewel/{distro}/noarch/ceph-{version}.{distro}.noarch.rpm'
 
 例如，对于 CentOS 7 （ ``el7`` ）： ::
 
-	su -c 'rpm -Uvh http://download.ceph.com/rpm-jewel/el7/noarch/ceph-release-1-0.el7.noarch.rpm'
+	su -c 'rpm -Uvh https://download.ceph.com/rpm-jewel/el7/noarch/ceph-release-1-0.el7.noarch.rpm'
 
 你可以从这里直接下载RPM包： ::
 
-	http://download.ceph.com/rpm-jewel
+	https://download.ceph.com/rpm-jewel
 
 对较老的 Ceph 发布，用 Ceph 发布名替换 ``{release-name}`` ，你\
 可以执行 ``lsb_release -sc`` 命令获取发行版代号。 ::
 
-	su -c 'rpm -Uvh http://download.ceph.com/rpm-{release-name}/{distro}/noarch/ceph-{version}.{distro}.noarch.rpm'
+	su -c 'rpm -Uvh https://download.ceph.com/rpm-{release-name}/{distro}/noarch/ceph-{version}.{distro}.noarch.rpm'
 
 
 
 .. _安装 Ceph 对象存储: ../install-storage-cluster
-.. _Debian 测试版软件库: http://download.ceph.com/debian-testing/dists
+.. _Debian 测试版软件库: https://download.ceph.com/debian-testing/dists
 .. _the gitbuilder page: http://gitbuilder.ceph.com
 .. _Ceph 镜像: ../mirrors

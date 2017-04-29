@@ -39,7 +39,7 @@
 
 	[ceph]
 	name=Ceph packages for $basearch
-	baseurl=http://download.ceph.com/rpm-{ceph-release}/{distro}/$basearch
+	baseurl=https://download.ceph.com/rpm-{ceph-release}/{distro}/$basearch
 	enabled=1
 	priority=2
 	gpgcheck=1
@@ -48,7 +48,7 @@
 
 	[ceph-noarch]
 	name=Ceph noarch packages
-	baseurl=http://download.ceph.com/rpm-{ceph-release}/{distro}/noarch
+	baseurl=https://download.ceph.com/rpm-{ceph-release}/{distro}/noarch
 	enabled=1
 	priority=2
 	gpgcheck=1
@@ -57,7 +57,7 @@
 
 	[ceph-source]
 	name=Ceph source packages
-	baseurl=http://download.ceph.com/rpm-{ceph-release}/{distro}/SRPMS
+	baseurl=https://download.ceph.com/rpm-{ceph-release}/{distro}/SRPMS
 	enabled=0
 	priority=2
 	gpgcheck=1
