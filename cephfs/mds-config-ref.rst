@@ -5,18 +5,11 @@
 
 ``mon force standby active``
 
-:描述: 如设为 ``true`` ，监视器会把 standby-replay 状态强设为 active 。设\
-       置于 ``[mon]`` 或 ``[global]`` 下。
+:描述: 如设为 ``true`` ，监视器会把 standby-replay 状态强设为
+       active 。设置于 ``[mon]`` 或 ``[global]`` 下。
 
 :类型: Boolean
 :默认值: ``true``
-
-
-``max mds``
-
-:描述: 集群创建时的 MDS 守护进程数量，设置于 ``[mon]`` 或 ``[global]`` 下。
-:类型:  32-bit Integer
-:默认值: ``1``
 
 
 ``mds max file size``
