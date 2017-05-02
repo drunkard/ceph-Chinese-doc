@@ -89,15 +89,15 @@
 
 .. _Async messenger options:
 
-异步信使选项
-============
+Async Messenger （异步信使）选项
+================================
 
 
 ``ms async transport type``
 
-:描述: Transport type used by Async Messenger. Can be ``posix``, ``dpdk``
-              or ``rdma``. Posix uses standard TCP/IP networking and is default. 
-              Other transports may be experimental and support may be limited.
+:描述: Async Messenger 所用的传输类型，可以是 ``posix`` 、
+       ``dpdk`` 或者 ``rdma`` 。 POSIX 用标准 TCP/IP 网络，是\
+       默认的；其它传输类型还是实验性的，支持尚不完整。
 :类型: String
 :是否必需: No
 :默认值: ``posix``
@@ -105,10 +105,9 @@
 
 ``ms async op threads``
 
-:描述: Initial number of worker threads used by each Async Messenger instance.
-              Should be at least equal to highest number of replicas, but you can
-              decrease it if you're low on CPU core count and/or you host a lot of
-              OSDs on single server.
+:描述: 各 Async Messenger 例程所用工作线程的初始数量。至少也得\
+       等于副本数的最大值，但是，如果 CPU 核心数比较少、或者单\
+       台服务器上的 OSD 很多，那你可以适当降低些。
 :类型: 64-bit Unsigned Integer
 :是否必需: No
 :默认值: ``3``
@@ -116,10 +115,9 @@
 
 ``ms async max op threads``
 
-:描述: Maximum number of worker threads used by each Async Messenger instance. 
-              Set to lower values when your machine has limited CPU count, and increase 
-              when your CPUs are underutilized (i. e. one or more of CPUs are
-              constantly on 100% load during I/O operations).
+:描述: 各 Async Messenger 例程所用工作线程的最大数量。 CPU 核\
+       心数少时可以设置得小些， CPU 利用率低时可以大些（也就是\
+       在 I/O 操作期间会有一或多个 CPU 核心的利用率持续在 100% ）。
 :类型: 64-bit Unsigned Integer
 :是否必需: No
 :默认值: ``5``
@@ -127,7 +125,8 @@
 
 ``ms async set affinity``
 
-:描述: Set to true to bind Async Messenger workers to particular CPU cores. 
+:描述: 设置为 true 时， Async Messenger 工作线程会绑到特定的
+       CPU 核心。
 :类型: Boolean
 :是否必需: No
 :默认值: ``true``
@@ -135,12 +134,11 @@
 
 ``ms async affinity cores``
 
-:描述: When ``ms async set affinity`` is true, this string specifies how Async
-              Messenger workers are bound to CPU cores. For example, "0,2" will bind
-              workers #1 and #2 to CPU cores #0 and #2, respectively.
-              NOTE: when manually setting affinity, make sure to not assign workers to
-              processors that are virtual CPUs created as an effect of Hyperthreading
-              or similar technology, because they're slower than regular CPU cores.
+:描述: ``ms async set affinity`` 为 true 时，此处的字符串可配置
+       Async Messenger 工作线程如何绑到 CPU 核心上。例如， "0,2"
+       表示把工作线程 #1 和 #2 分别绑到 CPU 核心 #0 和 #2 上。
+       **注意：** 手动设置亲和性时，千万别把工作线程绑到超线程\
+       或类似技术所虚拟出的 CPU 上，因为它们比一般 CPU 慢。
 :类型: String
 :是否必需: No
 :默认值: ``(empty)``
@@ -148,10 +146,9 @@
 
 ``ms async send inline``
 
-:描述: Send messages directly from the thread that generated them instead of
-              queuing and sending from Async Messenger thread. This option is known
-              to decrease performance on systems with a lot of CPU cores, so it's
-              disabled by default.
+:描述: 让生成这些消息的线程直接发送出去，而不是放入队列、再让
+       Async Messenger 线程发送。现已知晓，在 CPU 核心很多的系\
+       统上，启用此选项会降低性能，所以默认禁用了。
 :类型: Boolean
 :是否必需: No
 :默认值: ``false``
