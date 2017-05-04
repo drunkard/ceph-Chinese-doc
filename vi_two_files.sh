@@ -43,11 +43,14 @@ open_files() {
 
 remove_prefix() {
 	local str="$@"
-	if grep -qe ^[ab]/doc/ <<< "$str"; then
-		str=`sed -e 's:^[ab]/doc/::' <<< "$str"`
-	elif grep -qe ^doc/ <<< "$str"; then
+	# $str could be:
+	#	a/doc/dev/osd_internals/log_based_pg.rst
+	#	b/radosgw/swift/auth.rst
+	grep -qe ^[ab]/ <<< "$str" && \
+		str=`sed -e 's:^[ab]/::' <<< "$str"`
+
+	grep -qe ^doc/ <<< "$str" && \
 		str=`sed -e 's:^doc/::' <<< "$str"`
-	fi
 	echo -n "$str"
 }
 
