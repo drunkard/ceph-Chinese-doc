@@ -4,12 +4,10 @@ MAINLINE=${BASE_DIR}/ceph
 ZH_CODE=${BASE_DIR}/DRUNKARD/ceph-Chinese-doc
 ZH_READABLE=${BASE_DIR}/DRUNKARD/ceph-readable-doc
 
-MAINLINE_HEAD_ID=`awk -F'=' '{if($1=="SYNC_START") print $2}' $ZH_CODE/update-doc.sh`
+MAINLINE_HEAD_ID=`awk -F'"' '{if($1=="SYNC_START=") print $2}' $ZH_CODE/update-doc.sh`
 ZH_CODE_HEAD_ID=`git -C $ZH_CODE log -1 --pretty=%H`
 
-CODE_MSG="doc: sync with mainline
-                       
-Updated to: $MAINLINE_HEAD_ID"
+CODE_MSG="doc: sync with mainline, updated to: $MAINLINE_HEAD_ID"
 
 READABLE_MSG="ceph doc: updates
 
