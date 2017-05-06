@@ -32,6 +32,7 @@ commit_zh_code() {
 		echo -e "$FUNCNAME: commit failed in git repo: $ZH_CODE\n"
 		return 1
 	fi
+	git -C $ZH_CODE gc --quiet
 }
 
 commit_zh_readable() {
@@ -52,6 +53,7 @@ commit_zh_readable() {
 		echo -e "$FUNCNAME: commit failed in repo: $ZH_READABLE\n"
 		return 1
 	fi
+	git -C $ZH_READABLE gc --quiet
 }
 
 push_remotes() {
