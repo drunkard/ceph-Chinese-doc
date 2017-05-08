@@ -2,7 +2,7 @@
 # Where we synced with ceph mainline. Note by date is more reliable than
 # commit ID, because there's too many criss-cross branches which is hard
 # for us to sync by branch/commit ID.
-SYNC_START="2017-02-16"
+SYNC_START="2017-02-27"
 
 if ! /usr/bin/which tig &>/dev/null; then
 	echo "Need command line tool: tig"
