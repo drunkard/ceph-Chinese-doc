@@ -9,8 +9,14 @@
     backfill
         回填
 
+    demote (a image to non-primary)
+        降级
+
     dump
         转储、倒出
+
+    layout
+        （ CephFS 的）布局
 
     manpage
         手册页
@@ -33,6 +39,9 @@
     pool
         存储池
 
+    promote (an image to primary)
+        晋级
+
     replica
         副本
 
@@ -47,6 +56,13 @@
 
     snapset
         *未翻译*
+
+    standby
+        灾备、备用
+
+    standby-replay
+    standby-replay daemon
+        灾备重放、灾备重放守护进程； => 热备？
 
 
 .. vim: set ts=4 sw=4 expandtab:
