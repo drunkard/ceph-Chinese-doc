@@ -18,6 +18,9 @@
     layout
         （ CephFS 的）布局
 
+    link (bucket)
+        链接（桶到用户）
+
     manpage
         手册页
 
@@ -63,6 +66,9 @@
     standby-replay
     standby-replay daemon
         灾备重放、灾备重放守护进程； => 热备？
+
+    unlink (bucket)
+        断开、切断
 
 
 .. vim: set ts=4 sw=4 expandtab:
