@@ -1,8 +1,10 @@
-.. _RGW Multisite:
+.. _Multi-Site:
 
-==========
- RGW 多站
-==========
+======
+ 多站
+======
+
+**需全部重新校验**
 
 .. versionadded:: Jewel
 
