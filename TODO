@@ -1,13 +1,12 @@
 TODO for Chinese
 ================
 
-纠正联盟配置文档中的错误之处，并提交给上游；
+Test ditaa 0.11.0
+术语上方标注原文词语，用 HTML5 的 ruby + rt TAG 实现，但是rst现在还没有原生支持。
 
-重新断行，不超过67
 
-
-TODO for English
-================
+TODO for raw doc (English version)
+==================================
 
 Cache Tier modes, do compare in table, include these column at least:
 	cache-mode

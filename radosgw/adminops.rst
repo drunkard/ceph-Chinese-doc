@@ -1869,11 +1869,6 @@ If successful, the response contains the user's capabilities.
 :描述: User does not possess specified capability.
 :状态码: 404 Not Found
 
-特殊错误响应
-~~~~~~~~~~~~
-
-None.
-
 
 .. _Quotas:
 

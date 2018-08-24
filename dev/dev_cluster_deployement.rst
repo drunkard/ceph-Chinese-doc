@@ -48,10 +48,6 @@ osd 、和/或 mds ，不指定的话会启动所有类型。
 
     Add *config* to all sections in the ceph configuration.
 
-.. option:: -r
-
-    启动 radosgw ，端口从 8000 起递增。
-
 .. option:: --nodaemon
 
     Use ceph-run as wrapper for mon/osd/mds.
@@ -62,23 +58,20 @@ osd 、和/或 mds ，不指定的话会启动所有类型。
 
 .. option:: -x
 
-    Enable Cephx (on by default).
+    启用 Cephx （默认开启）。
 
 .. option:: -X
 
-    Disable Cephx.
+    禁用 Cephx 。
 
 .. option:: -d, --debug
 
-    Launch in debug mode
+    在调试模式下启动。
 
 .. option:: --valgrind[_{osd,mds,mon}] 'valgrind_toolname [args...]'
 
-    Launch the osd/mds/mon/all the ceph binaries using valgrind with the specified tool and arguments.
-
-.. option:: --{mon,osd,mds}_num
-
-    设置 mon/osd/mds 守护进程的数量。
+    在 valgrind 环境下、用指定的工具和参数，启动 ceph 的 \
+    osd/mds/mon/all 二进制。
 
 .. option:: --bluestore
 

@@ -1449,35 +1449,27 @@ cluster, and running the "s3-tests" suite against it.
 
 The following instructions should work on jewel and above.
 
-Step 1 - build Ceph
--------------------
 
-Refer to :doc:`/install/build-ceph`.
+.. _Step 1 - build Ceph:
 
-You can do step 2 separately while it is building.
-
-Step 2 - s3-tests
+第一步：构建 Ceph
 -----------------
 
-The test suite is in a separate git repo, and is written in python. Perform the
-following steps for jewel::
+细节见 :doc:`/install/build-ceph` 。
 
-    git clone git://github.com/ceph/s3-tests
-    cd s3-tests
-    git checkout ceph-jewel
-    ./bootstrap
+构建时间较长，你可以先单独试试第二步。
 
-For kraken, checkout the ``ceph-kraken`` branch instead of ``ceph-jewel``. For
-master, use ``ceph-master``.
 
-Step 3 - vstart
+.. _Step 2 - vstart:
+
+第二步： vstart
 ---------------
 
-When the build completes, and still in the top-level directory of the git
-clone where you built Ceph, do the following::
+构建结束后，还是在构建时的 git 克隆库顶极目录下，执行这些，用 \
+cmake 构建的话： ::
 
-    cd src/
-    ./vstart.sh -n -r --mds_num 0
+    cd build/
+    RGW=1 ../vstart.sh -n
 
 This will produce a lot of output as the vstart cluster is started up. At the
 end you should see a message like::
@@ -1486,50 +1478,15 @@ end you should see a message like::
 
 This means the cluster is running.
 
-Step 4 - prepare S3 environment
--------------------------------
 
-The s3-tests suite expects to run in a particular environment (S3 users, keys,
-configuration file).
+.. _Step 3 - run s3-tests:
 
-Before you try to prepare the environment, make sure you don't have any
-existing keyring or ``ceph.conf`` files in ``/etc/ceph``.
-
-For jewel, Abhishek Lekshmanan wrote a script that can be used for this
-purpose. Assuming you are testing jewel, run the following commands from the
-``src/`` directory of your ceph clone (where you just started the vstart
-cluster)::
-
-    pushd ~
-    wget https://gist.githubusercontent.com/theanalyst/2fee6bc2780f67c79cad7802040fcddc/raw/b497ddba053d9a6fb5d91b73924cbafcfc32f137/s3tests-bootstrap.sh
-    popd
-    sh ~/s3tests-bootstrap.sh
-
-If the script is successful, it will display a blob of JSON and create a file
-called ``s3.conf`` in the current directory.
-
-Step 5 - run s3-tests
+第三步：运行 s3-tests
 ---------------------
 
-To actually run the tests, take note of the full path to the ``s3.conf`` file
-created in the previous step and then move to the directory where you cloned
-``s3-tests`` in Step 2.
+用下列命令运行 s3tests 测试套件： ::
 
-First, verify that the test suite is there and can be run::
-
-    S3TEST_CONF=/path/to/s3.conf ./virtualenv/bin/nosetests -a '!fails_on_rgw' -v --collect-only
-
-This should complete quickly - it is like a "dry run" of all the tests in the
-suite.
-
-Finally, run the test suite itself::
-
-    S3TEST_CONF=/path/to/s3.conf ./virtualenv/bin/nosetests -a '!fails_on_rgw' -v
-
-Note: the following test is expected to error - this is a problem in the test
-setup (WIP), not an actual test failure::
-
-    ERROR: s3tests.functional.test_s3.test_bucket_acl_grant_email
+   $ ../qa/workunits/rgw/run-s3tests.sh
 
 
 .. WIP
