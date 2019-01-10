@@ -43,12 +43,17 @@ https://github.com/drunkard/ceph-readable-doc
 	cd /git/ceph-Chinese-doc/ && ./update-doc.sh
 	# update-doc.sh 脚本用了 git 和 tig 命令，最好先检查下安装了没。
 	# 对照着 tig 里的 commit 历史开始更新中文文档！
-	# 从最下面的 commit 开始翻译！！！
+	# 从第一个 commit 开始更新、翻译。
 
-	# 更新一或多个 commit 后提交到 git 库：
+	# 必须按日期更新！！！一次最少要更新一天的，如果遇上 commit 历史交叉得
+	# 厉害，可能一次必须更新很多天的。
+
+	# 更改脚本 ``update-doc.sh`` 里的 SYNC_START 变量；
+	vi update-doc.sh	# 更新 SYNC_START 变量
+
+	# 提交变更
 	./commit-updated.sh
 	git push origin
-	vi update-doc.sh	# 更新 SYNC_START 变量
 
 然后可以在 github 上向我反馈您的更新 :-)
 
@@ -96,3 +101,5 @@ https://github.com/drunkard/ceph-readable-doc
 
 	cd /git/ceph
 	./admin/serve-doc
+
+.. vim: set colorcolumn=80 noexpandtab smarttab:
