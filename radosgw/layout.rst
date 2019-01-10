@@ -2,7 +2,8 @@
  Rados 网关的数据布局
 ======================
 
-虽说源代码才是终极手册，但本文档能让新开发者更快地了解实现细节。
+虽说源代码才是终极手册，但本文档能让新开发者更快地了解实现细\
+节。
 
 
 简介
@@ -81,17 +82,18 @@ Hammer 起，这些映射可以分片存入多个 rados 对象。这个映射本
 在 RGW 里，用户 ID 是个字符串，通常是用户凭据里的真实用户名，而不是\
 其哈希值或者映射过的标识符。
 
-访问用户的数据时，用户记录要从 .users.uid 存储池里的 <user_id> 对象\
-载入。
+访问某个用户的数据时，此用户的记录要从 default.rgw.meta 存储池\
+内、命名空间为 users.uid 的 <user_id> 对象载入。
 
-桶名即 .rgw 存储池内的对象名。要载入桶记录，以便获取所谓的记号（ \
-marker ），它作为桶的唯一标识符。
+桶名即 default.rgw.meta 存储池内、命名空间为 root 的对象名。要\
+载入桶记录，以便获取所谓的记号（ marker ），它作为桶的唯一标识\
+符。
 
-对象数据位于 .rgw.buckets 存储池内。对象名是 "<marker>_<key>" ，如 \
-default.7593.4_image.png ，其中 marker 是 default.7593.4 、键名是 \
-image.png 。正因为这些组合起来的名字没被解析过，只是传递给了 \
-RADOS ，所以分隔符的选择就没那么重要、不会引起歧义；正因为如此，斜\
-杠也允许作为对象名（键名）。
+对象数据位于 default.rgw.buckets.data 存储池内。对象名是 \
+"<marker>_<key>" ，如 default.7593.4_image.png ，其中 marker \
+是 default.7593.4 、键名是 image.png 。正因为这些组合起来的名\
+字没被解析过，只是传递给了 RADOS ，所以分隔符的选择就没那么重\
+要、不会引起歧义；正因为如此，斜杠也允许作为对象名（键名）。
 
 也可以创建并使用多个数据存储池，这样不同的用户、桶就可以默认放到不\
 同的 rados 存储池里了，以此提供了必要的伸缩性。这样的布局和这些存储\
@@ -104,40 +106,43 @@ RADOS ，所以分隔符的选择就没那么重要、不会引起歧义；正�
 RADOS 对象里的。
 
 
+.. _Bucket and Object Listing:
+
 桶和对象列表
 ------------
 
-某一用户的桶存在 .users.uid 存储池里、名为 <user_id>.buckets 的对象\
-（如 foo.buckets ）的 omap 里。在罗列桶、更新桶内容、以及更新和检索\
-桶的统计信息（例如配额信息）时要访问这些对象。
+某一用户的桶列表保存在 default.rgw.meta 存储池里、命名空间为 \
+users.uid 、名为 <user_id>.buckets 的对象（如 foo.buckets ）的
+omap 里。在罗列桶、更新桶内容、以及更新和检索桶的统计信息（例\
+如配额信息）时要访问这些对象。
 
-这些 omap 条目的值位于用户可见、编码过的 cls_user_bucket_entry 类和\
-它的嵌套类 cls_user_bucket 里面。
+这些 omap 条目的值位于用户可见、编码过的 cls_user_bucket_entry
+类和它的嵌套类 cls_user_bucket 里面。
 
 这些列表以桶名持久化、存储在 .rgw 存储池里面。
 
-某一桶内所包含的对象罗列在桶索引里，这已经在前面的“桶索引”小段里说\
-过了。在 .rgw.buckets.index 存储池里、索引对象的默认命名规则是 \
-.dir.<marker> 。
+某一桶内所包含的对象罗列在桶索引里，这已经在前面的“桶索引”小段\
+里说过了。在 default.rgw.buckets.index 存储池里、索引对象的默\
+认命名规则是 .dir.<marker> 。
 
 
 附注
 ----
 
-[1] Omap 是个与对象相关联的键值存储，类似扩展属性与 POSIX 文件的关\
-联一样。对象的 omap 与对象数据在物理上是分离的，但是对 RADOS 网关来\
-说是不可见、无形的。在 Hammer 版里，每个 OSD 都有一个用于存储 omap \
-的 LevelDB 数据库。
+[1] Omap 是个与对象相关联的键值存储，类似扩展属性与 POSIX 文件\
+的关联一样。对象的 omap 与对象数据在物理上是分离的，但是对 \
+RADOS 网关来说是不可见、无形的。在 Hammer 版里，每个 OSD 都有\
+一个用于存储 omap 的 LevelDB 数据库。
 
-[2] 在 Dumpling 版之前还没有 bucket.instance 元数据，这些信息存储在\
-\ bucket 元数据里。所以，在较老的集群里有可能碰到这样的桶。
+[2] 在 Dumpling 版之前还没有 bucket.instance 元数据，这些信息\
+存储在 bucket 元数据里。所以，在较老的集群里有可能碰到这样的桶。
 
-[3] 在 Infernalis 版有个尚未被主线合并的提交，它实现了这样的功能，\
-不必再以句点作为 rgw 系统存储池的前缀，并且重命名了所有默认存储池。\
-详情见 Github 里的拉取请求 #4944 "rgw noperiod" 。
+[3] 从 Infernalis 版起，存储池的命名有所变化。与早先安装的系统\
+相比，有些细节不太一样，具体而言，原来为每个命名空间配置了单独\
+的存储池，现在都并入了 default.root.meta 存储池。
 
 
-附录：简介
+附录：提纲
 ----------
 
 已知存储池：
@@ -145,51 +150,52 @@ RADOS 对象里的。
 .rgw.root
   不确定的 region 、 zone 以及全局信息，每条使用一个对象。
 
-.rgw.control
+<zone>.rgw.control
   notify.<N>
 
-.rgw
-  <bucket>
-  .bucket.meta.<bucket>:<marker>   # see put_bucket_instance_info()
+<zone>.rgw.meta
+  多种元数据组成的多个命名空间：
 
-  租户（tenant）这个概念是用来界定桶的，而不是桶例程。例如：
+  namespace: root
+    <bucket>
+    .bucket.meta.<bucket>:<marker>   # 参见 put_bucket_instance_info()
 
-  .bucket.meta.prodtx:test%25star:default.84099.6
-  .bucket.meta.testcont:default.4126.1
-  .bucket.meta.prodtx:testcont:default.84099.4
-  prodtx/testcont
-  prodtx/test%25star
-  testcont
+    租户是用来区分桶的，而不是桶例程。例如： ::
 
-.rgw.gc
-  gc.<N>
+      .bucket.meta.prodtx:test%25star:default.84099.6
+      .bucket.meta.testcont:default.4126.1
+      .bucket.meta.prodtx:testcont:default.84099.4
+      prodtx/testcont
+      prodtx/test%25star
+      testcont
 
-.users.uid
-  包含两种信息，存储于 <user> 对象里的各个用户信息\
-  （ RGWUserInfo ）、及其各个桶的列表，储存在
-  "<user>.buckets" 对象的 omap 内。 <user> 如果不是空的，其\
-  内可能包含租户，如：
+  namespace: users.uid
+    包含两种信息，存储于 <user> 对象里的单个用户信息（ \
+    RGWUserInfo ）、及各个用户的桶列表，储存在 <user>.buckets \
+    对象的 omap 内。如果配置了租户，也会包含在 <user> 内，如：
+    ::
 
-  prodtx$prodt
-  test2.buckets
-  prodtx$prodt.buckets
-  test2
+      prodtx$prodt
+      test2.buckets
+      prodtx$prodt.buckets
+      test2
 
-.users.email
-  不重要
+  namespace: users.email
+    不重要
 
-.users
-  47UA98JSTJZ9YAN3OS3O
-  不明白为什么这里没用用户 ID 作为对象名。
+  namespace: users.keys
+    47UA98JSTJZ9YAN3OS3O
 
-.users.swift
-  test:tester
+    这样，在认证时 radosgw 就可以通过访问密钥查寻用户。
 
-.rgw.buckets.index
-  对象命名为 .dir.<marker> ，它们都有自己的桶索引。如果索引\
-  分片了，各个分片的标记之后还追加了分片索引。
+  namespace: users.swift
+    test:tester
 
-.rgw.buckets
+<zone>.rgw.buckets.index
+  对象命名规则为 .dir.<marker> ，它们都有各自的桶索引。如果索\
+  引分片了， marker 之后的各个分片后面还要追加分片索引。
+
+<zone>.rgw.buckets.data
   default.7593.4__shadow_.488urDFerTYXavx4yAd-Op8mxehnvTI_1
   <marker>_<key>
 

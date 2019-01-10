@@ -93,6 +93,8 @@ Make a pool and run some benchmarks against it:
 	$ ../src/stop.sh
 
 
+.. _Resetting your vstart environment:
+
 vstart 环境的重置
 -----------------
 
@@ -106,15 +108,17 @@ vstart 脚本会创建 out/ 和 dev/ 目录，集群的状态就保存在里面�
     [build]$ MDS=1 MON=1 OSD=3 ../src/vstart.sh -n -d
 
 
-运行 RadosGW 开发环境
+.. _Running a RadosGW development environment:
+
+部署 RadosGW 开发环境
 ---------------------
 
-执行 vstart.sh 时加 ``-r`` 可启用 RadosGW 。
+运行 vstart.sh 时设置 ``RGW`` 变量即可启用 RadosGW 。
 
 .. code::
 
 	$ cd build
-	$ ../src/vstart.sh -d -n -x -r
+	$ RGW=1 ../src/vstart.sh -d -n -x
 
 现在你可以用 swift python 客户端与 RadosGW 通讯了。
 

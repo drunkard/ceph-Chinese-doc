@@ -1,3 +1,5 @@
+.. Architecture
+
 ==========
  体系结构
 ==========
@@ -10,6 +12,8 @@ Ceph 可提供极大的伸缩性——供成千用户访问 PB 乃至 EB 级的�
 
 .. image:: images/stack.png
 
+
+.. The Ceph Storage Cluster
 
 Ceph 存储集群
 =============
@@ -36,6 +40,8 @@ Ceph OSD 守护进程检查自身状态、以及其它 OSD 的状态，并报告
 数据位置，而不是查询某个表。它的高级功能包括：基于 ``librados`` 的原生存储接\
 口、和多种基于 ``librados`` 的服务接口。
 
+
+.. Storing Data
 
 数据的存储
 ----------
@@ -68,6 +74,7 @@ OSD 在扁平的命名空间内把所有数据存储为对象（也就是没有�
 
 
 .. index:: architecture; high availability, scalability
+.. Scalability and High Availability
 
 伸缩性和高可用性
 ----------------
@@ -84,6 +91,7 @@ Ceph 消除了集中网关，允许客户端直接和 OSD 守护进程通讯。 
 
 
 .. index:: CRUSH; architecture
+.. CRUSH Introduction
 
 CRUSH 简介
 ~~~~~~~~~~
@@ -99,6 +107,7 @@ Ceph 客户端和 OSD 守护进程都用 \
 
 
 .. index:: architecture; cluster map
+.. Cluster Map
 
 集群运行图
 ~~~~~~~~~~
@@ -137,6 +146,7 @@ Ceph 依赖于 Ceph 客户端和 OSD ，因为它们知道集群的拓扑，这�
 
 
 .. index:: high availability; monitor architecture
+.. High Availability Monitors
 
 高可用监视器
 ~~~~~~~~~~~~
@@ -154,6 +164,7 @@ Ceph 客户端就不能读写数据了）。
 
 
 .. index:: architecture; high availability authentication
+.. High Availability Authentication
 
 高可用性认证
 ~~~~~~~~~~~~
@@ -275,6 +286,7 @@ Kerberos 票据的认证数据结构，它包含一个可用于获取 Ceph 服�
 
 
 .. index:: architecture; smart daemons and scalability
+.. Smart Daemons Enable Hyperscale
 
 智能程序支撑超大规模
 ~~~~~~~~~~~~~~~~~~~~
@@ -296,13 +308,18 @@ Ceph 客户端、监视器和 OSD 守护进程可以相互直接交互，这意�
    障点的同时，提升了性能和系统总容量。 Ceph 客户端可按需维护和某 OSD 的会话，而不\
    是一中央服务器。
 
-#. **OSD 成员和状态：** Ceph OSD 加入集群后会持续报告自己的状态。在底层， OSD 状态\
-   为 ``up`` 或 ``down`` ，反映它是否在运行、能否提供服务。如果一 OSD 状态为 \
-   ``down`` 且 ``in`` ，表明 OSD 守护进程可能失败了；如果一 OSD 守护进程没在运行\
-   （比如崩溃了），它就不能亲自向监视器报告自己是 ``down`` 的。 Ceph 监视器能周期\
-   性地 ping OSD 守护进程，以确保它们在运行，然而它也能授权 OSD 进程去确认邻居 \
-   OSD 是否 ``down`` 了，并更新集群运行图、报告给监视器。这种机制意味着监视器还是轻\
-   量级进程。详情见\ `监控 OSD`_ 和\ `心跳`_\ 。
+#. **OSD 成员和状态：** Ceph OSD 加入集群后会持续报告自己的状\
+   态。在底层， OSD 状态为 ``up`` 或 ``down`` ，反映它是否在运\
+   行、能否提供服务。如果一 OSD 状态为 ``down`` 且 ``in`` ，表\
+   明 OSD 守护进程可能失败了；如果一 OSD 守护进程没在运行（比\
+   如崩溃了），它就不能亲自向监视器报告自己是 ``down`` 的。所有
+   OSD 都会周期性地向 Ceph 监视器发送消息（ luminous 之前是
+   ``MPGStats`` ， luminous 起新增 ``MOSDBeacon`` ）；如果 Ceph
+   监视器在配置的周期内没看到这消息，就把它标记为 ``down`` ，\
+   然而，这只是个故障双保险机制。正常情况下， Ceph OSD 守护进\
+   程会判断邻居 OSD 是否倒下、并报告给监视器（们）。这样就能保\
+   证 Ceph 监视器始终是个轻量级进程。详情见\ `监控 OSD`_ 和\
+   `心跳`_\ 。
 
 #. **数据洗刷：** 作为维护数据一致性和清洁度的一部分， OSD 能洗刷归置组内的数据。就\
    是说， Ceph OSD 能比较对象元数据位于不同 OSD 上的几个副本的元数据，以捕捉 OSD \
@@ -345,6 +362,8 @@ Ceph 客户端、监视器和 OSD 守护进程可以相互直接交互，这意�
 和安全性。
 
 
+.. Dynamic Cluster Management
+
 动态集群管理
 ------------
 
@@ -355,6 +374,7 @@ OSD 守护进程来扩展和维护高可靠性。 Ceph 的关键设计是自治�
 
 
 .. index:: architecture; pools
+.. About Pools
 
 关于存储池
 ~~~~~~~~~~
@@ -390,6 +410,7 @@ Ceph 客户端从监视器获取一张\ `集群运行图`_\ ，并把对象写�
 
 
 .. index: architecture; placement group mapping
+.. Mapping PGs to OSDs
 
 PG 映射到 OSD
 ~~~~~~~~~~~~~
@@ -430,6 +451,7 @@ OSD ，这一间接层可以让 Ceph 在 OSD 守护进程和底层设备上线�
 
 
 .. index:: architecture; calculating PG IDs
+.. Calculating PG IDs
 
 计算 PG ID
 ~~~~~~~~~~
@@ -458,6 +480,7 @@ Ceph 客户端绑定到某监视器时，会索取最新的\ `集群运行图`_\
 
 
 .. index:: architecture; PG Peering
+.. Peering and Sets
 
 互联和子集
 ~~~~~~~~~~
@@ -492,6 +515,7 @@ OSD 守护进程作为 *acting set* 的一部分，不一定总在 ``up`` 状态
 
 
 .. index:: architecture; Rebalancing
+.. Rebalancing
 
 重均衡
 ~~~~~~
@@ -527,6 +551,7 @@ OSD 守护进程作为 *acting set* 的一部分，不一定总在 ``up`` 状态
 
 
 .. index:: architecture; Data Scrubbing
+.. Data Consistency
 
 数据一致性
 ~~~~~~~~~~
@@ -540,6 +565,7 @@ OSD 守护进程作为 *acting set* 的一部分，不一定总在 ``up`` 状态
 
 
 .. index:: erasure coding
+.. Erasure Coding
 
 纠删编码
 --------
@@ -551,6 +577,8 @@ OSD ，块的位置也作为对象属性保存下来了。
 比如一纠删码存储池创建时分配了五个 OSD （ ``K+M = 5`` ）并容忍其中两个丢失\
 （ ``M = 2`` ）。
 
+
+.. Reading and Writing Encoded Chunks
 
 读出和写入编码块
 ~~~~~~~~~~~~~~~~
@@ -661,6 +689,8 @@ OSD ，块的位置也作为对象属性保存下来了。
 	            +------------------| OSD5 |
 	                               +------+
 
+
+.. Interrupted Full Writes
 
 被中断的完全重写
 ~~~~~~~~~~~~~~~~
@@ -916,6 +946,8 @@ OSD 上，两个存储 ``K`` 、一个存 ``M`` 。此归置组的 acting set �
 详情见\ `纠删码笔记`_\ 。
 
 
+.. Cache Tiering
+
 缓存分级
 --------
 
@@ -956,6 +988,7 @@ OSD 上，两个存储 ``K`` 、一个存 ``M`` 。此归置组的 acting set �
 
 
 .. index:: Extensibility, Ceph Classes
+.. Extending Ceph
 
 扩展 Ceph
 ---------
@@ -980,6 +1013,8 @@ Ceph 原子地应用。
 ``src/barclass`` 。
 
 
+.. Summary
+
 小结
 ----
 
@@ -991,6 +1026,7 @@ CPU 和 RAM 资源，但是 Ceph 能。从心跳到互联、到重均衡、再�
 
 
 .. index:: Ceph Protocol, librados
+.. Ceph Protocol
 
 Ceph 协议
 =========
@@ -1007,6 +1043,8 @@ Ceph 客户端用原生协议和存储集群交互， Ceph 把此功能封装进
             |      OSDs     | |    Monitors   |
             +---------------+ +---------------+
 
+
+.. Native Protocol and ``librados``
 
 原生协议和 ``librados``
 -----------------------
@@ -1027,6 +1065,7 @@ Ceph 客户端用原生协议和存储集群交互， Ceph 把此功能封装进
 
 
 .. index:: architecture; watch/notify
+.. Object Watch/Notify
 
 对象关注/通知
 -------------
@@ -1081,6 +1120,7 @@ Ceph 客户端用原生协议和存储集群交互， Ceph 把此功能封装进
 
 
 .. index:: architecture; Striping
+.. Data Striping
 
 数据条带化
 ----------
@@ -1235,6 +1275,7 @@ Ceph 客户端把数据等分为条带单元并映射到对象后，用 CRUSH �
 
 
 .. index:: architecture; Ceph Clients
+.. Ceph Clients
 
 Ceph 客户端
 ===========
@@ -1272,6 +1313,7 @@ Ceph 能额外运行多个 OSD 、 MDS 、和监视器来保证伸缩性和高�
 
 
 .. index:: architecture; Ceph Object Storage
+.. Ceph Object Storage
 
 Ceph 对象存储
 -------------
@@ -1294,7 +1336,6 @@ Ceph 对象存储守护进程是 ``radosgw`` ，它是一个 FastCGI 服务，�
 
 
 .. index:: Ceph Block Device; block device; RBD; Rados Block Device
-
 .. _Ceph Block Device:
 
 Ceph 块设备
@@ -1319,6 +1360,8 @@ Ceph 块设备，其中宿主机用 ``librbd`` 向访客提供块设备服务；
 
 
 .. index:: Ceph FS; Ceph Filesystem; libcephfs; MDS; metadata server; ceph-mds
+
+.. _arch-cephfs:
 
 .. _Ceph Filesystem:
 

@@ -104,6 +104,11 @@
 
         Erasure coding can be useful with large quantities of data and any applications or systems that need to tolerate failures, such as disk array systems, data grids, distributed storage applications, object stores and archival storage. One common current use case for erasure coding is object-based cloud storage
 
+    eviction
+        驱逐
+
+        在 CephFS 部分，系统对客户端的屏蔽。
+
     exclusive lock
         互斥锁
 
@@ -112,6 +117,12 @@
 
         释义：默认情况下， MDS 会动态地做负载均衡；而此功能可让目录绑死到一个
         rank ，就像用“销子”固定住了，不能再随便动。
+
+    failover
+        故障恢复
+
+    failsafe
+        故障双保险，位于 architecture / Smart Daemons Enable Hyperscale
 
     fast read
         （EC 存储池的）速读（功能）
