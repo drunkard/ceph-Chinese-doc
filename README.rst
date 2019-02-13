@@ -9,7 +9,8 @@ https://github.com/drunkard/ceph-readable-doc
 中文版文档风格
 ==============
 
-词语的翻译应该尽量一致，请参考\ :doc:`/translation-convention`\ 。
+词语的翻译应该尽量一致，请参考\ `翻译惯例 </translation-convention>`_\ （即
+translation-convention.rst ）。
 
 尽量遵守原文档的书写风格，如缩进、不超过 80 列宽、等。
 
@@ -101,5 +102,8 @@ https://github.com/drunkard/ceph-readable-doc
 
 	cd /git/ceph
 	./admin/serve-doc
+
+如果遇到编译错误，请参考\ `此文档 </build-errors>`_\ （即 build-errors.rst ）\
+解决。
 
 .. vim: set colorcolumn=80 noexpandtab smarttab:
