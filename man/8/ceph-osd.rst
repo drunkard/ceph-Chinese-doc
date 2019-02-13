@@ -10,17 +10,18 @@
 ====
 
 | **ceph-osd** -i *osdnum* [ --osd-data *datapath* ] [ --osd-journal
-  *journal* ] [ --mkfs ] [ --mkjournal ] [ --mkkey ]
+  *journal* ] [ --mkfs ] [ --mkjournal ] [--flush-journal] [--check-allows-journal] [--check-wants-journal] [--check-needs-journal] [ --mkkey ]
 
 
 描述
 ====
 
-**ceph-osd** 是 Ceph 分布式对象存储系统的对象存储守护进程。它负责把对象存储\
-到本地文件系统，并使之通过网络可访问。
+**ceph-osd** 是 Ceph 分布式对象存储系统的对象存储守护进程。它\
+负责把对象存储到本地文件系统，并使之通过网络可访问。
 
-*datapath* 参数应该是 btrfs 文件系统上保存对象数据的一个目录。日志是可选的，\
-只有它位于非数据盘的低延时设备上（理想中应该是 NVRAM ）时才会达到最佳性能。
+*datapath* 参数应该是 btrfs 文件系统上保存对象数据的一个目录。\
+日志是可选的，只有它位于非数据盘的低延时设备上（理想中应该是
+NVRAM ）时才会达到最佳性能。
 
 
 选项
@@ -28,8 +29,8 @@
 
 .. option:: -f, --foreground
 
-   前台：启动后不要作为守护进程，仍在前台运行。不要生成 PID 文件。\
-   通过 :doc:`ceph-run <ceph-run>`\(8) 运行时此选项有用。
+   前台：启动后不要作为守护进程，仍在前台运行。不要生成 PID 文\
+   件。通过 :doc:`ceph-run <ceph-run>`\(8) 运行时此选项有用。
 
 .. option:: -d
 
@@ -37,8 +38,8 @@
 
 .. option:: --setuser userorgid
 
-   启动后设置 UID 。如果指定的是用户名，会查询用户记录以获取 UID \
-   及其 GID ，同时设置 GID ，除非还指定了 --setgroup 选项。
+   启动后设置 UID 。如果指定的是用户名，会查询用户记录以获取
+   UID 及其 GID ，同时设置 GID ，除非还指定了 --setgroup 选项。
 
 .. option:: --setgroup grouporgid
 
@@ -51,6 +52,18 @@
 .. option:: --osd-journal journal
 
    把日志更新到 *journal* 。
+
+.. option:: --check-wants-journal
+
+   检查下是否需要日志。
+
+.. option:: --check-allows-journal
+
+   检查是否允许启用日志。
+
+.. option:: --check-needs-journal
+
+   检查日志是否是必需的。
 
 .. option:: --mkfs
 

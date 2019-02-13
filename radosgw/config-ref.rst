@@ -321,10 +321,37 @@
 :默认值: ``false``
 
 
+``rgw bucket quota ttl``
+
+:描述: 在配置的这段时间（单位为秒）内，缓存的配额信息还是有效\
+       的；超时后，配额信息需重新从集群读取。
+:类型: Integer
+:默认值: ``600``
+
+
+``rgw user quota bucket sync interval``
+
+:描述: 桶的配额信息同步到集群前暂存的时间，单位为秒。在此期\
+       间，其它 RGW 例程看不到这个例程上的桶配额变更。
+
+:类型: Integer
+:默认值: ``180``
+
+
+``rgw user quota sync interval``
+
+:描述: 桶的配额信息同步到集群前暂存的时间，单位为秒。在此期\
+       间，其它 RGW 例程看不到这个例程上的用户配额变更。
+
+:类型: Integer
+:默认值: ``180``
+
+
 ``rgw bucket default quota max objects``
 
 :描述: 每个桶默认的最大对象数量。如果没其它配额操作，只给新用\
        户设置。对已有用户没影响。
+
 :类型: Integer
 :默认值: ``-1``
 
@@ -333,6 +360,7 @@
 
 :描述: 每个桶默认的最大容量，单位为字节。如果没其它配额操作，\
        只给新用户设置。对已有用户没影响。
+
 :类型: Integer
 :默认值: ``-1``
 
@@ -342,6 +370,7 @@
 :描述: 用户默认的最大对象数，此用户的所有桶内的所有对象都计算\
        在内。如果没其它配额操作，只给新用户设置。对已有用户没\
        影响。
+
 :类型: Integer
 :默认值: ``-1``
 
@@ -350,8 +379,16 @@
 
 :描述: 用户默认的最大容量，单位为字节。如果没其它配额操作，只\
        给新用户设置。对已有用户没影响。
+
 :类型: Integer
 :默认值: ``-1``
+
+
+``rgw verify ssl``
+
+:描述: 发出请求时验证 SSL 证书。
+:类型: Boolean
+:默认值: ``true``
 
 
 .. _Regions:
@@ -366,6 +403,7 @@ Ceph 从 v0.67 版开始，通过 region 概念支持 Ceph 对象网关联盟\
 region 的配置不同于一般配置过程，因为不是所有的配置都放在 Ceph
 配置文件中。从 Ceph 0.67 版开始，你可以列举 region 、获取
 region 配置或设置 region 配置。
+
 
 
 .. _List Regions:
@@ -386,6 +424,7 @@ Ceph 集群可包含一系列 region ，可用下列命令列举 region ： ::
 	        "default"]}
 
 
+
 .. _Get a Region Map:
 
 获取 region-map
@@ -395,8 +434,10 @@ Ceph 集群可包含一系列 region ，可用下列命令列举 region ： ::
 
 	sudo radosgw-admin region-map get
 
-.. note:: 如果你的到了 ``failed to read region map`` 错误，\
-   先试试 ``sudo radosgw-admin region-map update`` 。
+.. note::
+   如果你的到了 ``failed to read region map`` 错误，先试试
+   ``sudo radosgw-admin region-map update`` 。
+
 
 
 .. _Get a Region:
@@ -428,6 +469,7 @@ Ceph 集群可包含一系列 region ，可用下列命令列举 region ： ::
       {"name": "default-placement",
        "tags": [] }],
     "default_placement": "default-placement"}
+
 
 
 .. _Set a Region:

@@ -37,6 +37,16 @@ stripe_count
 object_size
     整数个字节。文件数据按此尺寸分块为 RADOS 对象。
 
+.. tip::
+
+   RADOS 会确保对象的尺寸是个可配置的限量：如果你自行增大
+   CephFS 对象尺寸，超过了那个限量，那么写入可能不会成功。对应\
+   的 OSD 选项是 ``osd_max_object_size`` ，默认值是 128MB 。
+   RADOS 对象过于大可能会影响集群的平稳运行，所以不建议对象尺\
+   寸限量超过默认值。
+
+
+.. Reading layouts with ``getfattr``
 
 用 ``getfattr`` 读取布局
 ------------------------

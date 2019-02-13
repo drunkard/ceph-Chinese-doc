@@ -107,10 +107,10 @@
   罗列此对象名的关注者。
 
 :command:`ls` *outfile*
-  List objects in given pool and write to outfile.
+  罗列指定存储池内的对象，并把名单写入 outfile 文件。
 
 :command:`lssnap`
-  List snapshots for given pool.
+  罗列指定存储池的快照。
 
 :command:`clonedata` *srcname* *dstname* --object-locator *key*
   Clone object byte data from *srcname* to *dstname*.  Both objects must be stored with the locator key *key* (usually either *srcname* or *dstname*).  Object attributes and omap keys are not copied or cloned.
@@ -134,6 +134,19 @@
   所创建对象的名字不能被 *seq* 所接受。
 
 :command:`cleanup`
+
+:command:`listxattr` *name*
+  罗列一个对象的所有扩展属性。
+
+:command:`getxattr` *name* *attr*
+  获取某一对象的扩展属性 *attr* 的值。
+
+:command:`setxattr` *name* *attr* *value*
+  设置某一对象的扩展属性，把扩展属性 *attr* 的值设置为
+  *value* 。
+
+:command:`rmxattr` *name* *attr*
+  删除某一对象的扩展属性 *attr* 。
 
 :command:`listomapkeys` *name*
   罗列 name 对象的对象映射图内存储的所有键。

@@ -244,7 +244,19 @@
 	     0 kB used, 0 kB / 0 kB avail
 	     192 creating
 
-   **注意：** 一旦你添加了 OSD 并启动，归置组健康错误应该消失，详情见下一节。
+   **注意：** 一旦你添加了 OSD 并启动，归置组健康错误应该消\
+   失，详情见下一节。
+
+
+.. _Manager daemon configuration:
+
+管理守护进程配置
+================
+
+在每个运行 ceph-mon 守护进程的节点上，应该同时配置起一个
+ceph-mgr 守护进程。
+
+请参考 :ref:`mgr-administrator-guide` 。
 
 
 .. _Adding OSDs:

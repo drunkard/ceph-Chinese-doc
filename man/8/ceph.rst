@@ -39,7 +39,7 @@
 
 | **ceph** **mon_status**
 
-| **ceph** **osd** [ *blacklist* \| *blocked-by* \| *create* \| *deep-scrub* \| *df* \| *down* \| *dump* \| *erasure-code-profile* \| *find* \| *getcrushmap* \| *getmap* \| *getmaxosd* \| *in* \| *lspools* \| *map* \| *metadata* \| *out* \| *pause* \| *perf* \| *pg-temp* \| *primary-affinity* \| *primary-temp* \| *repair* \| *reweight* \| *reweight-by-pg* \| *rm* \| *scrub* \| *set* \| *setcrushmap* \| *setmaxosd*  \| *stat* \| *thrash* \| *tree* \| *unpause* \| *unset* ] ...
+| **ceph** **osd** [ *blacklist* \| *blocked-by* \| *create* \| *new* \| *deep-scrub* \| *df* \| *down* \| *dump* \| *erasure-code-profile* \| *find* \| *getcrushmap* \| *getmap* \| *getmaxosd* \| *in* \| *ls* \| *lspools* \| *map* \| *metadata* \| *ok-to-stop* \| *out* \| *pause* \| *perf* \| *pg-temp* \| *force-create-pg* \| *primary-affinity* \| *primary-temp* \| *repair* \| *reweight* \| *reweight-by-pg* \| *rm* \| *destroy* \| *purge* \| *safe-to-destroy* \| *scrub* \| *set* \| *setcrushmap* \| *setmaxosd*  \| *stat* \| *tree* \| *unpause* \| *unset* ] ...
 
 | **ceph** **osd** **crush** [ *add* \| *add-bucket* \| *create-or-move* \| *dump* \| *get-tunable* \| *link* \| *move* \| *remove* \| *rename-bucket* \| *reweight* \| *reweight-all* \| *reweight-subtree* \| *rm* \| *rule* \| *set* \| *set-tunable* \| *show-tunables* \| *tunables* \| *unlink* ] ...
 
@@ -445,11 +445,55 @@ osd
 
 	ceph osd blocked-by
 
+
 子命令 ``create`` 用于新建 OSD ， UUID 和 ID 是可选的。
+
+从 Luminous 版起，此命令已\ **废弃**\ ，未来会删除。
+
+请改用 ``new`` 子命令。
 
 用法： ::
 
 	ceph osd create {<uuid>} {<id>}
+
+
+子命令 ``new`` 可用来创建新 OSD 或者重新创建以前销毁的 OSD ，\
+需指定 *id* ；这个新 OSD 会用指定的 *uuid* ，此命令还需指定一\
+个 JSON 文件，其内有认证实体 *client.osd.<id>* 的 base64 编码
+cephx 密钥；还有些可选项，如访问 dm-crypt 密码箱的 base64 编码
+cephx 密钥、和一个 dm-crypt 密钥。指定 dm-crypt 密钥时，还必须\
+同时指定密码箱的 cephx 密钥。
+
+用法： ::
+
+    ceph osd new {<uuid>} {<id>} -i {<params.json>}
+
+JSON 文件内的参数是可选的，但是如果设置了，就必须是下面的几种\
+格式之一： ::
+
+    {
+        "cephx_secret": "AQBWtwhZdBO5ExAAIDyjK2Bh16ZXylmzgYYEjg==",
+        "crush_device_class": "myclass"
+    }
+
+或者： ::
+
+    {
+        "cephx_secret": "AQBWtwhZdBO5ExAAIDyjK2Bh16ZXylmzgYYEjg==",
+        "cephx_lockbox_secret": "AQDNCglZuaeVCRAAYr76PzR1Anh7A0jswkODIQ==",
+        "dmcrypt_key": "<dm-crypt key>",
+        "crush_device_class": "myclass"
+    }
+
+或者： ::
+
+    {
+        "crush_device_class": "myclass"
+    }
+
+``crush_device_class`` 属性是可选的；指定后，它将是新 OSD 的初\
+始 CRUSH 设备类。
+
 
 子命令 ``crush`` 用于 CRUSH 管理，需额外指定子命令。
 
@@ -896,6 +940,40 @@ osd
 
 	ceph osd rm <ids> [<ids>...]
 
+子命令 ``destroy`` 把 OSD *id* 标记为 *destroyed （已销毁）*\
+，并删除与之对应的的 cephx 密钥、以及 dm-crypt 配置、和守护\
+进程私有的配置条目。
+
+此命令不会从 crush 中删除这个 OSD ，也不会从 OSD 运行图中删除\
+它；而是，一旦此命令正确无误地执行完，这个 OSD 的状态就是被标\
+记为 *destroyed* 。
+
+要把一个 OSD 标记为已销毁，它必须先被标记为
+**lost （丢失）**\ 。
+
+用法： ::
+
+    ceph osd destroy <id> {--yes-i-really-mean-it}
+
+
+子命令 ``purge`` 执行的是 ``osd destroy`` 、 ``osd rm`` 和
+``osd crush remove`` 命令的合体。
+
+用法： ::
+
+    ceph osd purge <id> {--yes-i-really-mean-it}
+
+
+子命令 ``safe-to-destroy`` 会检查在不降低整体数据冗余度或持久\
+性的前提下，删除或销毁一个 OSD 是否安全。如果绝对安全，它会返\
+回成功码；如果不是、或者现在还不能断定，它会返回错误码和提示\
+消息。
+
+用法： ::
+
+  ceph osd safe-to-destroy <id> [<ids>...]
+
+
 子命令 ``scrub`` 让指定 OSD 开始洗刷。
 
 用法： ::
@@ -1219,6 +1297,13 @@ tell
 用法： ::
 
 	ceph tell <name (type.id)> <args> [<args>...]
+
+
+罗列所有可用的命令。
+
+用法： ::
+
+	ceph tell <name (type.id)> help
 
 
 version

@@ -2,9 +2,10 @@
  Jerasure 纠删码插件
 =====================
 
-*jerasure* 插件是最通用、最灵活的插件，也是 Ceph 纠删码存储池的默认插件。
+*jerasure* 插件是最通用、最灵活的插件，也是 Ceph 纠删码存储池\
+的默认插件。
 
-*jerasure* 插件封装了 `Jerasure <https://bitbucket.org/jimplank/jerasure/>`_ \
+*jerasure* 插件封装了 `Jerasure <http://jerasure.org>`_ \
 库，要想更好地理解各参数，建议您仔细阅读 *jerasure* 文档。
 
 

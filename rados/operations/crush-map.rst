@@ -1185,4 +1185,4 @@ CRUSH 可调参数的遗留值可以用下面命令设置： ::
 全强制的。
 
 
-.. _CRUSH - 可控、可伸缩、分布式地归置多副本数据: http://ceph.com/papers/weil-crush-sc06.pdf
+.. _CRUSH - 可控、可伸缩、分布式地归置多副本数据: https://ceph.com/wp-content/uploads/2016/08/weil-crush-sc06.pdf

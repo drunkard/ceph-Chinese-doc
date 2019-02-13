@@ -464,6 +464,22 @@ the latest quota stats. ::
 和 ``rgw user default quota max size`` 。
 
 
+.. Quota Cache
+
+配额缓存
+--------
+
+配额统计信息缓存在各个 RGW 例程内。如果有多个例程，这些缓存就\
+会妨碍配额的完整施行，因为各例程将持有不同的配额信息。控制这些\
+的选项有 ``rgw bucket quota ttl`` 、
+``rgw user quota bucket sync interval`` 和
+``rgw user quota sync interval`` 。这些值设置得越高，配额操作\
+越高效，但是多个例程也会变得更不同步；这些值设置得越低，多个例\
+程就越接近完整地施行配额。如果三者都是 0 ，那就意味着配额缓存\
+被禁用了，这样多个例程就会完整地施行配额。请参考\
+`Ceph 对象网关配置参考`_\ 。
+
+
 .. _Reading / Writing Global Quotas:
 
 读取、写入全局配额

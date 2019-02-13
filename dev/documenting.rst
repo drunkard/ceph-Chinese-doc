@@ -5,8 +5,8 @@
 代码文档
 ========
 
-C 和 C++ 可以用 Doxygen_ 生成文档，我们用 Breathe_ 工具，它支持 Doxygen \
-的部分功能。
+C 和 C++ 可以用 Doxygen_ 生成文档，我们用 Breathe_ 工具，它\
+支持 Doxygen 的部分功能。
 
 .. _Doxygen: http://www.stack.nl/~dimitri/doxygen/
 .. _Breathe: https://github.com/michaeljones/breathe
@@ -24,12 +24,12 @@ C 和 C++ 可以用 Doxygen_ 生成文档，我们用 Breathe_ 工具，它支�
    * return value (if non-void)
    */
 
-这些应该在声明函数时写在函数头部，并且函数应该按逻辑分组， `librados C API`_ \
-里面有完整实例。这些文档被 `librados.rst`_ 拉进 Sphinx 、并在 \
-:doc:`/rados/api/librados` 渲染。
+这些应该在声明函数时写在函数头部，并且函数应该按逻辑分组，
+`librados C API`_ 里面有完整实例。这些文档被 `librados.rst`_
+拉进 Sphinx 、并在 :doc:`/rados/api/librados` 渲染。
 
 .. _`librados C API`: https://github.com/ceph/ceph/blob/master/src/include/rados/librados.h
-.. _`librados.rst`: https://raw.github.com/ceph/ceph/master/doc/api/librados.rst
+.. _`librados.rst`: https://github.com/ceph/ceph/raw/master/doc/rados/api/librados.rst
 
 
 绘图

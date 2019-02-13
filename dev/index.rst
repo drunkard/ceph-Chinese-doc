@@ -132,9 +132,9 @@ Ceph 的开发邮件讨论是通过邮件列表 ``ceph-devel@vger.kernel.org`` \
 
 要作为邮件正文发出。
 
-There are also `other Ceph-related mailing lists`_. 
+还有\ `其他与 Ceph 相关的邮件列表`_\ 。
 
-.. _`other Ceph-related mailing lists`: https://ceph.com/resources/mailing-list-irc/
+.. _`其他与 Ceph 相关的邮件列表`: https://ceph.com/irc/
 
 IRC
 ---
@@ -144,8 +144,8 @@ time using `Internet Relay Chat`_.
 
 .. _`Internet Relay Chat`: http://www.irchelp.org/
 
-See https://ceph.com/resources/mailing-list-irc/ for how to set up your IRC
-client and a list of channels.
+这里 ``https://ceph.com/irc/`` 介绍了如何配置 IRC 客户端、还有\
+一堆频道。
 
 补丁的提交
 ----------
@@ -764,7 +764,7 @@ The results of the nightlies are published at http://pulpito.ceph.com/ and
 http://pulpito.ovh.sepia.ceph.com:8081/. The developer nick shows in the
 test results URL and in the first column of the Pulpito dashboard.  The
 results are also reported on the `ceph-qa mailing list
-<http://ceph.com/resources/mailing-list-irc/>`_ for analysis.
+<https://ceph.com/irc/>`_ for analysis.
 
 Suites inventory
 ----------------
@@ -1149,11 +1149,14 @@ Reducing the number of tests
 ----------------------------
 
 The ``rados`` suite generates thousands of tests out of a few hundred
-files. For instance, all tests in the `rados/thrash suite
-<https://github.com/ceph/ceph/tree/master/qa/suites/rados/thrash>`_
-run for ``xfs``, ``btrfs`` and ``ext4`` because they are combined (via
-special file ``%``) with the `fs directory
-<https://github.com/ceph/ceph/tree/master/qa/suites/rados/thrash/fs>`_
+files. This happens because teuthology constructs test matrices from
+subdirectories wherever it encounters a file named ``%``. For instance,
+all tests in the `rados/basic suite
+<https://github.com/ceph/ceph/tree/master/qa/suites/rados/basic>`_
+run with different messenger types: ``simple``, ``async`` and
+``random``, because they are combined (via the special file ``%``) with
+the `msgr directory
+<https://github.com/ceph/ceph/tree/master/qa/suites/rados/basic/msgr>`_
 
 All integration tests are required to be run before a Ceph release is published. 
 When merely verifying whether a contribution can be merged without
@@ -1210,15 +1213,17 @@ To start with a clean slate, login to your tenant via the Horizon dashboard and:
 Also do the above if you ever get key-related errors ("invalid key", etc.) when
 trying to schedule suites.
 
-Getting ceph-workbench
-----------------------
+.. Getting ceph-workbench
+
+安装 ceph-workbench
+-------------------
 
 Since testing in the cloud is done using the `ceph-workbench
 ceph-qa-suite`_ tool, you will need to install that first. It is designed
 to be installed via Docker, so if you don't have Docker running on your
-development machine, take care of that first. The Docker project has a good
-tutorial called `Get Started with Docker Engine for Linux
-<https://docs.docker.com/linux/>`_ if you unsure how to proceed.
+development machine, take care of that first. You can follow `the official
+tutorial <https://docs.docker.com/engine/installation/>`_ to install if
+you have not installed yet.
 
 Once Docker is up and running, install ``ceph-workbench`` by following the
 `Installation instructions in the ceph-workbench documentation

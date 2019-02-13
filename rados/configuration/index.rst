@@ -27,7 +27,7 @@ Ceph 启动时要激活三类守护进程：
 .. toctree::
    :maxdepth: 1
 
-   硬盘和文件系统 <filesystem-recommendations>
+   存储设备 <storage-devices>
    ceph-conf
 
 
@@ -46,7 +46,8 @@ Ceph 启动时要激活三类守护进程：
    mon-lookup-dns
    心跳选项 <mon-osd-interaction>
    OSD 选项 <osd-config-ref>
-   filestore 选项 <filestore-config-ref>
+   BlueStore 配置 <bluestore-config-ref>
+   Filestore 配置 <filestore-config-ref>
    日志选项 <journal-ref>
    存储池、归置组和 CRUSH 选项 <pool-pg-config-ref.rst>
    消息传递选项 <ms-ref>

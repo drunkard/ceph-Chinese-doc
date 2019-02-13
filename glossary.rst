@@ -127,6 +127,17 @@ reflect either technical terms or legacy ways of referring to Ceph systems.
                 Ceph 管理器软件，它会把整个集群的所有状态信息\
                 收集到一起。
 
+	Ceph Manager Dashboard
+	Ceph Dashboard
+	Dashboard Plugin
+	Dashboard
+        Ceph 管理器仪表盘
+        Ceph 仪表盘
+        仪表盘插件
+        仪表盘
+                Ceph 管理器自带的、基于网页的监控和管理应用程\
+                序，详情请参考 :ref:`mgr-dashboard` 。
+
 	Ceph Metadata Server
 	MDS
         Ceph 元数据服务器

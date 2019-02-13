@@ -7,9 +7,9 @@ Ceph 监视器、 OSD 、和元数据服务器可利用 ``tcmalloc`` 生成堆�
 
 	sudo apt-get install google-perftools
 
-剖析器会把输出保存到 ``log file`` 目录（如 ``/var/log/ceph`` ），\
-详情见\ `日志记录和调试`_\ 。剖析器日志可用 Google 性能工具来查\
-看，执行如下命令： ::
+剖析器会把输出保存到 ``log file`` 目录（如
+``/var/log/ceph`` ），详情见\ `日志记录和调试`_\ 。剖析器日志\
+可用 Google 性能工具来查看，执行如下命令： ::
 
     google-pprof --text {path-to-daemon}  {log-path/filename}
 
@@ -134,4 +134,4 @@ OSD 号、监视器或元数据服务器的 ID 替换掉 ``{daemon-id}`` 。
 	ceph tell osd.0 heap stop_profiler
 
 .. _日志记录和调试: ../log-and-debug
-.. _Google 堆栈剖析器: http://google-perftools.googlecode.com/svn/trunk/doc/heapprofile.html
+.. _Google 堆栈剖析器: http://goog-perftools.sourceforge.net/doc/heap_profiler.html

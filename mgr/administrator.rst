@@ -1,17 +1,23 @@
-.. _ceph-mgr administrator's guide:
+.. _mgr-administrator-guide:
 
 ceph-mgr 管理员指南
 ===================
 
-设置
-----
+.. Manual setup
 
-给守护进程创建认证密钥： ::
+手动设置
+--------
 
-    ceph auth get-or-create mgr.$name mon 'allow *'
+平时，你可以用 ceph-ansible 之类的工具配置 ceph-mgr 守护进程。\
+下面说明了如何手动配置好一个 ceph-mgr 守护进程。
+
+首先，给守护进程创建认证密钥： ::
+
+    ceph auth get-or-create mgr.$name mon 'allow profile mgr' osd 'allow *' mds 'allow *'
 
 把创建的密钥放入 ``mgr data`` 所指向的路径，对于名为 ceph 的集\
-群、 mgr 的 $name 为 foo 的路径可能是 ``/var/lib/ceph/mgr/ceph-foo`` 。
+群、 mgr 的 $name 为 foo 的路径可能是
+``/var/lib/ceph/mgr/ceph-foo`` 。
 
 启动 ceph-mgr 守护进程： ::
 
@@ -56,6 +62,8 @@ Use the ``help`` command to get a list of available commands from all
 modules.
 
 
+.. Configuration
+
 配置选项
 --------
 
@@ -79,9 +87,10 @@ OPTION(mgr_module_path, OPT_STR, CEPH_PKGLIBDIR "/mgr") // 从哪里载入 pytho
 :类型: String
 :默认值: ``"/var/lib/ceph/mgr/$cluster-$id"``
 
-``mgr beacon period``
+``mgr tick period``
 
-:描述: mgr 向监视器发送信标的时间间隔，单位为秒。
+:描述: mgr 向监视器发送信标、以及其它周期性检查的时间间隔，单\
+       位为秒。
 :类型: Integer
 :默认值: ``5``
 

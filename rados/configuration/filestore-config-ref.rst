@@ -129,13 +129,15 @@ filestore 需要周期性地静默写入、同步文件系统，这创建了一�
 :默认值: ``.01``
 
 
+
 .. index:: filestore; flusher
 
 回写器
 ======
 
-filestore 回写器强制使用 ``sync file range`` 来写出大块数据，这样处理有望减小最终同\
-步的代价。实践中，禁用“ filestore 回写器”有时候能提升性能。
+filestore 回写器强制使用 ``sync file range`` 来写出大块数据，\
+这样处理有望减小最终同步的代价。实践中，禁用“ filestore 回写\
+器”有时候能提升性能。
 
 
 ``filestore flusher``
@@ -173,6 +175,7 @@ filestore 回写器强制使用 ``sync file range`` 来写出大块数据，这�
 :默认值: ``false``
 
 
+
 .. index:: filestore; queue
 
 队列
@@ -186,7 +189,7 @@ filestore 回写器强制使用 ``sync file range`` 来写出大块数据，这�
 :描述: 文件存储操作接受的最大并发数，超过此设置的请求会被阻塞。
 :类型: Integer
 :是否必需: 无。对性能影响最小。
-:默认值: ``500``
+:默认值: ``50``
 
 
 ``filestore queue max bytes``
@@ -196,21 +199,6 @@ filestore 回写器强制使用 ``sync file range`` 来写出大块数据，这�
 :是否必需: No
 :默认值: ``100 << 20``
 
-
-``filestore queue committing max ops``
-
-:描述: filestore 能提交的最大操作数。
-:类型: Integer
-:是否必需: No
-:默认值: ``500``
-
-
-``filestore queue committing max bytes``
-
-:描述: filestore 器能提交的最大字节数。
-:类型: Integer
-:是否必需: No
-:默认值: ``100 << 20``
 
 
 .. index:: filestore; timeouts
@@ -309,12 +297,24 @@ B-Tree 文件系统
 
 ``filestore split multiple``
 
-:描述:  ``filestore_split_multiple * abs(filestore_merge_threshold) * 16``
-               是分割为子目录前某目录内的最大文件数。
+:描述: ``(filestore_split_multiple * abs(filestore_merge_threshold) +(rend() % ore_split_rand_factor)) * 16``
+       是分割为子目录前某目录内的最大文件数。
 
 :类型: Integer
 :是否必需: No
 :默认值: ``2``
+
+
+``filestore split rand factor``
+
+:描述: 加到分割阈值的一个随机因子，用于避免一次发生的 filestore
+       分割太多，详情见 ``filestore split multiple`` 。只有已\
+       存在的 OSD 才能在离线状态下修改此值，用
+       ceph-objectstore-tool 的 apply-layout-settings 命令。
+
+:类型: Unsigned 32-bit Integer
+:是否必需: No
+:默认值: ``20``
 
 
 ``filestore update to``

@@ -286,7 +286,6 @@ state (e.g., "configuring", "connecting", etc.).
 .. automethod:: Rados.shutdown()
 .. automethod:: Rados.get_fsid()
 .. automethod:: Rados.get_cluster_stats()
-.. automethod:: Rados.require_state(*args)
 
 
 Pool Operations
@@ -297,7 +296,7 @@ first.  You may list the available pools, create a pool, check to see if a pool
 exists,  and delete a pool.
 
 .. automethod:: Rados.list_pools()
-.. automethod:: Rados.create_pool(pool_name, auid=None, crush_rule=None)
+.. automethod:: Rados.create_pool(pool_name, crush_rule=None)
 .. automethod:: Rados.pool_exists()
 .. automethod:: Rados.delete_pool(pool_name)
 
@@ -314,7 +313,6 @@ method. The remaining ``ioctx`` operations involve invoking methods of the
 .. automethod:: Rados.open_ioctx(ioctx_name)
 .. automethod:: Ioctx.require_ioctx_open()
 .. automethod:: Ioctx.get_stats()
-.. automethod:: Ioctx.change_auid(auid)
 .. automethod:: Ioctx.get_last_version()
 .. automethod:: Ioctx.close()
 
@@ -365,7 +363,7 @@ of objects or XATTRs and iterate over them.
 
 .. automethod:: Ioctx.set_xattr(key, xattr_name, xattr_value)
 .. automethod:: Ioctx.get_xattrs(oid)
-.. automethod:: XattrIterator.next()
+.. automethod:: XattrIterator.__next__()
 .. automethod:: Ioctx.get_xattr(key, xattr_name)
 .. automethod:: Ioctx.rm_xattr(key, xattr_name)
 
@@ -380,7 +378,7 @@ you may perform synchronous operations on the  objects. For asynchronous
 operations, you should use the I/O context methods.
 
 .. automethod:: Ioctx.list_objects()
-.. automethod:: ObjectIterator.next()
+.. automethod:: ObjectIterator.__next__()
 .. automethod:: Object.read(length = 1024*1024)
 .. automethod:: Object.write(string_to_write)
 .. automethod:: Object.get_xattrs()

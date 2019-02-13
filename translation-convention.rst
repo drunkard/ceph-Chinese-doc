@@ -8,6 +8,7 @@
 - ``?``  表示尚未决定翻译还是不翻译。
 
 .. glossary::
+
     access key
         访问密钥
 
@@ -61,6 +62,10 @@
 
     demote (a image to non-primary)
         降级
+
+    destroyed
+        已销毁；
+        OSD 状态，如 ``ceph osd destroy <id>`` 后的状态。
 
     down / up
         倒下、倒下了；起来了，活过来了；
@@ -137,6 +142,9 @@
     grace time
         宽限期；宽限时间；
 
+    inline compression
+        内联压缩、内联数据压缩；
+
     intent log
         意图日志
 
@@ -167,6 +175,12 @@
     master zone
     master zone group
         主域、主域组
+
+    messenger
+        信使
+
+    messenger layer
+        信使层
 
     non-master zone
     non-master zone group
@@ -223,6 +237,9 @@
     placement target
         归置目标 => 归置靶
 
+    point release
+        小版本
+
     pool
         存储池
 
@@ -233,6 +250,10 @@
     proposal
     proposer
         (PAXOS) 提议、提案
+
+    purge
+        擦净。
+        如用命令 ``ceph osd purge <id>`` 擦净 OSD 。
 
     quorum
         法定人数
@@ -297,6 +318,13 @@
 
     shard
         分片
+
+    Single Sign-On
+    SSO
+        单点登录
+
+    slow request
+        慢请求
 
     snap trim
         快照修剪
