@@ -1,7 +1,5 @@
-:orphan:
-
 ================
- 内部开发者文档
+ Ceph Internals
 ================
 
 .. note:: If you're looking for how to use Ceph as a library from your
@@ -39,3 +37,4 @@ in the body of the message.
    osd_internals/index*
    mds_internals/index*
    radosgw/index*
+   ceph-volume/index*
