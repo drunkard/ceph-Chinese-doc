@@ -10,6 +10,7 @@ logo.png
 
 changelog/
 images/
+scripts/
 _ext
 _static
 _templates
