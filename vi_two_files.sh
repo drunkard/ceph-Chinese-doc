@@ -18,6 +18,7 @@ open_files() {
 	if [ ! -e $cn_doc ]; then
 		if [ -e $en_doc ]; then
 			echo "中文版不存在，复制一个过来 ..."
+			sleep 1s;	# 让译者看一眼
 			mkdir -p `dirname $cn_doc`
 			cp -v $en_doc $cn_doc
 		else
