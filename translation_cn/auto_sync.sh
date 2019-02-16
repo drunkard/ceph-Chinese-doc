@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ${0%/*}/update-env.sh
+. ${0%/*}/env.sh
 
 updates="
 CMakeLists.txt
@@ -19,7 +19,7 @@ _themes
 
 # 自动同步 changelog
 if cd $EN_DOC/; then
-	rsync -avrR --del --exclude=__pycache__ $updates $ZH_DOC/
+	rsync -avrR --del --exclude=__pycache__ $updates $ZH_REPO/
 	retv=$?
 	if [ $retv -ne 0 ]; then
 		echo "$0: sync failed with error code: $retv"

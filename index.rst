@@ -103,7 +103,4 @@ Ceph 独一无二地在一个统一的系统中同时提供了\ **对象、块�
    ceph-volume/index
    releases/index
    Ceph 术语 <glossary>
-   中文版翻译说明 <README>
-   中文版词句翻译惯例 <translation-convention>
-   文档编译错误 <build-errors>
-   中文版待完成事项 <TODO>
+   中文版翻译资源 <translation_cn/index>
