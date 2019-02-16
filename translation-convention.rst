@@ -194,6 +194,10 @@
     object-info
         <不翻译>，因为它是专有名词，来自代码、JSON 输出。
 
+    objectstore
+        对象存储器
+        可用的有 filestore 、 bluestore
+
     (osd) reporter
         报告者 => 报信的?
 
@@ -380,6 +384,9 @@
 
     unlink bucket
         断开、切断桶链接、解绑桶，视具体语境采用。
+
+    zap
+        删除；（快速摧毁）
 
     zone
         域，是一或多个 Ceph 对象网关例程的逻辑分组。每个域组应该指定一个域为主\
