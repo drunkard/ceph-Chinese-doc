@@ -12,7 +12,7 @@ commit_zh_code() {
 		return 1
 	}
 	# check if updated cursor
-	if [ `git -C $ZH_REPO diff $PROGRESS_FILE |grep -c SYNC_CN=` -ne 2 ]; then
+	if [ `git -C $ZH_REPO diff $PROGRESS_FILE |grep -c SYNC_TO=` -ne 2 ]; then
 		echo "$FUNCNAME: $PROGRESS_FILE not changed, please update SYNC_TO="
 		return 2
 	fi

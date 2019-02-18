@@ -18,6 +18,9 @@
     active-passive
         (RGW) 主从
 
+    active/standby
+        活跃/备用
+
     ancestor type
         父级类型
 
