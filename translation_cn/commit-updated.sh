@@ -30,11 +30,13 @@ commit_zh_code() {
 commit_zh_readable() {
 	# sync newly built html/man
 	if [ -d $BUILT_OUTPUT ] && cd $BUILT_OUTPUT; then
-		# ./ includes current sub-directories: html/ man/
-		if rsync -avrR --del html/ man/ $ZH_READABLE_REPO/; then
-			echo -e "synced with most recent build\n"
+		local cmd="rsync -arR --del html/ man/ $ZH_READABLE_REPO/"
+		echo -n "$FUNCNAME running sync command: $cmd ... "
+		$cmd
+		if [ $? -eq 0 ]; then
+			echo -e "done\n"
 		else
-			echo -e "$FUNCNAME: sync failed"
+			echo -e "failed"
 			return 2
 		fi
 	else
