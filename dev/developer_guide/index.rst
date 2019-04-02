@@ -4,7 +4,7 @@
 
 :作者: Loic Dachary
 :作者: Nathan Cutler
-:许可证: Creative Commons Attribution-ShareAlike (CC BY-SA)
+:许可证: Creative Commons Attribution Share Alike 3.0 (CC-BY-SA-3.0)
 
 .. note:: 你可能也会对 :doc:`/dev/internals` 文档感兴趣。
 
@@ -24,8 +24,8 @@ object store and file system designed to provide excellent performance,
 reliability and scalability). If not, please refer to the `project website`_ 
 and especially the `publications list`_.
 
-.. _`project website`: http://ceph.com 
-.. _`publications list`: https://ceph.com/resources/publications/
+.. _`project website`: https://ceph.com
+.. _`publications list`: https://ceph.com/publications/
 
 Since this document is to be consumed by developers, who are assumed to
 have Internet access, topics covered elsewhere, either within the Ceph
@@ -154,14 +154,16 @@ time using `Internet Relay Chat`_.
 这里 ``https://ceph.com/irc/`` 介绍了如何配置 IRC 客户端、还有\
 一堆频道。
 
+.. Submitting patches
+
 补丁的提交
 ----------
 
-The canonical instructions for submitting patches are contained in the 
-`the file CONTRIBUTING.rst in the top-level directory of the source-code
-tree`_. There may be some overlap between this guide and that file.
+The canonical instructions for submitting patches are contained in the
+file `CONTRIBUTING.rst`_ in the top-level directory of the source-code
+tree. There may be some overlap between this guide and that file.
 
-.. _`the file CONTRIBUTING.rst in the top-level directory of the source-code tree`: 
+.. _`CONTRIBUTING.rst`:
   https://github.com/ceph/ceph/blob/master/CONTRIBUTING.rst
 
 All newcomers are encouraged to read that file carefully.
@@ -206,6 +208,27 @@ details refer to the `run modes`_ of the ccache manual. The default settings of
    cache, defaulting to 10G, to a larger size like 25G or so. Refer to the
    `configuration`_ section of ccache manual.
 
+To further increase the cache hit rate and reduce compile times in a development
+environment, it is possible to set version information and build timestamps to
+fixed values, which avoids frequent rebuilds of binaries that contain this
+information.
+
+This can be achieved by adding the following settings to the ``ccache``
+configuration file ``ccache.conf``::
+
+  sloppiness = time_macros
+  run_second_cpp = true
+
+Now, set the environment variable ``SOURCE_DATE_EPOCH`` to a fixed value (a UNIX
+timestamp) and set ``ENABLE_GIT_VERSION`` to ``OFF`` when running ``cmake``::
+
+  $ export SOURCE_DATE_EPOCH=946684800
+  $ cmake -DWITH_CCACHE=ON -DENABLE_GIT_VERSION=OFF ..
+
+.. note:: Binaries produced with these build options are not suitable for
+  production or debugging purposes, as they do not contain the correct build
+  time and git version information.
+
 .. _`ccache`: https://ccache.samba.org/
 .. _`run modes`: https://ccache.samba.org/manual.html#_run_modes
 .. _`configuration`: https://ccache.samba.org/manual.html#_configuration
@@ -230,6 +253,11 @@ The rest (including the actual backporting) will be taken care of by the
 
 .. _`tracker issue`: http://tracker.ceph.com/
 .. _`Stable Releases and Backports`: http://tracker.ceph.com/projects/ceph-releases/wiki
+
+Guidance for use of cluster log
+-------------------------------
+
+If your patches emit messages to the Ceph cluster log, please consult
 
 
 What is merged where and when ?
@@ -729,19 +757,24 @@ chapters examine the `make check`_ and integration tests in detail.
 单元测试 - make check
 ---------------------
 
-After compiling Ceph, the `make check`_ command can be used to run the
-code through a battery of tests covering various aspects of Ceph. For
-inclusion in `make check`_, a test must:
+After compiling Ceph, the code can be run through a battery of tests covering
+various aspects of Ceph. For historical reasons, this battery of tests is often
+referred to as `make check`_ even though the actual command used to run the
+tests is now ``ctest``. For inclusion in this battery of tests, a test must:
 
 * bind ports that do not conflict with other tests
 * not require root access
 * not require more than one machine to run
 * complete within a few minutes
 
-While it is possible to run `make check`_ directly, it can be tricky to
-correctly set up your environment. Fortunately, a script is provided to
-make it easier run `make check`_ on your code. It can be run from the
-top-level directory of the Ceph source tree by doing::
+For simplicity, we will refer to this class of tests as "make check tests" or
+"unit tests", to distinguish them from the more complex "integration tests"
+that are run via the `teuthology framework`_.
+
+While it is possible to run ``ctest`` directly, it can be tricky to correctly
+set up your environment. Fortunately, a script is provided to make it easier
+run the unit tests on your code. It can be run from the top-level directory of
+the Ceph source tree by doing::
 
     $ ./run-make-check.sh
 
@@ -791,7 +824,7 @@ the `cram task`_.
 
 
 测试 - 集成测试
-===============
+---------------
 
 When a test requires multiple machines, root access or lasts for a
 longer time (for example, to simulate a realistic Ceph deployment), it
@@ -804,7 +837,7 @@ In the sections that follow we attempt to provide a detailed introduction
 to that framework from the perspective of a beginning Ceph developer.
 
 Teuthology consumes packages 
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It may take some time to understand the significance of this fact, but it
 is `very` significant. It means that automated tests can be conducted on
@@ -813,14 +846,14 @@ installed on any machine running those platforms.
 
 Teuthology has a `list of platforms that it supports
 <https://github.com/ceph/ceph/tree/master/qa/distros/supported>`_ (as
-of March 2016 the list consisted of "CentOS 7.2" and "Ubuntu 14.04").  It
+of December 2017 the list consisted of "CentOS 7.2" and "Ubuntu 14.04").  It
 expects to be provided pre-built Ceph packages for these platforms.
 Teuthology deploys these platforms on machines (bare-metal or
 cloud-provisioned), installs the packages on them, and deploys Ceph
 clusters on them - all as called for by the test.
 
 The nightlies
--------------
+^^^^^^^^^^^^^
 
 A number of integration tests are run on a regular basis in the `Sepia
 lab`_ against the official Ceph repositories (on the ``master`` development
@@ -835,7 +868,7 @@ results are also reported on the `ceph-qa mailing list
 <https://ceph.com/irc/>`_ for analysis.
 
 Suites inventory
-----------------
+^^^^^^^^^^^^^^^^
 
 The ``suites`` directory of the `ceph/qa sub-directory`_ contains
 all the integration tests, for all the Ceph components.
@@ -889,7 +922,7 @@ all the integration tests, for all the Ceph components.
 .. _`ceph-disk man page`: ../../man/8/ceph-disk
 
 teuthology-describe-tests
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In February 2016, a new feature called ``teuthology-describe-tests`` was
 added to the `teuthology framework`_ to facilitate documentation and better
@@ -906,7 +939,7 @@ Developers are encouraged to improve the documentation, in terms of both
 coverage and quality.
 
 集成测试是如何运作的
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 Given that - as a new Ceph developer - you will typically not have access
 to the `Sepia lab`_, you may rightly ask how you can run the integration
@@ -945,7 +978,7 @@ available by running the following command on the teuthology machine::
 .. _How integration tests are defined:
 
 如何定义集成测试
-----------------
+^^^^^^^^^^^^^^^^
 
 Integration tests are defined by yaml files found in the ``suites``
 subdirectory of the `ceph/qa sub-directory`_ and implemented by python
@@ -955,7 +988,7 @@ directory tree containing yaml files that are combined, at runtime, into a
 larger yaml file.
 
 Reading a standalone test
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Let us first examine a standalone test, or "singleton".
 
@@ -1025,7 +1058,7 @@ This test can be run with::
     $ teuthology-suite --suite rados/singleton/all/admin-socket.yaml fs/ext4.yaml
 
 Test descriptions
------------------
+^^^^^^^^^^^^^^^^^
 
 Each test has a "test description", which is similar to a directory path,
 but not the same. In the case of a standalone test, like the one in
@@ -1046,15 +1079,15 @@ yaml facets, followed by an expression in curly braces (``{}``) consisting of
 a list of yaml facets in order of concatenation. For instance the
 test description::
 
-  ceph-disk/basic/{distros/centos_7.0.yaml tasks/ceph-disk.yaml}
+  ceph-deploy/basic/{distros/centos_7.0.yaml tasks/ceph-deploy.yaml}
 
 signifies the concatenation of two files:
 
-* ceph-disk/basic/distros/centos_7.0.yaml
-* ceph-disk/basic/tasks/ceph-disk.yaml
+* ceph-deploy/basic/distros/centos_7.0.yaml
+* ceph-deploy/basic/tasks/ceph-deploy.yaml
 
 How are tests built from directories?
--------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As noted in the previous section, most tests are not defined in a single
 yaml file, but rather as a `combination` of files collected from a
@@ -1069,15 +1102,15 @@ operators.  The ``%`` file is the "convolution" operator and ``+``
 signifies concatenation.
 
 Convolution operator
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 The convolution operator, implemented as an empty file called ``%``, tells
 teuthology to construct a test matrix from yaml facets found in
 subdirectories below the directory containing the operator.
 
-For example, the `ceph-disk suite
-<https://github.com/ceph/ceph/tree/jewel/qa/suites/ceph-disk/>`_ is
-defined by the ``suites/ceph-disk/`` tree, which consists of the files and
+For example, the `ceph-deploy suite
+<https://github.com/ceph/ceph/tree/jewel/qa/suites/ceph-deploy/>`_ is
+defined by the ``suites/ceph-deploy/`` tree, which consists of the files and
 subdirectories in the following structure::
 
   directory: ceph-disk/basic
@@ -1093,46 +1126,46 @@ This is interpreted as a 2x1 matrix consisting of two tests:
 1. ceph-disk/basic/{distros/centos_7.0.yaml tasks/ceph-disk.yaml}
 2. ceph-disk/basic/{distros/ubuntu_14.04.yaml tasks/ceph-disk.yaml}
 
-i.e. the concatenation of centos_7.0.yaml and ceph-disk.yaml and
-the concatenation of ubuntu_14.04.yaml and ceph-disk.yaml, respectively.
-In human terms, this means that the task found in ``ceph-disk.yaml`` is
-intended to run on both CentOS 7.0 and Ubuntu 14.04.
+i.e. the concatenation of centos_7.0.yaml and ceph-deploy.yaml and
+the concatenation of ubuntu_16.04.yaml and ceph-deploy.yaml, respectively.
+In human terms, this means that the task found in ``ceph-deploy.yaml`` is
+intended to run on both CentOS 7.0 and Ubuntu 16.04.
 
-Without the file percent, the ``ceph-disk`` tree would be interpreted as
+Without the file percent, the ``ceph-deploy`` tree would be interpreted as
 three standalone tests:
 
-* ceph-disk/basic/distros/centos_7.0.yaml
-* ceph-disk/basic/distros/ubuntu_14.04.yaml
-* ceph-disk/basic/tasks/ceph-disk.yaml
+* ceph-deploy/basic/distros/centos_7.0.yaml
+* ceph-deploy/basic/distros/ubuntu_16.04.yaml
+* ceph-deploy/basic/tasks/ceph-deploy.yaml
 
 (which would of course be wrong in this case).
 
 Referring to the `ceph/qa sub-directory`_, you will notice that the
-``centos_7.0.yaml`` and ``ubuntu_14.04.yaml`` files in the
-``suites/ceph-disk/basic/distros/`` directory are implemented as symlinks.
+``centos_7.0.yaml`` and ``ubuntu_16.04.yaml`` files in the
+``suites/ceph-deploy/basic/distros/`` directory are implemented as symlinks.
 By using symlinks instead of copying, a single file can appear in multiple
 suites. This eases the maintenance of the test framework as a whole.
 
-All the tests generated from the ``suites/ceph-disk/`` directory tree
-(also known as the "ceph-disk suite") can be run with::
+All the tests generated from the ``suites/ceph-deploy/`` directory tree
+(also known as the "ceph-deploy suite") can be run with::
 
-  $ teuthology-suite --suite ceph-disk
+  $ teuthology-suite --suite ceph-deploy
 
-An individual test from the `ceph-disk suite`_ can be run by adding the
+An individual test from the `ceph-deploy suite`_ can be run by adding the
 ``--filter`` option::
 
   $ teuthology-suite \
-      --suite ceph-disk/basic \
-      --filter 'ceph-disk/basic/{distros/ubuntu_14.04.yaml tasks/ceph-disk.yaml}'
+      --suite ceph-deploy/basic \
+      --filter 'ceph-deploy/basic/{distros/ubuntu_16.04.yaml tasks/ceph-deploy.yaml}'
 
-.. note: To run a standalone test like the one in `Reading a standalone
+.. note:: To run a standalone test like the one in `Reading a standalone
    test`_, ``--suite`` alone is sufficient. If you want to run a single
    test from a suite that is defined as a directory tree, ``--suite`` must
    be combined with ``--filter``. This is because the ``--suite`` option
    understands POSIX relative paths only.
 
 Concatenation operator
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 For even greater flexibility in sharing yaml files between suites, the
 special file plus (``+``) can be used to concatenate files within a
@@ -1187,7 +1220,7 @@ A single test from the rbd/thrash suite can be run by adding the
       --filter 'rbd/thrash/{clusters/fixed-2.yaml clusters/openstack.yaml workloads/rbd_api_tests_copy_on_read.yaml}'
 
 Filtering tests by their description
-------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When a few jobs fail and need to be run again, the ``--filter`` option
 can be used to select tests with a matching description. For instance, if the
@@ -1214,7 +1247,7 @@ Each string is looked up anywhere in the test description and has to
 be an exact match: they are not regular expressions.
 
 Reducing the number of tests
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The ``rados`` suite generates thousands of tests out of a few hundred
 files. This happens because teuthology constructs test matrices from
@@ -1226,7 +1259,7 @@ run with different messenger types: ``simple``, ``async`` and
 the `msgr directory
 <https://github.com/ceph/ceph/tree/master/qa/suites/rados/basic/msgr>`_
 
-All integration tests are required to be run before a Ceph release is published. 
+All integration tests are required to be run before a Ceph release is published.
 When merely verifying whether a contribution can be merged without
 risking a trivial regression, it is enough to run a subset. The ``--subset`` option can be used to
 reduce the number of tests that are triggered. For instance::
@@ -1295,7 +1328,7 @@ you have not installed yet.
 
 Once Docker is up and running, install ``ceph-workbench`` by following the
 `Installation instructions in the ceph-workbench documentation
-<http://ceph-workbench.readthedocs.org/en/latest/#installation>`_.
+<http://ceph-workbench.readthedocs.io/en/latest/#installation>`_.
 
 Linking ceph-workbench with your OpenStack tenant
 -------------------------------------------------
@@ -1542,7 +1575,7 @@ The following instructions should work on jewel and above.
 cmake 构建的话： ::
 
     cd build/
-    RGW=1 ../vstart.sh -n
+    RGW=1 ../src/vstart.sh -n
 
 This will produce a lot of output as the vstart cluster is started up. At the
 end you should see a message like::
