@@ -2,7 +2,7 @@ digraph G {
 	size="7,7"
 	compound=true;
 	subgraph cluster0 {
-		label = "RecoveryMachine";
+		label = "PeeringMachine";
 		color = "blue";
 		Crashed;
 		Initial[shape=Mdiamond];
@@ -107,10 +107,10 @@ Stray -> RepNotRecovering [label="MInfoRec",lhead=cluster5,];
 GetInfo -> Down [label="IsDown",];
 RepRecovering -> RepNotRecovering [label="RecoveryDone",];
 RepNotRecovering -> RepNotRecovering [label="RecoveryDone",];
-RepRecovering -> RepNotRecovering [label="RemoteReservationRejected",];
-RepNotRecovering -> RepNotRecovering [label="RemoteReservationRejected",];
-WaitRemoteBackfillReserved -> NotBackfilling [label="RemoteReservationRejected",];
-RepWaitBackfillReserved -> RepNotRecovering [label="RemoteReservationRejected",];
+RepRecovering -> RepNotRecovering [label="RemoteReservationRejectedTooFull",];
+RepNotRecovering -> RepNotRecovering [label="RemoteReservationRejectedTooFull",];
+WaitRemoteBackfillReserved -> NotBackfilling [label="RemoteReservationRejectedTooFull",];
+RepWaitBackfillReserved -> RepNotRecovering [label="RemoteReservationRejectedTooFull",];
 GetLog -> Incomplete [label="IsIncomplete",];
 WaitLocalBackfillReserved -> WaitRemoteBackfillReserved [label="LocalBackfillReserved",];
 GetInfo -> Activating [label="Activate",ltail=cluster3,lhead=cluster4,];
