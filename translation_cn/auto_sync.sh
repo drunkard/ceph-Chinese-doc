@@ -7,6 +7,8 @@ CMakeLists.txt
 conf.py
 favicon.ico
 logo.png
+man/CMakeLists.txt
+man/8/CMakeLists.txt
 
 changelog/
 images/

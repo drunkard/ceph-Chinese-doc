@@ -33,30 +33,33 @@ abbr:`KVM (kernel virtual machines)` （如 `QEMU`_ 、依赖 libvirt \
 块设备集成）。你可以用同一个集群同时运行 `Ceph RADOS 网关`_\ 、 \
 `Ceph FS 文件系统`_\ 、和 Ceph 块设备。
 
-.. important:: 要使用 Ceph 块设备，你必须有一个在运行的 Ceph 集群。
+.. important:: 要使用 Ceph 块设备，你必须有一个在运行的
+   Ceph 集群。
 
 .. toctree::
 	:maxdepth: 1
 
-	命令 <rados-rbd-cmds>
-	内核模块 <rbd-ko>
-	快照 <rbd-snapshot>
-        RBD 镜像 <rbd-mirroring>
-	QEMU <qemu-rbd>
-	libvirt <libvirt>
-	缓存选项 <rbd-config-ref/>
-	OpenStack <rbd-openstack>
-	CloudStack <rbd-cloudstack>
-	rbd 手册页 <../../man/8/rbd>
-	rbd-fuse 手册页 <../../man/8/rbd-fuse>
-	rbd-nbd 手册页 <../../man/8/rbd-nbd>
-	ceph-rbdnamer 手册页 <../../man/8/ceph-rbdnamer>
-	RBD 重放 <rbd-replay>
-	rbd-replay-prep 手册页 <../../man/8/rbd-replay-prep>
-	rbd-replay 手册页 <../../man/8/rbd-replay>
-	rbd-replay-many 手册页 <../../man/8/rbd-replay-many>
-	rbdmap 手册页 <../../man/8/rbdmap>
-	librbd 的 Python 接口 <librbdpy>
+	基本命令 <rados-rbd-cmds>
+
+.. toctree::
+        :maxdepth: 2
+
+        运维 <rbd-operations>
+
+.. toctree::
+	:maxdepth: 2
+
+        对接 <rbd-integrations>
+
+.. toctree::
+	:maxdepth: 2
+
+	手册页 <man/index>
+
+.. toctree::
+	:maxdepth: 2
+
+	APIs <api/index>
 
 
 .. _RBD 缓存: ../rbd-config-ref/
