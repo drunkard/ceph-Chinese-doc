@@ -1,3 +1,5 @@
+.. CephFS Client Capabilities
+
 ===================
  CephFS 客户端能力
 ===================
@@ -8,6 +10,8 @@
 .. note::
    路径限定和布局更改限定是 Ceph 从 Jewel 版起才具备的新功能。
 
+
+.. Path restriction
 
 路径限定
 ========
@@ -20,28 +24,39 @@
 用基于路径的 MDS 鉴权能力实现。
 
 
+.. Syntax
+
 语法
 ----
 
 如果只想授予指定目录读写（ rw ）权限，我们在给这个客户端创建\
 密钥时就要提及这个目录，语法如下： ::
 
-        ceph auth get-or-create client.*client_name* mon 'allow r' mds 'allow r, allow rw path=/*specified_directory*' osd 'allow rw pool=data'
+        ceph fs authorize *file_system_name* client.*client_name* /*specified_directory* rw
 
-比如，要想把 ``foo`` 客户端限定为只能在 ``bar`` 目录下写，命\
-令如下： ::
+比如，要想把 ``foo`` 客户端限定为只能在 ``cephfs`` 文件系统的
+``bar`` 目录下写，命令如下： ::
 
-        ceph auth get-or-create client.foo mon 'allow r' mds 'allow r, allow rw path=/bar' osd 'allow rw pool=data'
+        ceph fs authorize cephfs client.foo / r /bar rw
 
-要完全把此客户端限定在 ``bar`` 目录下，去掉不限制的 "allow r"
-子句即可： ::
+        results in:
 
-        ceph auth get-or-create client.foo mon 'allow r' mds 'allow rw path=/bar' osd 'allow rw pool=data'
+        client.foo
+          key: *key*
+          caps: [mds] allow r, allow rw path=/bar
+          caps  [mon] allow r
+          caps: [osd] allow rw tag cephfs data=cephfs_a
+
+要完全把此客户端限定在 ``bar`` 目录下，去掉根目录即可： ::
+
+        ceph fs authorize cephfs client.foo /bar rw
 
 需要注意的是，如果一个客户端的读权限被限定到了某一路径，它们\
 就只能挂载文件系统下的这个可读路径，在挂载命令里必须指定（如\
 下）。
 
+文件系统名指定为 ``all`` 或 ``*`` 时，权限将授予每个文件系统。\
+注意，一般都得给 ``*`` 加引号，以免被 shell 误用。
 
 关于用户管理的细节，请参阅\ `用户管理 - 把用户加入密钥环`_\ 。
 
@@ -50,12 +65,12 @@
 
         ceph-fuse -n client.*client_name* *mount_path* -r *directory_to_be_mounted*
 
-例如，要把客户端 ``foo`` 限定于 ``mnt/bar`` 目录，可用此命令： ::
+例如，要把客户端 ``foo`` 限定于 ``mnt/bar`` 目录，命令是： ::
 
         ceph-fuse -n client.foo mnt -r /bar
 
 
-.. _Free space reporting:
+.. Free space reporting
 
 报告的空闲空间
 --------------
@@ -72,32 +87,7 @@
 个选项配置成什么，都会报告整个文件系统的使用情况。
 
 
-.. _OSD restriction:
-
-OSD 限定
-========
-
-为防止客户端读取、或写入给 CephFS 所分配存储池之外的其它存储\
-池，可设置 OSD 鉴权能力，把访问限定到 CephFS 的数据存储池内。
-
-::
-
-    client.0
-        key: AQAz7EVWygILFRAAdIcuJ12opU/JKyfFmxhuaw==
-        caps: [mds] allow rw
-        caps: [mon] allow r
-        caps: [osd] allow rw pool=data1, allow rw pool=data2
-
-.. note::
-   没有相呼应的 MDS 路径限定，上述 OSD 能力\ **不能**\ 限定
-   ``data1`` 和 ``data2`` 之外的文件删除操作。
-
-你也可以把 OSD 能力中的 rw 替换为 r 来限定客户端，防止它们写\
-入数据。这不会影响客户端更新那些文件的文件系统元数据，但会阻\
-止它们写入能被其它客户端看到的持久数据。
-
-
-.. _Layout and Quota restriction (the 'p' flag):
+.. Layout and Quota restriction (the 'p' flag)
 
 布局和配额限定（ p 标记）
 =========================
