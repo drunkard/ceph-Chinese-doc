@@ -13,10 +13,10 @@ man/8/CMakeLists.txt
 changelog/
 images/
 scripts/
-_ext
-_static
-_templates
-_themes
+_ext/
+_static/
+_templates/
+_themes/
 "
 
 # 自动同步 changelog

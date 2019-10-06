@@ -53,6 +53,8 @@ remove_prefix() {
 
 	grep -qe ^doc/ <<< "$str" && \
 		str=`sed -e 's:^doc/::' <<< "$str"`
+	grep -qe ^doc-en/ <<< "$str" && \
+		str=`sed -e 's:^doc-en/::' <<< "$str"`
 	echo -n "$str"
 }
 
