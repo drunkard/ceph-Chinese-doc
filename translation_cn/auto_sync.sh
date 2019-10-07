@@ -3,10 +3,11 @@
 . ${0%/*}/env.sh
 
 updates="
-CMakeLists.txt
 conf.py
 favicon.ico
 logo.png
+
+CMakeLists.txt
 man/CMakeLists.txt
 man/8/CMakeLists.txt
 
