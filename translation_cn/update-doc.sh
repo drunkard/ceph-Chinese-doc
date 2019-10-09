@@ -9,5 +9,6 @@ fi
 
 if cd $CEPH_REPO; then
 	# echo "There's `git log --oneline --since=${SYNC_TO} doc/ | wc -l` commits to sync"
+	echo "command: tig --date-order --reverse --since=${SYNC_TO} -- doc/"
 	tig --date-order --reverse --since=${SYNC_TO} -- doc/
 fi
