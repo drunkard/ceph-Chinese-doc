@@ -43,3 +43,7 @@ fi
 # for us to sync by branch/commit ID.
 SYNC_TO="2017-10-17"
 PROGRESS_FILE="translation_cn/env.sh"
+
+# sync by STEP days once, 0 to disable
+STEP=2
+SYNC_UNTIL=`date -d "$SYNC_TO +$STEP days" +%Y-%m-%d`
