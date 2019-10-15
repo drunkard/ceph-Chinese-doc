@@ -41,9 +41,9 @@ fi
 # Where we synced with ceph mainline. Note by date is more reliable than
 # commit ID, because there's too many criss-cross branches which is hard
 # for us to sync by branch/commit ID.
-SYNC_TO="2017-11-08"
+SYNC_TO="2017-11-14"
 PROGRESS_FILE="translation_cn/env.sh"
 
 # sync by STEP days once, 0 to disable
-STEP=0
+STEP=3
 SYNC_UNTIL=`date -d "$SYNC_TO +$STEP days" +%Y-%m-%d`
