@@ -6,6 +6,8 @@ updates="
 conf.py
 favicon.ico
 logo.png
+rados/command/list-inconsistent-obj.json
+rados/command/list-inconsistent-snap.json
 
 CMakeLists.txt
 man/CMakeLists.txt
