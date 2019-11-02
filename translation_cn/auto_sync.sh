@@ -8,6 +8,7 @@ favicon.ico
 logo.png
 rados/command/list-inconsistent-obj.json
 rados/command/list-inconsistent-snap.json
+releases/releases.yml
 
 CMakeLists.txt
 man/CMakeLists.txt
