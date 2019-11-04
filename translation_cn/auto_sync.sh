@@ -8,6 +8,22 @@ favicon.ico
 logo.png
 rados/command/list-inconsistent-obj.json
 rados/command/list-inconsistent-snap.json
+
+releases/argonaut.rst
+releases/bobtail.rst
+releases/cuttlefish.rst
+releases/dumpling.rst
+releases/emperor.rst
+releases/firefly.rst
+releases/giant.rst
+releases/hammer.rst
+releases/infernalis.rst
+releases/jewel.rst
+releases/kraken.rst
+releases/luminous.rst
+releases/mimic.rst
+releases/nautilus.rst
+
 releases/releases.yml
 
 CMakeLists.txt
