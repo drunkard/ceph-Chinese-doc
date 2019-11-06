@@ -18,6 +18,7 @@ commit_zh_code() {
 		return 2
 	fi
 
+	git -C $ZH_REPO add .
 	git -C $ZH_REPO commit -a --signoff -m "doc: sync with mainline, updated to: $SYNC_TO"
 	if [ $? -eq 0 ]; then
 		echo -e "$FUNCNAME: commit ok in git repo: $ZH_REPO\n"
