@@ -66,6 +66,9 @@ Ceph 对象网关支持几种多站配置方案：
 都在本地也能跑通；还假设有两个 Ceph 对象网关服务器，分别名为
 ``rgw1`` 和 ``rgw2`` 。
 
+.. important:: Running a single Ceph storage cluster is NOT recommended unless you have 
+               low latency WAN connections.
+
 一套多站配置必须有一个主域组和一个主域，另外，各域组都得有自己\
 的主域；域组可以有一或多个副域组、副域。
 
@@ -75,7 +78,8 @@ Ceph 对象网关支持几种多站配置方案：
 为 Ceph 对象存储服务创建和调整存储池的文档请参考\ `存储池`_\ 。
 
 
-.. _Configuring a Master Zone:
+.. _master-zone-label:
+.. Configuring a Master Zone
 
 配置主域
 ========
@@ -122,7 +126,7 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
    以随时改名。
 
 
-.. _Create a Master Zone Group:
+.. Create a Master Zone Group
 
 创建主域组
 ----------
@@ -130,8 +134,8 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
 一个 realm 必须至少有一个域组，只有一个的话它将作为此 realm 的\
 主域组。
 
-在为主域组和域提供服务的主机上，打开命令行，执行下列命令新建多\
-站配置所需的主域组： ::
+在为主域组和域提供服务的主机上，打开命令行，执行下列命令新建\
+多站配置所需的主域组： ::
 
     # radosgw-admin zonegroup create --rgw-zonegroup={name} --endpoints={url} [--rgw-realm={realm-name}|--realm-id={realm-id}] --master --default
 
@@ -165,15 +169,15 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
     }
 
 
-.. _Create a Master Zone:
+.. Create a Master Zone
 
 创建主域
 --------
 
 .. important:: 域必须在此域内的 Ceph 对象网关所在节点上创建。
 
-在为主域组和域提供服务的主机上，打开命令行，执行下列命令新建多\
-站配置所需的主域： ::
+在为主域组和域提供服务的主机上，打开命令行，执行下列命令新建\
+多站配置所需的主域： ::
 
     # radosgw-admin zone create --rgw-zonegroup={zone-group-name} \
                                 --rgw-zone={zone-name} \
@@ -194,7 +198,7 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
    ``default`` 域及其存储池，否则数据会被删除且不可恢复。
 
 
-.. _Delete Default Zone Group and Zone:
+.. Delete Default Zone Group and Zone
 
 删除默认域组与域
 ----------------
@@ -217,11 +221,11 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
 
 ::
 
-    # rados rmpool default.rgw.control default.rgw.control --yes-i-really-really-mean-it
-    # rados rmpool default.rgw.data.root default.rgw.data.root --yes-i-really-really-mean-it
-    # rados rmpool default.rgw.gc default.rgw.gc --yes-i-really-really-mean-it
-    # rados rmpool default.rgw.log default.rgw.log --yes-i-really-really-mean-it
-    # rados rmpool default.rgw.users.uid default.rgw.users.uid --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.control default.rgw.control --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.data.root default.rgw.data.root --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.gc default.rgw.gc --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.log default.rgw.log --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.users.uid default.rgw.users.uid --yes-i-really-really-mean-it
 
 
 .. Create a System User
@@ -293,19 +297,20 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
 
 
 
-.. _Configure Secondary Zones:
+.. Configure Secondary Zones
+.. _secondary-zone-label:
 
 配置副域
 ========
 
-一个域组内的域们会复制所有数据，以确保各个域都有相同的数据。创\
-建副域需在作为副域的主机上执行下面的所有操作。
+一个域组内的域们会复制所有数据，以确保各个域都有相同的数据。\
+创建副域需在作为副域的主机上执行下面的所有操作。
 
 .. note:: 增加第三个域和增加副域的过程相同，必须用不同的域名称。
 
-.. important:: 你必须在主域内的主机上执行元数据操作，如用户创\
-   建。主域和副域都可以处理桶操作，但是副域会把桶操作重定向到\
-   主域；如果主域倒下了，桶操作会失败。
+.. important:: 你必须在主域内的主机上执行元数据操作，如用户\
+   创建。主域和副域都可以处理桶操作，但是副域会把桶操作重定向\
+   到主域；如果主域倒下了，桶操作会失败。
 
 
 .. Pull the Realm
@@ -319,25 +324,13 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
 
     # radosgw-admin realm pull --url={url-to-master-zone-gateway} --access-key={access-key} --secret={secret}
 
+.. note:: 拉取 realm 时也会检出远端的当前 period 、并使之成为\
+   本机的当前 period 。
+
 如果这是默认 realm 或仅有的一个 realm ，可以让它成为默认 realm::
 
     # radosgw-admin realm default --rgw-realm={realm-name}
 
-
-.. Pull the Period
-
-拉取 period
------------
-
-用主域组中主域的 URL 、访问密钥和私钥可以把 period 拉到本主机。\
-如果要从非默认 realm 拉取 period ，还需用 ``--rgw-realm`` 或
-``--realm-id`` 选项指定 realm ::
-
-    # radosgw-admin period pull --url={url-to-master-zone-gateway} --access-key={access-key} --secret={secret}
-
-
-.. note:: 拉取 period 会获取到此 realm 最新版本的域组和域配置\
-   信息。
 
 
 .. Create a Secondary Zone
@@ -379,11 +372,11 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
 
 最后，删除 Ceph 存储集群内的默认存储池。 ::
 
-    # rados rmpool default.rgw.control default.rgw.control --yes-i-really-really-mean-it
-    # rados rmpool default.rgw.data.root default.rgw.data.root --yes-i-really-really-mean-it
-    # rados rmpool default.rgw.gc default.rgw.gc --yes-i-really-really-mean-it
-    # rados rmpool default.rgw.log default.rgw.log --yes-i-really-really-mean-it
-    # rados rmpool default.rgw.users.uid default.rgw.users.uid --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.control default.rgw.control --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.data.root default.rgw.data.root --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.gc default.rgw.gc --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.log default.rgw.log --yes-i-really-really-mean-it
+    # ceph osd pool rm default.rgw.users.uid default.rgw.users.uid --yes-i-really-really-mean-it
 
 
 .. Update the Ceph Configuration File
@@ -498,7 +491,7 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
                           data is caught up with source
 
 
-.. _Changing the Metadata Master Zone:
+.. Changing the Metadata Master Zone
 
 更改元数据主域
 --------------
@@ -590,7 +583,7 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
 
 
 
-.. _Migrating a Single Site System to Multi-Site:
+.. Migrating a Single Site System to Multi-Site
 
 从单站迁移到多站配置
 ====================
@@ -640,7 +633,7 @@ realm ；如果没指定 ``--default`` ，新增域组和域时就必须指定
 
 
 
-.. _Multi-Site Configuration Reference:
+.. Multi-Site Configuration Reference
 
 多站配置参考
 ============
@@ -1209,11 +1202,11 @@ Ceph 对象网关支持域概念，域是一或多个 Ceph 对象网关例程的
 
 ::
 
-    # rados rmpool <del-zone>.rgw.control <del-zone>.rgw.control --yes-i-really-really-mean-it
-    # rados rmpool <del-zone>.rgw.data.root <del-zone>.rgw.data.root --yes-i-really-really-mean-it
-    # rados rmpool <del-zone>.rgw.gc <del-zone>.rgw.gc --yes-i-really-really-mean-it
-    # rados rmpool <del-zone>.rgw.log <del-zone>.rgw.log --yes-i-really-really-mean-it
-    # rados rmpool <del-zone>.rgw.users.uid <del-zone>.rgw.users.uid --yes-i-really-really-mean-it
+    # ceph osd pool rm <del-zone>.rgw.control <del-zone>.rgw.control --yes-i-really-really-mean-it
+    # ceph osd pool rm <del-zone>.rgw.data.root <del-zone>.rgw.data.root --yes-i-really-really-mean-it
+    # ceph osd pool rm <del-zone>.rgw.gc <del-zone>.rgw.gc --yes-i-really-really-mean-it
+    # ceph osd pool rm <del-zone>.rgw.log <del-zone>.rgw.log --yes-i-really-really-mean-it
+    # ceph osd pool rm <del-zone>.rgw.users.uid <del-zone>.rgw.users.uid --yes-i-really-really-mean-it
 
 
 .. Modify a Zone
