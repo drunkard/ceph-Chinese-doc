@@ -20,7 +20,7 @@ CEPH_REPO="/git/ceph"
 ZH_REPO="/git/DRUNKARD/ceph-Chinese-doc"
 ZH_READABLE_REPO="/git/DRUNKARD/ceph-readable-doc"
 
-BUILT_OUTPUT="$CEPH_REPO/build-doc/output/"
+BUILT_OUTPUT="$CEPH_REPO/build-doc/output-zh/"
 
 # directory or symlinks in $CEPH_REPO
 EN="doc-en"
@@ -41,7 +41,7 @@ fi
 # Where we synced with ceph mainline. Note by date is more reliable than
 # commit ID, because there's too many criss-cross branches which is hard
 # for us to sync by branch/commit ID.
-SYNC_TO="2018-06-11"
+SYNC_TO="2018-06-16"
 PROGRESS_FILE="translation_cn/env.sh"
 
 # sync by STEP days once, 0 to disable

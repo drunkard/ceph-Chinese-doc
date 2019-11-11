@@ -78,8 +78,8 @@ Ceph 对象网关支持几种多站配置方案：
 为 Ceph 对象存储服务创建和调整存储池的文档请参考\ `存储池`_\ 。
 
 
-.. _master-zone-label:
 .. Configuring a Master Zone
+.. _master-zone-label:
 
 配置主域
 ========
