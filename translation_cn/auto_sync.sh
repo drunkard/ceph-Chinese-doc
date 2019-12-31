@@ -9,6 +9,12 @@ logo.png
 rados/command/list-inconsistent-obj.json
 rados/command/list-inconsistent-snap.json
 
+cephfs/Makefile
+cephfs/cephfs-architecture.svg
+cephfs/mds-state-diagram.dot
+cephfs/mds-state-diagram.svg
+cephfs/subtree-partitioning.svg
+
 releases/argonaut.rst
 releases/bobtail.rst
 releases/cuttlefish.rst
