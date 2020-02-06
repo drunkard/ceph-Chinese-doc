@@ -58,11 +58,11 @@ digraph G {
 			}
 		}
 	}
-GetInfo -> WaitActingChange [label="NeedActingChange",ltail=cluster2,];
 RepRecovering -> RepNotRecovering [label="RemoteReservationCanceled",];
 RepNotRecovering -> RepNotRecovering [label="RemoteReservationCanceled",];
 RepWaitRecoveryReserved -> RepNotRecovering [label="RemoteReservationCanceled",];
 RepWaitBackfillReserved -> RepNotRecovering [label="RemoteReservationCanceled",];
+GetLog -> WaitActingChange [label="NeedActingChange",];
 Clean -> WaitLocalRecoveryReserved [label="DoRecovery",];
 Recovered -> WaitLocalRecoveryReserved [label="DoRecovery",];
 NotRecovering -> WaitLocalRecoveryReserved [label="DoRecovery",];
