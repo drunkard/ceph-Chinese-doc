@@ -14,11 +14,11 @@ if tags.has('man'):
     master_doc = 'man_index'
     exclude_patterns += ['index.rst', 'architecture.rst', 'glossary.rst', 'release*.rst',
                          'api/*',
+                         'cephadm/*',
                          'cephfs/*',
                          'dev/*',
                          'governance.rst',
                          'foundation.rst',
-                         'bootstrap.rst',
                          'install/*',
                          'mon/*',
                          'rados/*',
@@ -48,6 +48,7 @@ sys.path.insert(0, os.path.abspath('_ext'))
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx_autodoc_typehints',
     'sphinx.ext.graphviz',
     'sphinx.ext.todo',
     'sphinxcontrib.ditaa',

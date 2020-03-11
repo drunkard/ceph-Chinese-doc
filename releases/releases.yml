@@ -14,6 +14,12 @@
 releases:
   nautilus:
     releases:
+      - version: 14.2.8
+        released: 2020-03-03
+      - version: 14.2.7
+        released: 2020-01-31
+      - version: 14.2.6
+        released: 2020-01-09
       - version: 14.2.5
         released: 2019-12-10
       - version: 14.2.4
@@ -26,6 +32,7 @@ releases:
         released: 2019-04-29
       - version: 14.2.0
         released: 2019-03-19
+    target_eol: 2021-06-01
 
   mimic:
     releases:
@@ -51,6 +58,8 @@ releases:
   
   luminous:
     releases:
+      - version: 12.2.13
+        released: 2020-01-31
       - version: 12.2.12
         released: 2019-04-12
       - version: 12.2.11
@@ -232,6 +241,8 @@ releases:
 
 development:
   releases:
+    - version: 15.1.0
+      released: 2020-01-29
     - version: 15.0.0
       released: 2019-04-03
       skip_ref: true        
