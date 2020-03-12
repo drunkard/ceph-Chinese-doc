@@ -29,6 +29,7 @@ releases/kraken.rst
 releases/luminous.rst
 releases/mimic.rst
 releases/nautilus.rst
+releases/octopus.rst
 
 releases/releases.yml
 
