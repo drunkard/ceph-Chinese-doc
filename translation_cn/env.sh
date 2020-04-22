@@ -17,6 +17,7 @@
 
 
 CEPH_REPO="/git/ceph"
+CEPH_REPO_OUTDATE_DAYS=10	# 超过此天数没有更新时，可能被强制更新
 ZH_REPO="/git/DRUNKARD/ceph-Chinese-doc"
 ZH_READABLE_REPO="/git/DRUNKARD/ceph-readable-doc"
 
