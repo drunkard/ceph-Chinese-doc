@@ -23,6 +23,7 @@
 | **ceph-bluestore-tool** bluefs-bdev-new-db --path *osd path* --dev-target *new-device*
 | **ceph-bluestore-tool** bluefs-bdev-migrate --path *osd path* --dev-target *new-device* --devs-source *device1* [--devs-source *device2*]
 | **ceph-bluestore-tool** free-dump|free-score --path *osd path* [ --allocator block/bluefs-wal/bluefs-db/bluefs-slow ]
+| **ceph-bluestore-tool** reshard --path *osd path* --sharding *new sharding* [ --sharding-ctrl *control string* ]
 
 
 描述
@@ -60,6 +61,12 @@
 
    让 BlueFS 检查它的块设备尺寸，而且，如果发现它们扩大了，把\
    那些额外空间也用起来。
+   Please note that only the new
+   files created by BlueFS will be allocated on the preferred block device if
+   it has enough free space, and the existing files that have spilled over to
+   the slow device will be gradually removed when RocksDB performs compaction.
+   In other words, if there is any data spilled over to the slow device, it
+   will be moved to the fast device over time.
 
 :command:`bluefs-bdev-new-wal` --path *osd path* --dev-target *new-device*
 
@@ -94,6 +101,17 @@
    会收到一个 0-1 之间的数字，用于表示分配器中碎片的质量。\
    0 表示所有空闲空间都在一个块中的情形； 1 表示最糟糕的\
    碎片散布情形。
+
+:command:`reshard` --path *osd path* --sharding *new sharding* [ --resharding-ctrl *control string* ]
+
+   Changes sharding of BlueStore's RocksDB. Sharding is build on top of RocksDB column families.
+   This option allows to test performance of *new sharding* without need to redeploy OSD.
+   Resharding is usually a long process, which involves walking through entire RocksDB key space
+   and moving some of them to different column families.
+   Option --resharding-ctrl provides performance control over resharding process.
+   Interrupted resharding will prevent OSD from running.
+   Interrupted resharding does not corrupt data. It is always possible to continue previous resharding,
+   or select any other sharding scheme, including reverting to original one.
 
 
 选项
@@ -138,6 +156,13 @@
 .. option:: --allocator *name*
 
    适用于 *free-dump* 和 *free-score* 操作。选择分配器。
+
+.. option:: --resharding-ctrl *control string*
+
+   Provides control over resharding process. Specifies how often refresh RocksDB iterator,
+   and how large should commit batch be before committing to RocksDB. Option format is:
+   <iterator_refresh_bytes>/<iterator_refresh_keys>/<batch_commit_bytes>/<batch_commit_keys>
+   Default: 10000000/10000/1000000/1000
 
 
 设备标签
