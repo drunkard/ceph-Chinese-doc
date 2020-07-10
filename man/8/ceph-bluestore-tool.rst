@@ -59,14 +59,12 @@
 
 :command:`bluefs-bdev-expand` --path *osd path*
 
-   让 BlueFS 检查它的块设备尺寸，而且，如果发现它们扩大了，把\
-   那些额外空间也用起来。
-   Please note that only the new
-   files created by BlueFS will be allocated on the preferred block device if
-   it has enough free space, and the existing files that have spilled over to
-   the slow device will be gradually removed when RocksDB performs compaction.
-   In other words, if there is any data spilled over to the slow device, it
-   will be moved to the fast device over time.
+   让 BlueFS 检查它的块设备尺寸，并且，如果发现它们扩大了，把\
+   那些额外空间也用起来。请注意，在空闲空间足够的前提下，只有
+   BlueFS 新建的文件才会被分配到首选块设备；而已经存在的、溢出\
+   到慢速设备上的文件会在 RocksDB 压缩时逐渐删除。换句话说，\
+   如果有数据溢出到了慢速设备上，它会随着时间的推移被挪到\
+   高速设备上。
 
 :command:`bluefs-bdev-new-wal` --path *osd path* --dev-target *new-device*
 
@@ -104,14 +102,14 @@
 
 :command:`reshard` --path *osd path* --sharding *new sharding* [ --resharding-ctrl *control string* ]
 
-   Changes sharding of BlueStore's RocksDB. Sharding is build on top of RocksDB column families.
-   This option allows to test performance of *new sharding* without need to redeploy OSD.
-   Resharding is usually a long process, which involves walking through entire RocksDB key space
-   and moving some of them to different column families.
-   Option --resharding-ctrl provides performance control over resharding process.
-   Interrupted resharding will prevent OSD from running.
-   Interrupted resharding does not corrupt data. It is always possible to continue previous resharding,
-   or select any other sharding scheme, including reverting to original one.
+   更改 BlueStore 内 RocksDB 的分片配置。分片建立在
+   RocksDB 列族基础之上。此选项方便你测试 *new sharding* 的\
+   性能，而无需重新部署 OSD 。重分片一般都耗时绵长，需要遍历\
+   整个 RocksDB 键名空间、并把其中某些挪到别的列族。
+   ``--resharding-ctrl`` 选项便于你对重分片过程进行性能控制。\
+   中断重分片会妨碍 OSD 的正常运行；中断重分片不会损坏数据；\
+   而且随时可以继续之前的重分片，或者选用其它分片方案，包括\
+   回退到最初的那个。
 
 
 选项
@@ -159,10 +157,10 @@
 
 .. option:: --resharding-ctrl *control string*
 
-   Provides control over resharding process. Specifies how often refresh RocksDB iterator,
-   and how large should commit batch be before committing to RocksDB. Option format is:
+   提供了对重分片过程的控制手段，指示多久刷一次 RocksDB 递归器，\
+   以及提交给 RocksDB 的批次应该是多大。选项格式为：
    <iterator_refresh_bytes>/<iterator_refresh_keys>/<batch_commit_bytes>/<batch_commit_keys>
-   Default: 10000000/10000/1000000/1000
+   默认值： 10000000/10000/1000000/1000
 
 
 设备标签
