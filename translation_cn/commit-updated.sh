@@ -62,6 +62,11 @@ commit_zh_readable() {
 	git -C $ZH_READABLE_REPO gc --quiet
 }
 
+# TODO
+# commit_zh_github_io() {
+# drunkard.github.io
+# 22:43:05 /git/DRUNKARD/ceph-readable-doc/html $ rsync -avrR --exclude=.git --exclude=_config.yml --del . /git/DRUNKARD/drunkard.github.io/ 
+
 push_remotes() {
 	local repos repo
 	local remotes remote
