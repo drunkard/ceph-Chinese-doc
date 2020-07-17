@@ -13,6 +13,11 @@ else
 	tig_opts="--until=${SYNC_UNTIL}"
 fi
 
+auto_sync() {
+	# TODO exec translation_cn/auto_sync.sh
+	true
+}
+
 update_ceph_repo() {
 	# If ceph repo has outdated more than $CEPH_REPO_OUTDATE_DAYS, do 'git pull' first.
 	differ=$(( `date -d 'now' +%s` - `git -C $CEPH_REPO log -1 --date=short --format=%at` ))
@@ -27,6 +32,7 @@ update_ceph_repo() {
 
 if cd $CEPH_REPO; then
 	update_ceph_repo
+	auto_sync
 
 	# view "git log" using "tig"
 	# echo "There's `git log --oneline --since=${SYNC_TO} doc/ | wc -l` commits to sync"
