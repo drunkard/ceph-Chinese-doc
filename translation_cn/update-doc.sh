@@ -14,8 +14,15 @@ else
 fi
 
 auto_sync() {
-	# TODO exec translation_cn/auto_sync.sh
-	true
+	# exec translation_cn/auto_sync.sh
+	local s="translation_cn/auto_sync.sh"
+	if cd $ZH_REPO; then
+		sh $s
+		echo
+	else
+		echo "$FUNCNAME: failed to exec $s"
+		exit 1
+	fi
 }
 
 update_ceph_repo() {
@@ -36,6 +43,7 @@ if cd $CEPH_REPO; then
 
 	# view "git log" using "tig"
 	# echo "There's `git log --oneline --since=${SYNC_TO} doc/ | wc -l` commits to sync"
+	cd $CEPH_REPO || exit 1
 	echo "command: tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/"
 	tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/
 else
