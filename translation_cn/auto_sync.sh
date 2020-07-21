@@ -15,6 +15,11 @@ cephfs/mds-state-diagram.dot
 cephfs/mds-state-diagram.svg
 cephfs/subtree-partitioning.svg
 
+doc/dev/osd_internals/osdmap_versions.txt
+doc/dev/osd_internals/osd_throttles.txt
+doc/dev/peering_graph.generated.dot
+doc/dev/PlanningImplementation.txt
+
 releases/argonaut.rst
 releases/bobtail.rst
 releases/cuttlefish.rst

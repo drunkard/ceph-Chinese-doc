@@ -386,9 +386,7 @@ OSD 周期性地相互检查心跳并报告给监视器。 Ceph 默认配置可�
 
 ``osd client op priority``
 
-:描述: 设置客户端操作优先级，它相对于
-       ``osd recovery op priority`` 。
-
+:描述: 客户端操作的优先级组。
 :类型: 32-bit Integer
 :默认值: ``63``
 :有效范围: 1-63
@@ -396,7 +394,7 @@ OSD 周期性地相互检查心跳并报告给监视器。 Ceph 默认配置可�
 
 ``osd recovery op priority``
 
-:描述: 设置恢复优先级，其值相对于 ``osd client op priority`` 。
+:描述: 恢复操作的优先级组，如果未配置 ``recovery_op_priority`` 就采用此配置。
 :类型: 32-bit Integer
 :默认值: ``3``
 :有效范围: 1-63
@@ -404,9 +402,10 @@ OSD 周期性地相互检查心跳并报告给监视器。 Ceph 默认配置可�
 
 ``osd scrub priority``
 
-:描述: 设置洗刷操作的优先级。与 ``osd client op priority`` 有\
-       关。
-
+:描述: The default priority set for a scheduled scrub work queue when the
+              pool doesn't specify a value of ``scrub_priority``.  This can be
+              boosted to the value of ``osd client op priority`` when scrub is
+              blocking client operations.
 :类型: 32-bit Integer
 :默认值: ``5``
 :有效范围: 1-63
@@ -425,9 +424,7 @@ OSD 周期性地相互检查心跳并报告给监视器。 Ceph 默认配置可�
 
 ``osd snap trim priority``
 
-:描述: 设置快照修建操作的优先级。与 ``osd client op priority``
-       有关。
-
+:描述: 快照修建工作队列的的优先级组。
 :类型: 32-bit Integer
 :默认值: ``5``
 :有效范围: 1-63
@@ -482,48 +479,6 @@ OSD 周期性地相互检查心跳并报告给监视器。 Ceph 默认配置可�
 :描述: 一个操作进行多久后开始抱怨。
 :类型: Float
 :默认值: ``30``
-
-
-``osd disk threads``
-
-:描述: 硬盘线程数，用于在后台执行磁盘密集型操作，像数据洗刷和\
-       快照修复。
-
-:类型: 32-bit Integer
-:默认值: ``1``
-
-
-``osd disk thread ioprio class``
-
-:描述: 警告：只有 ``osd disk thread ioprio class`` 和 \
-       ``osd disk thread ioprio priority`` 同时改为非默认值时\
-       此配置才生效。 OSD 用 ioprio_set(2) 为磁盘线程设置 I/O
-       调度分类（ ``class`` ），当前支持 ``idle`` 、 ``be`` 或
-       ``rt`` 。其中， ``idle`` 类意味着磁盘线程的优先级低于其\
-       它的 OSD 线程，适合需延缓洗刷操作的情形，如 OSD 正忙于\
-       处理客户端操作。 ``be`` 是默认值，将设置与其它 OSD 线程\
-       相同的优先级。 ``rt`` 意为磁盘线程的优先级将高于其它任何
-       OSD 线程。注：只能与 Linux 内核的 CFQ 调度器配合使用。从
-       Jewel 版起，洗刷操作已经不再由磁盘的 iothread 发起了，\
-       请参考 OSD 优先级选项。
-
-:类型: String
-:默认值: 空字符串
-
-
-``osd disk thread ioprio priority``
-
-:描述: 警告：只有 ``osd disk thread ioprio class`` 和 \
-       ``osd disk thread ioprio priority`` 同时改为非默认值时\
-       此配置才生效。它通过 ioprio_set(2) 设置磁盘线程的 I/O \
-       调度优先级（ ``priority`` ），优先级从最高的 0 到最低的
-       7 。如果某主机上的所有 OSD 都在 ``idle`` 类中竞争 I/O \
-       资源（即控制器拥塞了），那么你就可以用此选项把某 OSD 的\
-       磁盘线程优先级调低为 7 ，其它优先级为 0 的 OSD 就获得优\
-       先权了。注：只能与 Linux 内核的 CFQ 调度器配合使用。
-
-:类型: 0 到 7 间的整数， -1 禁用此功能。
-:默认值: ``-1``
 
 
 ``osd op history size``
@@ -979,9 +934,17 @@ OSD 们建立连接，这样才能正常工作。详情见\
 
 :描述: OSD 数据在机械硬盘上而 OSD 日志在固态硬盘上时，下一轮\
        恢复或回填操作前睡眠的时间，单位为秒。
-
 :类型: Float
 :默认值: ``0.025``
+
+
+``osd recovery priority``
+
+:描述: The default priority set for recovery work queue.  Not
+              related to a pool's ``recovery_priority``.
+
+:类型: 32-bit Integer
+:默认值: ``5``
 
 
 .. Tiering
