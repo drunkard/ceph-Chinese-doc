@@ -337,6 +337,21 @@ OSD 周期性地相互检查心跳并报告给监视器。 Ceph 默认配置可�
 :默认值: 512 KB. ``524288``
 
 
+``osd scrub auto repair``
+
+:描述: Setting this to ``true`` will enable automatic pg repair when errors
+              are found in scrub or deep-scrub.  However, if more than
+              ``osd scrub auto repair num errors`` errors are found a repair is NOT performed.
+:类型: Boolean
+:默认值: ``false``
+
+
+``osd scrub auto repair num errors``
+
+:描述: Auto repair will not occur if more than this many errors are found.
+:类型: 32-bit Integer
+:默认值: ``5``
+
 
 .. index:: OSD; operations settings
 .. Operations
