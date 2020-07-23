@@ -17,6 +17,7 @@ auto_sync() {
 	# exec translation_cn/auto_sync.sh
 	local s="translation_cn/auto_sync.sh"
 	if cd $ZH_REPO; then
+		echo -e "\nrunning $s ..."
 		sh $s
 		echo
 	else
