@@ -157,5 +157,5 @@ Primary Storage.
 .. _安装和配置 libvirt: ../libvirt
 .. _KVM Hypervisor Host Installation: http://docs.cloudstack.apache.org/en/latest/installguide/hypervisor/kvm.html
 .. _存储标签: http://docs.cloudstack.apache.org/en/latest/adminguide/storage.html#storage-tags
-.. _创建存储服务 (4.2.0): http://docs.cloudstack.apache.org/en/latest/adminguide/service_offerings.html#creating-a-new-disk-offering
+.. _创建一个新磁盘服务服务: http://docs.cloudstack.apache.org/en/latest/adminguide/service_offerings.html#creating-a-new-disk-offering
 .. _用户管理: ../../rados/operations/user-management
