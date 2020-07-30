@@ -6,8 +6,6 @@ updates="
 conf.py
 favicon.ico
 logo.png
-rados/command/list-inconsistent-obj.json
-rados/command/list-inconsistent-snap.json
 
 cephfs/Makefile
 cephfs/cephfs-architecture.svg
@@ -19,6 +17,9 @@ dev/osd_internals/osdmap_versions.txt
 dev/osd_internals/osd_throttles.txt
 dev/peering_graph.generated.dot
 dev/PlanningImplementation.txt
+
+rados/command/list-inconsistent-obj.json
+rados/command/list-inconsistent-snap.json
 
 releases/argonaut.rst
 releases/bobtail.rst
