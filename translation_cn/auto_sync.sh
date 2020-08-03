@@ -20,6 +20,8 @@ dev/PlanningImplementation.txt
 
 rados/command/list-inconsistent-obj.json
 rados/command/list-inconsistent-snap.json
+rados/configuration/demo-ceph.conf
+rados/configuration/pool-pg.conf
 
 releases/argonaut.rst
 releases/bobtail.rst
