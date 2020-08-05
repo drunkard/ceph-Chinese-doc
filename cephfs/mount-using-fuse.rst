@@ -1,51 +1,110 @@
-============================
- 用户空间挂载 Ceph 文件系统
-============================
+.. Mount CephFS using FUSE
 
-从用户空间（ FUSE ）挂载一 Ceph 文件系统前，确保客户端主机有一\
-份 Ceph 配置文件副本、和具备 Ceph 元数据服务器能力的密钥环。
+=====================
+ 用 FUSE 挂载 CephFS
+=====================
 
-#. 在客户端主机上，把监视器主机上的 Ceph 配置文件拷贝到
-   ``/etc/ceph/`` 目录下。 ::
+`ceph-fuse`_ is an alternate way of mounting CephFS, although it mounts it
+in userspace. Therefore, performance of FUSE can be relatively lower but FUSE
+clients can be more manageable, especially while upgrading CephFS.
 
-	sudo mkdir -p /etc/ceph
-	sudo scp {user}@{server-machine}:/etc/ceph/ceph.conf /etc/ceph/ceph.conf
+Prerequisites
+=============
 
-#. 在客户端主机上，把监视器主机上的 Ceph 密钥环拷贝到
-   ``/etc/ceph`` 目录下。 ::
+Complete General Prerequisites
+------------------------------
+Go through the prerequisites required by both, kernel as well as FUSE mounts,
+in `Mount CephFS: Prerequisites`_ page.
 
-	sudo scp {user}@{server-machine}:/etc/ceph/ceph.keyring /etc/ceph/ceph.keyring
+``fuse.conf`` option
+--------------------
 
-#. 确保客户端机器上的 Ceph 配置文件和密钥环都有合适的权限位，如
-   ``chmod 644`` 。
+#. If you are mounting Ceph with FUSE not as superuser/root user/system admin
+   you would need to add the option ``user_allow_other`` to ``/etc/fuse.conf``
+   (under no section in the conf).
 
-``cephx`` 如何配置请参考 `CEPHX 配置参考`_\ 。
+Synopsis
+========
+In general, the command to mount CephFS via FUSE looks like this::
 
-要把 Ceph 文件系统挂载为用户空间文件系统，可以用 ``ceph-fuse``
-命令，例如： ::
+    ceph-fuse {mountpoint} {options}
 
-	sudo mkdir /home/usernname/cephfs
-	sudo ceph-fuse -m 192.168.0.1:6789 /home/username/cephfs
+Mounting CephFS
+===============
+To FUSE-mount the Ceph file system, use the ``ceph-fuse`` command::
 
-如果你的文件系统不止一个，挂载时可用 ``--client_mds_namespace``
-参数指定要挂载哪个文件系统，或者在 ``ceph.conf`` 里配置
-``client_mds_namespace`` 选项。
+    mkdir /mnt/mycephfs
+    ceph-fuse --id foo /mnt/mycephfs
 
-详情见 `ceph-fuse`_ 。
+Option ``-id`` passes the name of the CephX user whose keyring we intend to
+use for mounting CephFS. In the above command, it's ``foo``. You can also use
+``-n`` instead, although ``--id`` is evidently easier::
 
-要自动挂载 ceph-fuse ，你可以把它写入系统的 fstab_ 文件。另外，\
-还得有 systemd 的单元文件 ``ceph-fuse@.service`` 和
-``ceph-fuse.target`` ，这些单元文件声明了 ``ceph-fuse`` 所需的\
-默认依赖和推荐的执行上下文。用 ceph-fuse 挂载到 ``/mnt`` 的实\
-例如下： ::
+    ceph-fuse -n client.foo /mnt/mycephfs
 
-	sudo systemctl start ceph-fuse@/mnt.service
+In case the keyring is not present in standard locations, you may pass it
+too::
 
-永久挂载点可以这样配置： ::
+    ceph-fuse --id foo -k /path/to/keyring /mnt/mycephfs
 
-	sudo systemctl enable ceph-fuse@/mnt.service
+You may pass the MON's socket too, although this is not mandatory::
 
+    ceph-fuse --id foo -m 192.168.0.1:6789 /mnt/mycephfs
 
-.. _ceph-fuse: ../../man/8/ceph-fuse/
-.. _fstab: ./fstab
-.. _CEPHX 配置参考: ../../rados/configuration/auth-config-ref
+You can also mount a specific directory within CephFS instead of mounting
+root of CephFS on your local FS::
+
+    ceph-fuse --id foo -r /path/to/dir /mnt/mycephfs
+
+If you have more than one FS on your Ceph cluster, use the option
+``--client_fs`` to mount the non-default FS::
+
+    ceph-fuse --id foo --client_fs mycephfs2 /mnt/mycephfs2
+
+You may also add a ``client_fs`` setting to your ``ceph.conf``
+
+Unmounting CephFS
+=================
+
+Use ``umount`` to unmount CephFS like any other FS::
+
+    umount /mnt/mycephfs
+
+.. tip:: Ensure that you are not within the file system directories before
+   executing this command.
+
+Persistent Mounts
+=================
+
+To mount CephFS as a file system in user space, add the following to ``/etc/fstab``::
+
+       #DEVICE PATH       TYPE      OPTIONS
+       none    /mnt/mycephfs  fuse.ceph ceph.id={user-ID}[,ceph.conf={path/to/conf.conf}],_netdev,defaults  0 0
+
+For example::
+
+       none    /mnt/mycephfs  fuse.ceph ceph.id=myuser,_netdev,defaults  0 0
+       none    /mnt/mycephfs  fuse.ceph ceph.id=myuser,ceph.conf=/etc/ceph/foo.conf,_netdev,defaults  0 0
+
+Ensure you use the ID (e.g., ``myuser``, not ``client.myuser``). You can pass
+any valid ``ceph-fuse`` option to the command line this way.
+
+To mount a subdirectory of the CephFS, add the following to ``/etc/fstab``::
+
+       none    /mnt/mycephfs  fuse.ceph ceph.id=myuser,ceph.client_mountpoint=/path/to/dir,_netdev,defaults  0 0
+
+``ceph-fuse@.service`` and ``ceph-fuse.target`` systemd units are available.
+As usual, these unit files declare the default dependencies and recommended
+execution context for ``ceph-fuse``. After making the fstab entry shown above,
+run following commands::
+
+    systemctl start ceph-fuse@/mnt/mycephfs.service
+    systemctl enable ceph-fuse.target
+    systemctl enable ceph-fuse@-mnt-mycephfs.service
+
+See :ref:`User Management <user-management>` for details on CephX user management and `ceph-fuse`_
+manual for more options it can take. For troubleshooting, see
+:ref:`ceph_fuse_debugging`.
+
+.. _ceph-fuse: ../../man/8/ceph-fuse/#options
+.. _Mount CephFS\: Prerequisites: ../mount-prerequisites
