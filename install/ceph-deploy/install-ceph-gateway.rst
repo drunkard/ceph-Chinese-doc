@@ -1,3 +1,5 @@
+.. Install Ceph Object Gateway
+
 ====================
  安装 Ceph 对象网关
 ====================
@@ -15,9 +17,10 @@
    并调度到 Civetweb 。
 
 
+.. Execute the Pre-Installation Procedure
+
 安装前的准备工作
 ----------------
-
 参考\ `飞前检查`_\ ，先在 Ceph 对象网关节点上完成安装前的准\
 备工作。特别要注意， Ceph 部署用户的 ``requiretty`` 需禁用，
 SELinux 需设置为 ``Permissive`` ， Ceph 部署用户执行
@@ -27,9 +30,10 @@ Civetweb 在生产环境下要用到的端口。
 .. note:: Civetweb 默认使用 ``7480`` 端口。
 
 
+.. Install Ceph Object Gateway
+
 安装 Ceph 对象网关
 ------------------
-
 在管理服务器的工作目录下，把 Ceph 对象网关软件包安装到 Ceph
 对象网关节点上。例如： ::
 
@@ -43,9 +47,10 @@ Ceph 对象网关节点兼具管理节点的功能，可以在管理节点的工
         ceph-deploy admin <node-name>
 
 
+.. Create a Gateway Instance
+
 创建网关例程
 ------------
-
 在管理服务器的工作目录下，为 Ceph 网关节点创建一个例程。\
 例如： ::
 
@@ -76,11 +81,10 @@ Ceph 对象网关节点兼具管理节点的功能，可以在管理节点的工
 如果你执行的是 ``purge`` ，那你得重新安装 Ceph 软件包。
 
 
-.. _Change the Default Port:
+.. Change the Default Port
 
 更改默认端口
 ------------
-
 Civetweb 默认使用 ``7480`` 端口。要改变默认端口（如改成 ``80``
 端口），可以在管理服务器的工作目录下修改配置文件，新增名为
 ``[client.rgw.<gateway-node>]`` 的段，其中，要把
@@ -147,7 +151,7 @@ Civetweb 默认使用 ``7480`` 端口。要改变默认端口（如改成 ``80``
         iptables-save > /etc/iptables/rules.v4
 
 
-.. _Using SSL with Civetweb:
+.. Using SSL with Civetweb
 
 在 Civetweb 上使用 SSL
 ----------------------
@@ -186,7 +190,6 @@ SSL 和非 SSL 连接的场景。例如： ::
 
 额外的 Civetweb 配置选项
 ------------------------
-
 还有些额外配置选项可用来调整嵌入式的 Civetweb 网页服务器，位于
 ``ceph.conf`` 文件的 **Ceph 对象网关**\ 一节。
 支持的选项、包括例子，都在 `HTTP 前端`_\ 里。
@@ -194,7 +197,6 @@ SSL 和非 SSL 连接的场景。例如： ::
 
 从 Apache 迁移到 Civetweb
 -------------------------
-
 如果你是基于 Apache 和 FastCGI 运行 Ceph 对象网关的， 而且
 Ceph 存储版本是 v0.80 或更高，那么你有条件切换到 Civetweb
 ——它随 ``ceph-radosgw`` 守护进程启动、默认运行在 7480 端口\
@@ -254,9 +256,10 @@ FastCGI 前端，并指定你想用的端口。例如： ::
 如果你选用的端口没有开放，你还得在防火墙上开放它。
 
 
+.. Configure Bucket Sharding
+
 桶分片的配置
 ------------
-
 Ceph 对象网关把桶的索引数据存储在 ``index_pool`` 里面，它\
 默认是 ``.rgw.buckets.index`` 。有时候，用户们会用单个桶放\
 置很多（数十到数百万个对象）对象，如果你没用网关管理接口配\
@@ -311,7 +314,6 @@ Red Hat Enteprise Linux 上需执行： ::
 
 增加 DNS 通配符
 ---------------
-
 要想在 Ceph 上使用 S3 风格的子域名（如
 bucket-name.domain-name.com ），需要在 DNS 服务器上给这个
 ``ceph-radosgw`` 守护进程使用的域名加一条通配符记录。
@@ -352,9 +354,10 @@ DNS 的地址也必须写入 Ceph 配置文件，选项为
         ping mybucket.gateway-node1
 
 
+.. Add Debugging (if needed)
+
 开启调试选项（如有必要）
 ------------------------
-
 完成上述配置后，如果它们不如所愿，可以在 Ceph 配置文件的
 ``[global]`` 段下加入调试选项，并重启网关，试着排除配置问\
 题。例如： ::
@@ -365,17 +368,19 @@ DNS 的地址也必须写入 Ceph 配置文件，选项为
         debug rgw = 20
 
 
+.. Using the Gateway
+
 试用网关
 --------
-
 要使用 REST 接口，首先得创建一个适用于 S3 接口的 Ceph 对象\
 网关用户，然后创建用于 Swift 接口的子用户。之后验证创建的用\
 户是否能访问网关。
 
 
+.. Create a RADOSGW User for S3 Access
+
 创建用于 S3 访问的 RADOSGW 用户
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 需创建 ``radosgw`` 用户、并授予权限。其它的命令选项可以查看
 ``man radosgw-admin`` 。
 
@@ -430,9 +435,10 @@ DNS 的地址也必须写入 Ceph 配置文件，选项为
    的合法字符。
 
 
+.. Create a Swift User
+
 创建 Swift 用户
 ^^^^^^^^^^^^^^^
-
 如果要通过 Swift 接口访问，需创建 Swift 子用户。 Swift 用\
 户的创建包含两步，第一步是创建用户，第二步是创建密钥。
 
@@ -530,12 +536,15 @@ DNS 的地址也必须写入 Ceph 配置文件，选项为
         }
 
 
+.. Access Verification
+
 访问验证
 ^^^^^^^^
 
+.. Test S3 Access
+
 测试 S3 访问
 """"""""""""
-
 你得写个 Python 测试脚本并运行它来验证 S3 访问。这个 S3 访问测\
 试脚本会连接到 ``radosgw`` 、创建新桶、并罗列所有桶。其中，
 ``aws_access_key_id`` 和 ``aws_secret_access_key`` 的值取自
@@ -585,9 +594,10 @@ DNS 的地址也必须写入 Ceph 配置文件，选项为
     my-new-bucket 2015-02-16T17:09:10.000Z
 
 
+.. Test swift access
+
 测试 Swift 访问
 """""""""""""""
-
 Swift 访问可用 ``swift`` 命令行客户端验证，其命令行选项可用
 ``man swift`` 获取。
 
@@ -625,5 +635,5 @@ swift 访问可用下列命令验证： ::
         my-new-bucket
 
 
-.. _飞前检查:  ../../start/quick-start-preflight
-.. _HTTP 前端: ../../radosgw/frontends
+.. _飞前检查:  ../quick-start-preflight
+.. _HTTP 前端: ../../../radosgw/frontends

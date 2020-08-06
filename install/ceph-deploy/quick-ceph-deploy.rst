@@ -1,4 +1,4 @@
-.. _Storage Cluster Quick Start:
+.. Storage Cluster Quick Start
 
 ==============
  存储集群入门
@@ -31,7 +31,6 @@ OSD 守护进程。一旦集群达到 ``active + clean`` 状态，再扩展它�
 
 从头开始
 ========
-
 如果在某些地方碰到麻烦，想从头再来，可以用下列命令清除 Ceph 软\
 件包，并擦除所有数据和配置： ::
 
@@ -48,7 +47,6 @@ OSD 守护进程。一旦集群达到 ``active + clean`` 状态，再扩展它�
 
 创建一集群
 ==========
-
 在管理节点上，进入刚创建的放置配置文件的目录，用
 ``ceph-deploy`` 执行如下步骤。
 
@@ -356,16 +354,16 @@ OSD 。要定位对象，只需要对象名和存储池名字即可，例如： 
 
 
 .. _飞前检查: ../quick-start-preflight
-.. _Ceph Deploy: ../../rados/deployment
-.. _ceph-deploy install -h: ../../rados/deployment/ceph-deploy-install
-.. _ceph-deploy new -h: ../../rados/deployment/ceph-deploy-new
-.. _ceph-deploy osd: ../../rados/deployment/ceph-deploy-osd
-.. _用 upstart 控制 Ceph: ../../rados/operations/operating#running-ceph-with-upstart
-.. _通过 sysvinit 机制运行 Ceph: ../../rados/operations/operating#running-ceph-with-sysvinit
-.. _CRUSH 图: ../../rados/operations/crush-map
-.. _存储池: ../../rados/operations/pools
-.. _归置组: ../../rados/operations/placement-groups
-.. _监控集群: ../../rados/operations/monitoring
-.. _监控 OSD 和归置组: ../../rados/operations/monitoring-osd-pg
-.. _网络配置参考: ../../rados/configuration/network-config-ref
-.. _用户管理: ../../rados/operations/user-management
+.. _Ceph Deploy: ../../../rados/deployment
+.. _ceph-deploy install -h: ../../../rados/deployment/ceph-deploy-install
+.. _ceph-deploy new -h: ../../../rados/deployment/ceph-deploy-new
+.. _ceph-deploy osd: ../../../rados/deployment/ceph-deploy-osd
+.. _用 upstart 控制 Ceph: ../../../rados/operations/operating#running-ceph-with-upstart
+.. _通过 sysvinit 机制运行 Ceph: ../../../rados/operations/operating#running-ceph-with-sysvinit
+.. _CRUSH 图: ../../../rados/operations/crush-map
+.. _存储池: ../../../rados/operations/pools
+.. _归置组: ../../../rados/operations/placement-groups
+.. _监控集群: ../../../rados/operations/monitoring
+.. _监控 OSD 和归置组: ../../../rados/operations/monitoring-osd-pg
+.. _网络配置参考: ../../../rados/configuration/network-config-ref
+.. _用户管理: ../../../rados/operations/user-management
