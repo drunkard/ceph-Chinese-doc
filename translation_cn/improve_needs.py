@@ -49,7 +49,7 @@ def compare_file_length():
         if d > LEN_DIFF_THRESHOLD:
             ss = '{} - {}'.format(cn, en)
             # 文件名缩进4， 行数相减右对齐，然后 = ，然后结果左对齐。
-            print('    {} {:>{diff_align}} = {:}'
+            print('    {} {:>{diff_align}} === {:}'
                   .format(f.ljust(DIFF_ALIGN), ss, d, diff_align=(DIFF_ALIGN / 3.1)))
 
 
