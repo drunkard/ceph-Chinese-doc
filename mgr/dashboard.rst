@@ -6,7 +6,6 @@ Ceph 仪表盘
 
 概述
 ----
-
 The Ceph Dashboard is a built-in web-based Ceph management and monitoring
 application to administer various aspects and objects of the cluster. It is
 implemented as a :ref:`ceph-manager-daemon` module.
@@ -40,7 +39,6 @@ using a web server hosted by ``ceph-mgr``.
 
 功能概述
 ^^^^^^^^
-
 The dashboard provides the following features:
 
 * **Multi-User and Role Management**: The dashboard supports multiple user
@@ -133,7 +131,6 @@ aspects of your Ceph cluster:
 
 支持的浏览器
 ^^^^^^^^^^^^
-
 Ceph Dashboard is primarily tested and developed using the following web
 browsers:
 
@@ -153,7 +150,6 @@ recommend you to update your browser to the latest version.
 
 如何启用
 --------
-
 If you have installed ``ceph-mgr-dashboard`` from distribution packages, the
 package management system should have taken care of installing all the required
 dependencies.
@@ -177,7 +173,6 @@ Within a running Ceph cluster, the Ceph Manager Dashboard is enabled with::
 
 SSL/TLS 支持
 ^^^^^^^^^^^^
-
 All HTTP connections to the dashboard are secured with SSL/TLS by default.
 
 To get the dashboard up and running quickly, you can generate and install a
@@ -278,7 +273,6 @@ app.
 
 用户名和密码
 ^^^^^^^^^^^^
-
 为了能登录进去，你需要创建用户帐户并给他关联至少一个角色。我们\
 预定义了一系列\ *系统角色*\ ，可以直接使用。更多细节请参考\
 `用户和角色管理`_\ 一节。
@@ -369,7 +363,6 @@ The default value is 45 seconds.
 
 启用 iSCSI 的管理
 ^^^^^^^^^^^^^^^^^
-
 The Ceph Dashboard can manage iSCSI targets using the REST API provided by the
 `rbd-target-api` service of the :ref:`ceph-iscsi`. Please make sure that it's
 installed and enabled on the iSCSI gateways.
@@ -401,7 +394,6 @@ The available iSCSI gateways must be defined using the following commands::
 
 允许嵌入 Grafana 仪表盘
 ^^^^^^^^^^^^^^^^^^^^^^^
-
 `Grafana`_ requires data from `Prometheus <https://prometheus.io/>`_. Although
 Grafana can use other data sources, the Grafana dashboards we provide contain
 queries that are specific to Prometheus. Our Grafana dashboards therefore
@@ -430,7 +422,6 @@ separate application that provides machine metrics.
 
 Installation and Configuration using cephadm
 """"""""""""""""""""""""""""""""""""""""""""
-
 Grafana and Prometheus can be installed using :ref:`cephadm`. They will
 automatically be configured by `cephadm`. Please see
 :ref:`mgr-cephadm-monitoring` documentation for more details on how to use
@@ -438,7 +429,6 @@ cephadm for installing and configuring Prometheus and Grafana.
 
 Manual Installation and Configuration
 """""""""""""""""""""""""""""""""""""
-
 The following process describes how to configure Grafana and Prometheus
 manually. After you have installed Prometheus, Grafana and the Node exporter
 on your preferred hosts, proceed with the following steps.
@@ -524,9 +514,10 @@ on your preferred hosts, proceed with the following steps.
       allow_embedding = true
 
 
-Configuring Dashboard
-"""""""""""""""""""""
+.. Configuring Dashboard
 
+仪表盘的配置
+""""""""""""
 After you have set up Grafana and Prometheus, you will need to configure the
 connection information that the Ceph Dashboard will use to access Grafana.
 
@@ -560,7 +551,6 @@ You can directly access Grafana Instance as well to monitor your cluster.
 
 启用单点登录（ Single Sign-On, SSO ）
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 The Ceph Dashboard supports external authentication of users via the
 `SAML 2.0 <https://en.wikipedia.org/wiki/SAML_2.0>`_ protocol. You need to create
 the user accounts and associate them with the desired roles first, as authorization
@@ -616,7 +606,6 @@ To enable SSO::
 
 启用 Prometheus 报警
 ^^^^^^^^^^^^^^^^^^^^
-
 Using Prometheus for monitoring, you have to define `alerting rules
 <https://prometheus.io/docs/prometheus/latest/configuration/alerting_rules>`_.
 To manage them you need to use the `Alertmanager
@@ -718,14 +707,11 @@ ways:
 
 用户和角色管理
 --------------
-
 .. Password Policy
 
 密码策略
 ^^^^^^^^
-
-By default the password policy feature is enabled including the following
-checks:
+密码策略功能默认就是启用的，要检查这些：
 
 - Is the password longer than N characters?
 - Are the old and new password the same?
@@ -765,8 +751,7 @@ policy behaviour.
   - Increase by 3 if the character is a special character like ``!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~``.
   - Increase by 5 if the character has not been classified by one of the previous rules.
 
-- A list of comma separated words that are not allowed to be used in a
-  password::
+- 一系列逗号分隔的单词，密码里不能有这些单词： ::
 
   $ ceph dashboard set-pwd-policy-exclusion-list <word>[,...]
 
@@ -775,7 +760,6 @@ policy behaviour.
 
 用户帐户
 ^^^^^^^^
-
 Ceph Dashboard supports managing multiple user accounts. Each user account
 consists of a username, a password (stored in encrypted form using ``bcrypt``),
 an optional name, and an optional email address.
@@ -832,7 +816,6 @@ We provide a set of CLI commands to manage user accounts:
 
 用户角色和权限
 ^^^^^^^^^^^^^^
-
 User accounts are also associated with a set of roles that define which
 dashboard functionality can be accessed by the user.
 
@@ -945,7 +928,6 @@ To associate roles to users, the following CLI commands are available:
 
 用户和定制角色创建实例
 ^^^^^^^^^^^^^^^^^^^^^^
-
 In this section we show a full example of the commands that need to be used
 in order to create a user account, that should be able to manage RBD images,
 view and create Ceph pools, and have read-only access to any other scopes.
@@ -1099,7 +1081,6 @@ A log entry may look like this::
 
 NFS-Ganesha 的管理
 ------------------
-
 Ceph Dashboard can manage `NFS Ganesha <http://nfs-ganesha.github.io/>`_ exports that use
 CephFS or RadosGW as their backstore.
 
@@ -1129,7 +1110,6 @@ same RADOS pool/namespace.
 
 NFS-Ganesha 在仪表盘中的配置
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 To enable the management of NFS-Ganesha exports in Ceph Dashboard, we only
 need to tell the Dashboard, in which RADOS pool and namespace the
 configuration objects are stored. Then, Ceph Dashboard can access the objects
@@ -1155,7 +1135,6 @@ configuration objects and we can start manage the exports through the Web UI.
 
 多个 NFS-Ganesha 集群的支持情况
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 Ceph Dashboard also supports the management of NFS-Ganesha exports belonging
 to different NFS-Ganesha clusters. An NFS-Ganesha cluster is a group of
 NFS-Ganesha service daemons sharing the same exports. Different NFS-Ganesha
@@ -1198,7 +1177,6 @@ Web UI will automatically allow to choose to which cluster an export belongs.
 
 定位仪表盘
 ^^^^^^^^^^
-
 If you are unsure of the location of the Ceph Dashboard, run the following command::
 
     $ ceph mgr services | jq .dashboard
@@ -1207,17 +1185,15 @@ If you are unsure of the location of the Ceph Dashboard, run the following comma
 The command returns the URL where the Ceph Dashboard is located: ``https://<host>:<port>/``
 
 .. note::
-
-    Many Ceph command line tools return results in JSON format. You may have to install
-    the `jq <https://stedolan.github.io/jq>`_ command-line JSON processor utility on
-    your operating system beforehand.
+   Ceph 的很多命令行工具都会返回 JSON 格式的结果，你得在\
+   操作系统上预先装好 `jq <https://stedolan.github.io/jq>`_
+   命令行的 JSON 处理工具。
 
 
 .. Accessing the Dashboard
 
 访问仪表盘
 ^^^^^^^^^^
-
 If you are unable to access the Ceph Dashboard, run through the following
 commands:
 
@@ -1277,7 +1253,6 @@ commands:
 
 从仪表盘看不到日志
 ^^^^^^^^^^^^^^^^^^
-
 If you are unable to log into the Ceph Dashboard and you receive the following
 error, run through the procedural checks below:
 
@@ -1316,7 +1291,6 @@ Please see :ref:`dashboard-user-role-management` for more information.
 
 仪表盘的某个功能失效
 ^^^^^^^^^^^^^^^^^^^^
-
 When an error occurs on the backend, you will usually receive an error
 notification on the frontend. Run through the following scenarios to debug.
 
@@ -1336,7 +1310,6 @@ Ceph 仪表盘的日志
 
 仪表盘调试标志
 """"""""""""""
-
 With this flag enabled, traceback of errors are included in backend responses.
 
 To enable this flag via the Ceph Dashboard, navigate from *Cluster* to *Manager
@@ -1352,16 +1325,13 @@ To enable it via the CLI, run the following command::
 
 配置仪表盘模块的日志级别
 """"""""""""""""""""""""
-
-Setting the logging level to debug makes the log more verbose and helpful for
-debugging.
+把日志级别设置为 debug 可使日志更详尽，有助于调试。
 
 #. Increase the logging level of manager daemons::
 
    $ ceph tell mgr config set debug_mgr 20
 
-#. Adjust the logging level of the Ceph Dashboard module via the Dashboard or
-   CLI:
+#. 通过 Dashboard 或 CLI 调整 Ceph Dashboard 的日志级别：
 
    * Navigate from *Cluster* to *Manager modules*. Select *Dashboard module*
      and click the edit button. Modify the ``log_level`` configuration.
