@@ -5,4 +5,5 @@
 translation_cn/build-warnings
 
 __pycache__
+*.pyc
 .*.swp
