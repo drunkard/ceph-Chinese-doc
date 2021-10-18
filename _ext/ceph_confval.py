@@ -41,7 +41,7 @@ TEMPLATE = '''
   {%- elif opt.type == 'bool' %}
    :default: ``{{ default | string | lower }}``
   {%- else %}
-   :default: ``{{ default }}``
+   :default: {{ default | literal }}
   {%- endif -%}
 {%- endif %}
 {%- if opt.enum_values %}
@@ -55,6 +55,15 @@ TEMPLATE = '''
    :min: ``{{ opt.min }}``
 {%- elif opt.max is defined %}
    :max: ``{{ opt.max }}``
+{%- endif %}
+{%- if opt.constraint %}
+   :constraint: {{ opt.constraint }}
+{% endif %}
+{%- if opt.policies %}
+   :policies: {{ opt.policies }}
+{% endif %}
+{%- if opt.example %}
+   :example: {{ opt.example }}
 {%- endif %}
 {%- if opt.see_also %}
    :see also: {{ opt.see_also | map('ref_confval') | join(', ') }}
@@ -199,7 +208,10 @@ class CephOption(ObjectDescription):
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = False
-    option_spec = {'default': directives.unchanged}
+    option_spec = {
+        'module': directives.unchanged,
+        'default': directives.unchanged
+    }
 
 
     doc_field_types = [
@@ -326,30 +338,35 @@ class CephOption(ObjectDescription):
         module_path = self.env.config.ceph_confval_mgr_module_path
         module_path = self._normalize_path(module_path)
         sys.path.insert(0, module_path)
+        if not self._is_mgr_module(module_path, module):
+            raise self.error(f'module "{module}" not found under {module_path}')
+        fn = os.path.join(module_path, module, 'module.py')
+        if os.path.exists(fn):
+            self.env.note_dependency(fn)
         os.environ['UNITTEST'] = 'true'
-
-        modules = [name for name in os.listdir(module_path)
-                   if self._is_mgr_module(module_path, name)]
-        opts = []
-        for module in status_iterator(modules,
-                                      'loading module...', 'darkgreen',
-                                      len(modules),
-                                      self.env.app.verbosity):
-            fn = os.path.join(module_path, module, 'module.py')
-            if os.path.exists(fn):
-                self.env.note_dependency(fn)
-            opts += self._collect_options_from_module(module)
+        opts = self._collect_options_from_module(module)
         CephOption.mgr_opts[module] = dict((opt['name'], opt) for opt in opts)
         return CephOption.mgr_opts[module]
 
+    def _current_module(self) -> str:
+        return self.options.get('module',
+                                self.env.ref_context.get('ceph:module'))
+
     def _render_option(self, name) -> str:
-        cur_module = self.env.ref_context.get('ceph:module')
+        cur_module = self._current_module()
         if cur_module:
-            opt = self._load_module(cur_module).get(name)
+            try:
+                opt = self._load_module(cur_module).get(name)
+            except Exception as e:
+                message = f'Unable to load module "{cur_module}": {e}'
+                raise self.error(message)
         else:
             opt = self._load_yaml().get(name)
         if opt is None:
             raise self.error(f'Option "{name}" not found!')
+        if cur_module and 'type' not in opt:
+            # the type of module option defaults to 'str'
+            opt['type'] = 'str'
         desc = opt.get('fmt_desc') or opt.get('long_desc') or opt.get('desc')
         opt_default = opt.get('default')
         default = self.options.get('default', opt_default)
@@ -369,7 +386,11 @@ class CephOption(ObjectDescription):
         signode += addnodes.desc_name(sig, sig)
         # normalize whitespace like XRefRole does
         name = ws_re.sub(' ', sig)
-        return name
+        cur_module = self._current_module()
+        if cur_module:
+            return '/'.join(['mgr', cur_module, name])
+        else:
+            return name
 
     def transform_content(self, contentnode: addnodes.desc_content) -> None:
         name = self.arguments[0]
@@ -384,21 +405,17 @@ class CephOption(ObjectDescription):
                              name: str,
                              sig: str,
                              signode: addnodes.desc_signature) -> None:
-        cur_module = self.env.ref_context.get('ceph:module')
-        if cur_module:
-            prefix = '-'.join(['mgr', cur_module, self.objtype])
-        else:
-            prefix = self.objtype
-        node_id = make_id(self.env, self.state.document, prefix, name)
+        node_id = make_id(self.env, self.state.document, self.objtype, name)
         signode['ids'].append(node_id)
         self.state.document.note_explicit_target(signode)
-        if cur_module:
-            entry = f'{cur_module} {name}; mgr module option'
-        else:
-            entry = f'{name}; configuration option'
+        entry = f'{name}; configuration option'
         self.indexnode['entries'].append(('pair', entry, node_id, '', None))
         std = self.env.get_domain('std')
         std.note_object(self.objtype, name, node_id, location=signode)
+
+
+def _reset_ref_context(app, env, docname):
+    env.ref_context.pop('ceph:module', None)
 
 
 def setup(app) -> Dict[str, Any]:
@@ -433,6 +450,7 @@ def setup(app) -> Dict[str, Any]:
     )
     app.add_directive_to_domain('std', 'mgr_module', CephModule)
     app.add_directive_to_domain('std', 'confval', CephOption, override=True)
+    app.connect('env-purge-doc', _reset_ref_context)
 
     return {
         'version': 'builtin',

@@ -47,9 +47,9 @@ reflect either technical terms or legacy ways of referring to Ceph systems.
 	RADOS Cluster
 	Reliable Autonomic Distributed Object Store
         Ceph 存储集群
-        Ceph 对象存储
+        Ceph 对象存储库
         RADOS 集群
-        可靠自主的分布式对象存储
+        可靠自主的分布式对象存储库
 		The core set of storage software which stores the user's data (MON+OSD).
 
 	Ceph Cluster Map
@@ -74,7 +74,6 @@ reflect either technical terms or legacy ways of referring to Ceph systems.
 	Ceph Block Device
 	RBD
         Ceph 块设备
-        RBD
 		The block storage component of Ceph.
 
 	Ceph Block Storage

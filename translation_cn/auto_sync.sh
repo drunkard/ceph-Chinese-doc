@@ -7,10 +7,9 @@ conf.py
 favicon.ico
 logo.png
 
-cephfs/Makefile
 cephfs/cephfs-architecture.svg
+cephfs/cephfs-top.png
 cephfs/mds-state-diagram.dot
-cephfs/mds-state-diagram.svg
 cephfs/subtree-partitioning.svg
 
 dev/osd_internals/osdmap_versions.txt

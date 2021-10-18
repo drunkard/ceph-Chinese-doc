@@ -9,7 +9,6 @@ set(client_srcs
   ceph-dencoder.rst)
 
 set(server_srcs
-  ceph-deploy.rst
   crushtool.rst
   ceph-run.rst
   mount.ceph.rst
@@ -25,6 +24,7 @@ set(osd_srcs
   ceph-volume.rst
   ceph-volume-systemd.rst
   ceph-osd.rst
+  crushdiff.rst
   osdmaptool.rst
   ceph-bluestore-tool.rst)
 
