@@ -4,10 +4,6 @@ cd "$(dirname "$0")"
 cd ..
 TOPDIR=`pwd`
 
-SUFFIX="zh"
-DOC="doc-${SUFFIX}"
-OUTPUT="output-${SUFFIX}"
-
 install -d -m0755 build-doc
 
 if command -v dpkg >/dev/null; then
@@ -24,8 +20,7 @@ if command -v dpkg >/dev/null; then
         exit 1
     fi
 elif command -v yum >/dev/null; then
-    python_package="python$(rpm --eval '%{python3_pkgversion}')"
-    for package in "$python_package"-devel "$python_package"-pip "$python_package"-virtualenv doxygen ditaa ant libxml2-devel libxslt-devel "$python_package"-Cython graphviz; do
+    for package in ant ditaa doxygen libxslt-devel libxml2-devel graphviz python3-devel python3-pip python3-Cython; do
 	if ! rpm -q --whatprovides $package >/dev/null ; then
 		missing="${missing:+$missing }$package"
 	fi
@@ -36,8 +31,7 @@ elif command -v yum >/dev/null; then
         exit 1
     fi
 else
-    # for command in dot virtualenv doxygen ant ditaa cython; do
-    for command in dot virtualenv doxygen ant cython; do
+    for command in dot doxygen ant ditaa cython; do
         if ! command -v "$command" > /dev/null; then
             # add a space after old values
             missing="${missing:+$missing }$command"
@@ -54,110 +48,69 @@ fi
 # for availability of commands
 set -e
 
-cat $TOPDIR/src/osd/PeeringState.h $TOPDIR/src/osd/PeeringState.cc | $TOPDIR/$DOC/scripts/gen_state_diagram.py > $TOPDIR/$DOC/dev/peering_graph.generated.dot
+[ -z "$vdir" ] && vdir="$TOPDIR/build-doc/virtualenv"
+
+md5=$vdir/md5
+if test -f $md5 && md5sum --check $md5 > /dev/null; then
+    # reusing existing venv
+    :
+else
+    python3 -m venv $vdir
+
+    $vdir/bin/pip install --quiet wheel
+    $vdir/bin/pip install --quiet \
+              -r $TOPDIR/admin/doc-requirements.txt \
+              -r $TOPDIR/admin/doc-python-common-requirements.txt
+    BUILD_DOC=1 $vdir/bin/pip install --quiet \
+         -r $TOPDIR/admin/doc-pybind.txt
+    md5sum \
+        $TOPDIR/admin/doc-requirements.txt \
+        $TOPDIR/admin/doc-python-common-requirements.txt \
+        $TOPDIR/admin/doc-pybind.txt \
+        > $md5
+fi
+
+install -d -m0755 \
+    $TOPDIR/build-doc/output/html \
+    $TOPDIR/build-doc/output/man
+
+for opt in "$@"; do
+    case $opt in
+        html|man|livehtml)
+            sphinx_targets="$sphinx_targets $opt"
+            shift
+            ;;
+        --)
+            shift
+            break
+    esac
+done
+
+if [ -z "$sphinx_targets" ]; then
+    sphinx_targets="html man"
+fi
 
 cd build-doc
 
-[ -z "$vdir" ] && vdir="$TOPDIR/build-doc/virtualenv"
-
-if [ ! -e $vdir ]; then
-    virtualenv --python=python3 $vdir
-fi
-$vdir/bin/pip install --quiet -r $TOPDIR/admin/doc-requirements.txt -r $TOPDIR/admin/doc-python-common-requirements.txt
-
-install -d -m0755 \
-    $TOPDIR/build-doc/$OUTPUT/html \
-    $TOPDIR/build-doc/$OUTPUT/man
-
-# To avoid having to build librbd to build the Python bindings to build the docs,
-# create a dummy librbd.so that allows the module to be imported by sphinx.
-# the module are imported by the "automodule::" directive.
-mkdir -p $vdir/lib
-export LD_LIBRARY_PATH="$vdir/lib"
-export PYTHONPATH=$TOPDIR/src/pybind
-
-
-$vdir/bin/python $TOPDIR/doc/scripts/gen_mon_command_api.py > $TOPDIR/doc/api/mon_command_api.rst
-
-
-# FIXME(sileht): I dunno how to pass the include-dirs correctly with pip
-# for build_ext step, it should be:
-# --global-option=build_ext --global-option="--cython-include-dirs $TOPDIR/src/pybind/rados/"
-# but that doesn't work, so copying the file in the rbd module directly, that's ok for docs
-for bind in rados rbd cephfs rgw; do
-    if [ ${bind} != rados ]; then
-        cp -f $TOPDIR/src/pybind/rados/rados.pxd $TOPDIR/src/pybind/${bind}/
-    fi
-    ln -sf lib${bind}.so.1 $vdir/lib/lib${bind}.so
-    gcc -shared -o $vdir/lib/lib${bind}.so.1 -xc /dev/null
-    ld_flags="-Wl,-rpath,$vdir/lib"
-    if [ $(uname) != Darwin ]; then
-        ld_flags="${ld_flags},--no-as-needed"
-    fi
-    BUILD_DOC=1 \
-        CFLAGS="-iquote$TOPDIR/src/include" \
-        CPPFLAGS="-iquote$TOPDIR/src/include" \
-        LDFLAGS="-L$vdir/lib ${ld_flags}" \
-        $vdir/bin/pip install --upgrade $TOPDIR/src/pybind/${bind}
-    # rgwfile_version(), librgw_create(), rgw_mount()
-    # since py3.5, distutils adds postfix in between ${bind} and so
-    lib_fn=$vdir/lib/python*/*-packages/${bind}.*.so
-    if [ ! -e $lib_fn ]; then
-       lib_fn=$vdir/lib/python*/*-packages/${bind}.so
-    fi
-    if [ ${bind} = "cephfs" ]; then
-        func_prefix="ceph"
-    else
-        func_prefix="(lib)?${bind}"
-    fi
-    nm $lib_fn | grep -E "U (_)?${func_prefix}" | \
-        awk '{ gsub(/^_/,"",$2); print "void "$2"(void) {}" }' | \
-        gcc -shared -o $vdir/lib/lib${bind}.so.1 -xc -
-    if [ ${bind} != rados ]; then
-        rm -f $TOPDIR/src/pybind/${bind}/rados.pxd
-    fi
-done
-
-if [ -z "$@" ]; then
-    sphinx_targets="html man"
-else
-    sphinx_targets=$@
-fi
 for target in $sphinx_targets; do
-    builder=$target
+    # Build with -W so that warnings are treated as errors and this fails
     case $target in
         html)
-            builder=dirhtml
-            extra_opt="-D graphviz_output_format=svg"
+            $vdir/bin/sphinx-build -W --keep-going -a -b dirhtml -d doctrees \
+                                   $TOPDIR/doc $TOPDIR/build-doc/output/$target
             ;;
         man)
-            extra_opt="-t man"
+            $vdir/bin/sphinx-build -W --keep-going -a -b man -t man -d doctrees \
+                                   -c $TOPDIR/man \
+                                   $TOPDIR/doc/man $TOPDIR/build-doc/output/$target
+            ;;
+        livehtml)
+            $vdir/bin/pip install --quiet sphinx-autobuild
+            $vdir/bin/sphinx-autobuild --re-ignore '.*\.dot' -b dirhtml "$@" \
+                                       $TOPDIR/doc $TOPDIR/build-doc/output/html
             ;;
     esac
-    # Build with -W so that warnings are treated as errors and this fails
-    $vdir/bin/sphinx-build --keep-going -a -b $builder $extra_opt -d doctrees \
-                           $TOPDIR/$DOC $TOPDIR/build-doc/$OUTPUT/$target
-
-
 done
-
-# build the releases.json. this reads in the yaml version and dumps
-# out the json representation of the same file. the resulting releases.json
-# should be served from the root of hosted site.
-$vdir/bin/python << EOF > $TOPDIR/build-doc/$OUTPUT/html/releases.json
-from __future__ import print_function
-import datetime
-import json
-import yaml
-
-def json_serialize(obj):
-    if isinstance(obj, datetime.date):
-        return obj.isoformat()
-
-with open("$TOPDIR/$DOC/releases/releases.yml", 'r') as fp:
-    releases = yaml.safe_load(fp)
-    print(json.dumps(releases, indent=2, default=json_serialize))
-EOF
 
 #
 # Build and install JavaDocs
@@ -165,11 +118,11 @@ EOF
 JAVADIR=$TOPDIR/src/java
 
 # Clean and build JavaDocs
-rm -rf $JAVADIR/$DOC
+rm -rf $JAVADIR/doc
 ant -buildfile $JAVADIR/build.xml docs
 
 # Create clean target directory
-JAVA_OUTDIR=$TOPDIR/build-doc/$OUTPUT/html/cephfs/api/libcephfs-java/javadoc
+JAVA_OUTDIR=$TOPDIR/build-doc/output/html/cephfs/api/libcephfs-java/javadoc
 rm -rf $JAVA_OUTDIR
 mkdir $JAVA_OUTDIR
 
