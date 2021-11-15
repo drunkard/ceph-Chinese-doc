@@ -12,10 +12,15 @@ cephfs/cephfs-top.png
 cephfs/mds-state-diagram.dot
 cephfs/subtree-partitioning.svg
 
+dev/cephadm/design/mockups/OSD_Creation_device_mode.svg
+dev/cephadm/design/mockups/OSD_Creation_host_mode.svg
 dev/osd_internals/osdmap_versions.txt
 dev/osd_internals/osd_throttles.txt
 dev/peering_graph.generated.dot
 dev/PlanningImplementation.txt
+
+jaegertracing/osd_jaeger.png
+jaegertracing/rgw_jaeger.png
 
 rados/command/list-inconsistent-obj.json
 rados/command/list-inconsistent-snap.json
@@ -37,6 +42,7 @@ releases/luminous.rst
 releases/mimic.rst
 releases/nautilus.rst
 releases/octopus.rst
+releases/pacific.rst
 
 releases/releases.yml
 
