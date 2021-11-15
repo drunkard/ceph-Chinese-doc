@@ -4,6 +4,10 @@ cd "$(dirname "$0")"
 cd ..
 TOPDIR=`pwd`
 
+SUFFIX="zh"
+DOC="doc-${SUFFIX}"
+OUTPUT="output-${SUFFIX}"
+
 install -d -m0755 build-doc
 
 if command -v dpkg >/dev/null; then
@@ -71,8 +75,8 @@ else
 fi
 
 install -d -m0755 \
-    $TOPDIR/build-doc/output/html \
-    $TOPDIR/build-doc/output/man
+    $TOPDIR/build-doc/$OUTPUT/html \
+    $TOPDIR/build-doc/$OUTPUT/man
 
 for opt in "$@"; do
     case $opt in
@@ -97,17 +101,17 @@ for target in $sphinx_targets; do
     case $target in
         html)
             $vdir/bin/sphinx-build -W --keep-going -a -b dirhtml -d doctrees \
-                                   $TOPDIR/doc $TOPDIR/build-doc/output/$target
+                                   $TOPDIR/$DOC $TOPDIR/build-doc/$OUTPUT/$target
             ;;
         man)
             $vdir/bin/sphinx-build -W --keep-going -a -b man -t man -d doctrees \
                                    -c $TOPDIR/man \
-                                   $TOPDIR/doc/man $TOPDIR/build-doc/output/$target
+                                   $TOPDIR/$DOC/man $TOPDIR/build-doc/$OUTPUT/$target
             ;;
         livehtml)
             $vdir/bin/pip install --quiet sphinx-autobuild
             $vdir/bin/sphinx-autobuild --re-ignore '.*\.dot' -b dirhtml "$@" \
-                                       $TOPDIR/doc $TOPDIR/build-doc/output/html
+                                       $TOPDIR/$DOC $TOPDIR/build-doc/$OUTPUT/html
             ;;
     esac
 done
@@ -118,15 +122,15 @@ done
 JAVADIR=$TOPDIR/src/java
 
 # Clean and build JavaDocs
-rm -rf $JAVADIR/doc
+rm -rf $JAVADIR/$DOC
 ant -buildfile $JAVADIR/build.xml docs
 
 # Create clean target directory
-JAVA_OUTDIR=$TOPDIR/build-doc/output/html/cephfs/api/libcephfs-java/javadoc
+JAVA_OUTDIR=$TOPDIR/build-doc/$OUTPUT/html/cephfs/api/libcephfs-java/javadoc
 rm -rf $JAVA_OUTDIR
 mkdir $JAVA_OUTDIR
 
 # Copy JavaDocs to target directory
-cp -a $JAVADIR/doc/* $JAVA_OUTDIR/
+cp -a $JAVADIR/$DOC/* $JAVA_OUTDIR/
 
 echo "SUCCESS"
