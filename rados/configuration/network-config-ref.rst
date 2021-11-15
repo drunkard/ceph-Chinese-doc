@@ -10,7 +10,7 @@ Ceph 存储集群不会代表 :term:`Ceph 客户端`\ 执行请求路由或调�
 请求，然后OSD为客户端执行数据复制，也就是说复制和其它因素会额\
 外增加集群网的负载。
 
-我们的快速入门配置提供了一个简陋的 `Ceph 配置文件`_\ ，其中\
+我们的快速入门配置提供了一个简陋的 Ceph 配置文件，其中\
 只设置了监视器 IP 地址和守护进程所在的主机名。如果没有配置\
 集群网，那么 Ceph 假设你只有一个“公共网”。只用一个网可以运行
 Ceph ，但是在大型集群里用单独的“集群”网可显著地提升性能。
@@ -150,7 +150,7 @@ Ceph 网络
 =========
 
 Ceph 的网络配置要放到 ``[global]`` 段下。前述的 5 分钟快速入门\
-提供了一个简陋的 `Ceph 配置文件`_\ ，它假设服务器和客户端\
+提供了一个简陋的 Ceph 配置文件，它假设服务器和客户端\
 都位于同一网段， Ceph 可以很好地适应这种情形。然而 Ceph 允许\
 配置更精细的公共网，包括多 IP 和多掩码；也能用单独的集群网处理
 OSD 心跳、对象复制、和恢复流量。不要混淆你配置的 IP 地址和\
@@ -389,7 +389,6 @@ Ceph 默认禁用 TCP 缓冲。
 
 .. _伸缩性和高可用性: ../../../architecture#scalability-and-high-availability
 .. _硬件推荐——网络: ../../../start/hardware-recommendations#networks
-.. _Ceph 配置文件: ../../../start/quick-ceph-deploy/#create-a-cluster
 .. _硬件推荐: ../../../start/hardware-recommendations
 .. _监视器与 OSD 的交互: ../mon-osd-interaction
 .. _消息签名: ../auth-config-ref#signatures

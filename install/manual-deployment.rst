@@ -10,9 +10,8 @@
 归置组数量、心跳周期、是否需认证等，其中大多数选项都有默认值，\
 但是建设生产集群时仍需要您熟知它们。
 
-按照\ `安装（ ceph-deploy ）`_\ 里的相同配置，我们能配置起\
-监视器为 ``node1`` ， OSD 节点为 ``node2`` 、 ``node3`` 的\
-集群。
+我们将配置起监视器为 ``mon-node1`` ， OSD 节点为 ``osd-node1`` 、
+``osd-node2`` 的集群。
 
 
 .. ditaa:: 
@@ -95,10 +94,6 @@
    ``/etc/ceph/`` 目录。 ::
 
 	ls /etc/ceph   
-
-   **注意：**\ 部署工具在清除集群时可能删除此目录（如
-   ``ceph-deploy purgedata {node-name}`` 、
-   ``ceph-deploy purge {node-name}`` ）。
 
 #. 创建 Ceph 配置文件， Ceph 默认使用 ``ceph.conf`` ，其中的
    ``ceph`` 是集群名字。 ::
@@ -517,7 +512,6 @@ CRUSH 图。对于每个 OSD ，执行下列详细步骤。
 （或删除）额外 OSD ，参见\ `增加/删除 OSD`_ 。
 
 
-.. _安装（ ceph-deploy ）: ../ceph-deploy
 .. _增加/删除监视器: ../../rados/operations/add-or-rm-mons
 .. _增加/删除 OSD: ../../rados/operations/add-or-rm-osds
 .. _网络配置参考: ../../rados/configuration/network-config-ref
