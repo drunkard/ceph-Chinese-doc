@@ -1,36 +1,48 @@
-.. CephFS Shell
+:orphan:
 
-=============
-CephFS Shell
-=============
+===================================================
+cephfs-shell -- Shell-like tool talking with CephFS
+===================================================
 
-CephFS Shell 包含各种类似 shell 的命令，可以直接与
-:term:`Ceph 文件系统`\ 交互。
+.. program:: cephfs-shell
+
+Synopsis
+========
+
+| **cephfs-shell** [options] [command]
+| **cephfs-shell** [options] -- [command, command,...]
+
+Description
+===========
+
+CephFS Shell provides shell-like commands that directly interact with the
+Ceph File System.
 
 This tool can be used in interactive mode as well as in non-interactive mode.
 In former mode, cephfs-shell opens a shell session and after the given command
 is finished, it prints the prompt string and waits indefinitely. When the
 shell session is finished, cephfs-shell quits with the return value of last
 executed command. In non-interactive mode, cephfs-shell issues a command and
-exits right after the command's execution is complete with the command's return
-value.
+exits right after the command's execution is complete with the command's
+return value.
 
-Behaviour of CephFS Shell can be tweaked using cephfs-shell.conf. CephFS Shell
-looks for it by default at the path provided in environment variable
-`CEPHFS_SHELL_CONF` and then in user's home directory
-(`~/.cephfs-shell.conf`).
+Behaviour of CephFS Shell can be tweaked using ``cephfs-shell.conf``. Refer to
+`CephFS Shell Configuration File`_ for details.
 
-用法：
+Options
+=======
 
-    cephfs-shell [options] [command]
-    cephfs-shell [options] -- [command, command,...]
+.. option:: -c, --config FILE
 
-选项：
+   Path to cephfs-shell.conf
 
-    -c, --config FILE     配置文件 cephfs-shell.conf 的路径
-    -b, --batch FILE      批处理文件的路径
-    -t, --test FILE       Path to transcript(s) in FILE for testing
+.. option:: -b, --batch FILE
 
+   Path to batch file.
+
+.. option:: -t, --test FILE
+
+   Path to transcript(s) in FILE for testing
 
 .. note::
 
@@ -40,27 +52,24 @@ looks for it by default at the path provided in environment variable
 
 .. code:: bash
 
-    [build]$ virtualenv -p python3 venv && source venv/bin/activate && pip3 install cmd2
+    [build]$ python3 -m venv venv && source venv/bin/activate && pip3 install cmd2
     [build]$ source vstart_environment.sh && source venv/bin/activate && python3 ../src/tools/cephfs/cephfs-shell
 
-
-.. Commands
-
-命令
-====
+Commands
+========
 
 mkdir
 -----
 
 Create the directory(ies), if they do not already exist.
 
-用法：
+Usage : 
         
     mkdir [-option] <directory>... 
 
 * directory - name of the directory to be created.
 
-选项：
+Options :
   -m MODE    Sets the access mode for the new directory.
   -p, --parent         Create parent directories as necessary. When this option is specified, no error is reported if a directory already exists.
  
@@ -69,7 +78,7 @@ put
 
 Copy a file/directory to Ceph File System from Local File System.
 
-用法：
+Usage : 
     
         put [options] <source_path> [target_path]
 
@@ -80,7 +89,7 @@ Copy a file/directory to Ceph File System from Local File System.
 * target_path - remote directory path where the files/directories are to be copied to.
     * if `.` files/directories are copied to the remote working directory.
 
-选项：
+Options :
    -f, --force        Overwrites the destination if it already exists.
 
 
@@ -89,7 +98,7 @@ get
  
 Copy a file from Ceph File System to Local File System.
 
-用法： :: 
+Usage : 
 
     get [options] <source_path> [target_path]
 
@@ -100,7 +109,7 @@ Copy a file from Ceph File System to Local File System.
     * if `.` files/directories are copied to the local working directory. 
     * if `-` Writes output to stdout.
 
-选项：
+Options:
   -f, --force        Overwrites the destination if it already exists.
 
 ls
@@ -108,14 +117,14 @@ ls
 
 List all the files and directories in the current working directory.
 
-用法： :: 
+Usage : 
     
     ls [option] [directory]...
 
 * directory - name of directory whose files/directories are to be listed. 
     * By default current working directory's files/directories are listed.
 
-选项：
+Options:
   -l, --long	    list with long format - show permissions
   -r, --reverse     reverse sort     
   -H                human readable
@@ -128,7 +137,7 @@ cat
 
 Concatenate files and print on the standard output
 
-用法： :: 
+Usage : 
 
     cat  <file>....
 
@@ -139,7 +148,7 @@ cd
 
 Change current working directory.
 
-用法： :: 
+Usage : 
     
     cd [directory]
         
@@ -151,7 +160,7 @@ cwd
 
 Get current working directory.
  
-用法： :: 
+Usage : 
     
     cwd
 
@@ -166,7 +175,7 @@ chmod
 
 Change the permissions of file/directory.
  
-用法： :: 
+Usage : 
     
     chmod <mode> <file/directory>
 
@@ -175,7 +184,7 @@ mv
 
 Moves files/Directory from source to destination.
 
-用法： :: 
+Usage : 
     
     mv <source_path> <destination_path>
 
@@ -184,7 +193,7 @@ rmdir
 
 Delete a directory(ies).
 
-用法： :: 
+Usage : 
     
     rmdir <directory_name>.....
 
@@ -193,7 +202,7 @@ rm
 
 Remove a file(es).
 
-用法： :: 
+Usage : 
     
     rm <file_name/pattern>...
 
@@ -203,7 +212,7 @@ write
 
 Create and Write a file.
 
-用法： :: 
+Usage : 
         
         write <file_name>
         <Enter Data>
@@ -223,7 +232,7 @@ lcd
 
 Moves into the given local directory.
 
-用法： :: 
+Usage : 
     
     lcd <path>
 
@@ -232,7 +241,7 @@ lpwd
 
 Prints the absolute path of the current local directory.
 
-用法： :: 
+Usage : 
     
     lpwd
 
@@ -242,7 +251,7 @@ umask
 
 Set and get the file mode creation mask 
 
-用法： :: 
+Usage : 
     
     umask [mode]
 
@@ -279,7 +288,7 @@ py
 
 Invoke python command, shell, or script
 
-用法： :: 
+Usage : 
 
         py <command>: Executes a Python command.
         py: Enters interactive Python mode.
@@ -289,7 +298,7 @@ shortcuts
 
 Lists shortcuts (aliases) available
 
-用法： ::
+Usage :
 
     shortcuts
 
@@ -298,11 +307,11 @@ history
 
 View, run, edit, and save previously entered commands.
 
-用法： :: 
+Usage : 
     
     history [-h] [-r | -e | -s | -o FILE | -t TRANSCRIPT] [arg]
 
-选项：
+Options:
    -h             show this help message and exit
    -r             run selected history items
    -e             edit and then run selected history items
@@ -315,13 +324,13 @@ unalias
 
 Unsets aliases
  
-用法： :: 
+Usage : 
     
     unalias [-a] name [name ...]
 
 * name - name of the alias being unset
 
-选项：
+Options:
    -a     remove all alias definitions
 
 set
@@ -329,13 +338,13 @@ set
 
 Sets a settable parameter or shows current settings of parameters.
 
-用法： :: 
+Usage : 
 
     set [-h] [-a] [-l] [settable [settable ...]]
 
 * Call without arguments for a list of settable parameters with their values.
 
-选项：
+Options :
   -h     show this help message and exit
   -a     display read-only settings as well
   -l     describe function of parameter
@@ -385,7 +394,7 @@ Usage:
 
      locate [options] <name>
 
-选项：
+Options :
   -c       Count number of items found
   -i       Ignore case 
 
@@ -394,11 +403,11 @@ stat
 
 Display file status.
 
-用法： ::
+Usage :
 
      stat [-h] <file_name> [file_name ...]
 
-选项：
+Options :
   -h     Shows the help message
 
 snap
@@ -419,7 +428,7 @@ setxattr
 
 Set extended attribute for a file
 
-用法： ::
+Usage :
 
      setxattr [-h] <path> <name> <value>
 
@@ -429,7 +438,7 @@ Set extended attribute for a file
 
 *  value - Extended attribute value to be set
 
-选项：
+Options:
   -h, --help   Shows the help message
 
 getxattr
@@ -437,7 +446,7 @@ getxattr
 
 Get extended attribute value for the name associated with the path
 
-用法： ::
+Usage :
 
      getxattr [-h] <path> <name>
 
@@ -445,7 +454,7 @@ Get extended attribute value for the name associated with the path
 
 *  name - Extended attribute name to get or set
 
-选项：
+Options:
   -h, --help   Shows the help message
 
 listxattr
@@ -453,13 +462,13 @@ listxattr
 
 List extended attribute names associated with the path
 
-用法：
+Usage :
 
      listxattr [-h] <path>
 
 *  path - Path to the file
 
-选项：
+Options:
   -h, --help   Shows the help message
 
 df
@@ -513,6 +522,35 @@ Options :
 
   --max_files MAX_FILES    Set total number of files under this directory tree
 
+CephFS Shell Configuration File
+===============================
+By default, CephFS Shell looks for ``cephfs-shell.conf`` in the path provided
+by the environment variable ``CEPHFS_SHELL_CONF`` and then in user's home
+directory (``~/.cephfs-shell.conf``).
+
+Right now, CephFS Shell inherits all its options from its dependency ``cmd2``.
+Therefore, these options might vary with the version of ``cmd2`` installed on
+your system. Refer to ``cmd2`` docs for a description of these options.
+
+Following is a sample ``cephfs-shell.conf``
+
+.. code-block:: ini
+
+    [cephfs-shell]
+    prompt = CephFS:~/>>>
+    continuation_prompt = >
+
+    quiet = False
+    timing = False
+    colors = True
+    debug = False
+
+    abbrev = False
+    autorun_on_edit = False
+    echo = False
+    editor = vim
+    feedback_to_output = False
+    locals_in_py = True
 
 Exit Code
 =========
@@ -566,3 +604,8 @@ Following exit codes are returned by cephfs shell
 +-----------------------------------------------+-----------+
 | Interrupted function call                     |     22    |
 +-----------------------------------------------+-----------+
+
+Files
+=====
+
+``~/.cephfs-shell.conf``
