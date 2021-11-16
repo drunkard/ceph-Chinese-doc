@@ -131,6 +131,6 @@ rm -rf $JAVA_OUTDIR
 mkdir $JAVA_OUTDIR
 
 # Copy JavaDocs to target directory
-cp -a $JAVADIR/$DOC/* $JAVA_OUTDIR/
+cp -a $JAVADIR/doc/* $JAVA_OUTDIR/
 
 echo "SUCCESS"
