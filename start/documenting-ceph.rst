@@ -1,8 +1,7 @@
-.. Documenting Ceph
-
 ================
  贡献 Ceph 文档
 ================
+.. Documenting Ceph
 
 帮助 Ceph 项目的\ **最简单的方法**\ 之一就是贡献文档，随着 Ceph 用户量的增长和\
 开发的迅速推进，越来越多的人在更新文档、增加新条目。即使是修正拼写错误或增加说\
@@ -14,13 +13,13 @@ HTML 和手册页。 http://ceph.com/docs 链接默认展示 ``master`` 分支�
 正在改进的分支，只需把 ``master`` 改成你想看的分支即可。
 
 
-.. Making Contributions
-
 如何贡献
 ========
+.. Making Contributions
 
-贡献文档和贡献源码的过程基本相同，唯一不同的就是你编译的是文档源码而不是程序源\
-码。大致顺序如下：
+贡献文档和贡献源码的过程基本相同，\
+唯一不同的就是你编译的是文档源码而不是程序源码。\
+大致顺序如下：
 
 #. `获取源代码`_
 #. `进入分支`_
@@ -32,35 +31,45 @@ HTML 和手册页。 http://ceph.com/docs 链接默认展示 ``master`` 分支�
 #. `通知我们`_
 
 
-.. Get the Source
-
 获取源代码
 ----------
+.. Get the Source
 
-Ceph 文档位于和源码同一仓库内的 ``ceph/doc`` 目录下，关于 github 和 Ceph 的详\
-细情况见\ :ref:`Get Involved`\ 。
+Ceph 文档位于和源码同一仓库内的 ``ceph/doc`` 目录下，\
+关于 github 和 Ceph 的关系细节情况见\ :ref:`Get Involved`\ 。
 
-最常用的贡献方法是\ `分支并拉入`_\ 。为此，必须先做到：
+最常用的贡献方法是\ `分支并拉取`_\ 。\
+为此，必须先做到：
 
-#. 在本地安装 git 。在 Debian/Ubuntu 下用此命令： ::
+#. 在本地安装 git 。在 Debian/Ubuntu 下用此命令：
+
+   .. prompt:: bash $
 
 	sudo apt-get install git
 
-   在 Fedora 下用此命令： ::
+   在 Fedora 下用此命令：
+
+   .. prompt:: bash $
 
 	sudo yum install git
 
-   在 CentOS/RHEL 下用此命令： ::
+   在 CentOS/RHEL 下用此命令：
+
+   .. prompt:: bash $
 
 	sudo yum install git
 
-#. 在 ``.gitconfig`` 配置文件里写好自己的名字和邮件地址。 ::
+#. 在 ``.gitconfig`` 配置文件里写好自己的名字和邮件地址。
+
+   .. code-block:: ini
 
 	[user]
 	   email = {your-email-address}
 	   name = {your-name}
 
-   例如： ::
+   例如：
+
+   .. prompt:: bash $
 
 	git config --global user.name "John Doe"
 	git config --global user.email johndoe@example.com
@@ -73,40 +82,49 @@ Ceph 文档位于和源码同一仓库内的 ``ceph/doc`` 目录下，关于 git
 #. 把已分支项目克隆到本机。
 
 
-Ceph 文档按主要组件来分类组织。
+Ceph 文档按它自身的主要组件来分类组织。
 
-- **Ceph 存储集群：**\ Ceph 存储集群文档位于 ``doc/rados`` 目录下；
+- **Ceph 存储集群：**\ Ceph 存储集群文档位于
+  ``doc/rados`` 目录下；
 
-- **Ceph 块设备：**\ Ceph 块设备文档位于 ``doc/rbd`` 目录下；
+- **Ceph 块设备：**\ Ceph 块设备文档位于
+  ``doc/rbd`` 目录下；
 
-- **Ceph 对象存储：**\ Ceph 对象存储文档位于 ``doc/radosgw`` 目录下；
+- **Ceph 对象存储：**\ Ceph 对象存储文档位于
+  ``doc/radosgw`` 目录下；
 
-- **Ceph 文件系统：**\ Ceph 文件系统文档位于 ``doc/cephfs`` 目录下；
+- **Ceph 文件系统：**\ Ceph 文件系统文档位于
+  ``doc/cephfs`` 目录下；
 
-- **安装（快速）：**\ 快速入门文档位于 ``doc/start`` 目录下；
+- **安装（快速）：**\ 快速入门文档位于
+  ``doc/start`` 目录下；
 
-- **安装（手动）：**\ 手动安装文档位于 ``doc/install`` 目录下；
+- **安装（手动）：**\ 手动安装文档位于
+  ``doc/install`` 目录下；
 
 - **手册页：**\ 手册源码位于 ``doc/man`` 目录下；
 
 - **开发者：**\ 开发者文档位于 ``doc/dev`` 目录下；
 
-- **图片：**\ 如果你想上传文档，如 JPEG 或 PNG 文件，应该放到 ``doc/images`` \
-  目录下。
+- **图片：**\ 如果你想上传文档，如 JPEG 或 PNG 文件，应该放到
+  ``doc/images`` 目录下。
 
-
-.. Select a Branch
 
 进入分支
 --------
+.. Select a Branch
 
 如果只是细小的变更，像修正排版错误、或换一种措辞，直接提交到 ``master`` 分支即\
 可；为当前版本的功能提供文档时也应该提交到 ``master`` 分支。 ``master`` 是最常\
-用的分支。 ::
+用的分支。
+
+.. prompt:: bash $
 
 	git checkout master
 
-给未来版本提供文档时应该提交到 ``next`` 分支， ``next`` 分支是第二常用的分支。 ::
+给未来版本提供文档时应该提交到 ``next`` 分支， ``next`` 分支是第二常用的分支。
+
+.. prompt:: bash $
 
 	git checkout next
 
@@ -123,20 +141,22 @@ http://tracker.ceph.com/issues/4000 。
    所有新增功能或配置选项的拉取请求也要包含一个文档提交，\
    描述一下相关的变更、选项。
 
-创建分支前，确保本地和远程都没有同名的。 ::
+创建分支前，确保本地和远程都没有同名的。
+
+.. prompt:: bash $
 
 	git branch -a | grep wip-doc-{your-branch-name}
 
-如果确实不存在，就可以创建了： ::
+如果确实不存在，就可以创建了：
+
+.. prompt:: bash $
 
 	git checkout -b wip-doc-{your-branch-name}
 
 
-
-.. Make a Change
-
 开始更改
 --------
+.. Make a Change
 
 修改文档很简单，打开 restructuredText 文件、修改、保存即可。
 相关的语法请参考 `文档风格手册`_ 。
@@ -150,37 +170,52 @@ TOC ，你可以在这里添加新文件名。所有文档都必须有标题，�
 你新建的文档不会自动被 ``git`` 跟踪，如果想把它加进仓库，必须\
 用 ``git add {path-to-filename}`` 命令。比如，在 Ceph 仓库的\
 顶极目录下，把 ``example.rst`` 文件加到 ``rados`` 子目录下，\
-可以这样： ::
+可以这样：
+
+.. prompt:: bash $
 
 	git add doc/rados/example.rst
 
-要删除一文档，应该用 ``git rm {path-to-filename}`` ，比如： ::
+要删除一文档，应该用 ``git rm {path-to-filename}`` ，比如：
+
+.. prompt:: bash $
 
 	git rm doc/rados/example.rst
 
 还必须从其他文档删除与之相关的引用。
 
 
-.. Build the Source
-
 构建文档源码
 ------------
+.. Build the Source
 
-要想构建文档，先进入 ``ceph`` 库目录： ::
+要想构建文档，先进入 ``ceph`` 库目录：
+
+.. prompt:: bash $
 
 	cd ceph
 
-在 Debian/Ubuntu 、 Fedora 或 CentOS/RHEL 上执行此命令构建文档： ::
+.. note::
+   The directory that contains ``build-doc`` and ``serve-doc`` must be included
+   in the ``PATH`` environment variable in order for these commands to work.
+
+在 Debian/Ubuntu 、 Fedora 或 CentOS/RHEL 上执行此命令构建文档：
+
+.. prompt:: bash $
 
 	admin/build-doc
 
-要扫描外部链接是否都可达，执行： ::
+要扫描外部链接是否都可达，执行：
+
+.. prompt:: bash $
 
 	admin/build-doc linkcheck
 
 执行 ``admin/build-doc`` 之后，它会在 ``ceph`` 下创建一个
 ``build-doc`` 目录。你也许还得在 ``ceph/build-doc`` 下创建个目\
-录用于 Javadoc 的输出。 ::
+录用于 Javadoc 的输出。
+
+.. prompt:: bash $
 
 	mkdir -p output/html/api/libcephfs-java/javadoc
 
@@ -191,7 +226,9 @@ TOC ，你可以在这里添加新文件名。所有文档都必须有标题，�
    止构建过程。
 
 文档构建完成后你就可以启动一个 HTTP 服务器、通过
-``http://localhost:8080/`` 查看了： ::
+``http://localhost:8080/`` 查看了：
+
+.. prompt:: bash $
 
 	admin/serve-doc
 
@@ -200,10 +237,9 @@ TOC ，你可以在这里添加新文件名。所有文档都必须有标题，�
 页格式的文档。
 
 
-.. Build the Source (First Time)
-
 构建源码（首次）
 ~~~~~~~~~~~~~~~~
+.. Build the Source (First Time)
 
 Ceph 用 Python Sphinx 构建文档，此软件一般都没安装。首次构建文\
 档时，它会生成一个用于 doxygen 的 XML 树，这个过程比较耗时.
@@ -236,7 +272,6 @@ Python Sphinx 的依赖软件包根据发行版不同而有所区别。首次构
 - gcc
 - python-devel
 - python-pip
-- python-virtualenv
 - python-docutils
 - python-jinja2
 - python-pygments
@@ -255,7 +290,6 @@ Python Sphinx 的依赖软件包根据发行版不同而有所区别。首次构
 - gcc
 - python-devel
 - python-pip
-- python-virtualenv
 - python-docutils
 - python-jinja2
 - python-pygments
@@ -272,32 +306,42 @@ Python Sphinx 的依赖软件包根据发行版不同而有所区别。首次构
 
 
 缺少的依赖都要安装，基于 Debian/Ubuntu 发行版的系统可以用此命\
-令安装： ::
+令安装：
 
-	sudo apt-get install gcc python-dev python-pip python-virtualenv libxml2-dev libxslt-dev doxygen graphviz ant ditaa
+.. prompt:: bash $
+
+	sudo apt-get install gcc python-dev python-pip libxml2-dev libxslt-dev doxygen graphviz ant ditaa
 	sudo apt-get install python-sphinx
 
-在 Fedora 发行版上可以执行： ::
+在 Fedora 发行版上可以执行：
 
-   sudo yum install gcc python-devel python-pip python-virtualenv libxml2-devel libxslt-devel doxygen graphviz ant
+.. prompt:: bash $
+
+   sudo yum install gcc python-devel python-pip libxml2-devel libxslt-devel doxygen graphviz ant
    sudo pip install html2text
    sudo yum install python-jinja2 python-pygments python-docutils python-sphinx
    sudo yum install jericho-html ditaa
 
 在 CentOS/RHEL 发行版上，最好安装 ``epel`` (Extra Packages for
 Enterprise Linux) 软件库，因为它提供了很多默认软件库所没有的软\
-件包。可执行此命令安装 ``epel`` ： ::
+件包。可执行此命令安装 ``epel`` ：
+
+.. prompt:: bash $
 
         sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 
-在 CentOS/RHEL 发行版上可以执行： ::
+在 CentOS/RHEL 发行版上可以执行：
 
-	sudo yum install gcc python-devel python-pip python-virtualenv libxml2-devel libxslt-devel doxygen graphviz ant
+.. prompt:: bash $
+
+	sudo yum install gcc python-devel python-pip libxml2-devel libxslt-devel doxygen graphviz ant
 	sudo pip install html2text
 
 对于 CentOS/RHEL 发行版，其余软件包不包含在默认及 ``epel`` 软\
 件库内，所以得到 http://rpmfind.net/ 找，然后到合适的镜像下载\
-并安装它们，比如： ::
+并安装它们，比如：
+
+.. prompt:: bash $
 
 	wget http://rpmfind.net/linux/centos/7/os/x86_64/Packages/python-jinja2-2.7.2-2.el7.noarch.rpm
 	sudo yum install python-jinja2-2.7.2-2.el7.noarch.rpm
@@ -319,7 +363,9 @@ CentOS/RHEL7 发行版兼容的包，并手动安装。在 CentOS/RHEL7 下
 - batik
 
 到 http://rpmfind.net/ 找兼容的 ``ditaa`` 及其依赖，然后从某个\
-镜像下载并安装它们。例如： ::
+镜像下载并安装它们。例如：
+
+.. prompt:: bash $
 
 	wget http://rpmfind.net/linux/fedora/linux/releases/22/Everything/x86_64/os/Packages/j/jericho-html-3.3-4.fc22.noarch.rpm
 	sudo yum install jericho-html-3.3-4.fc22.noarch.rpm
@@ -381,7 +427,9 @@ Ceph文档的提交虽然简单，却遵循着严格的惯例：
 	Signed-off-by: John Doe <john.doe@gmail.com>
 
 
-执行下列命令提交变更： ::
+执行下列命令提交变更：
+
+.. prompt:: bash $
 
 	git commit -a
 
@@ -392,15 +440,21 @@ Ceph文档的提交虽然简单，却遵循着严格的惯例：
 送到自己的 Ceph 分支仓库。
 
 
-在 Debian/Ubuntu 上执行以下命令安装： ::
+在 Debian/Ubuntu 上执行以下命令安装：
+
+.. prompt:: bash $
 
 	sudo apt-get install gitk git-gui
 
-在 Fedora/CentOS/RHEL 上执行以下命令安装： ::
+在 Fedora/CentOS/RHEL 上执行以下命令安装：
+
+.. prompt:: bash $
 
 	sudo yum install gitk git-gui
 
-然后执行 ::
+然后执行：
+
+.. prompt:: bash $
 
 	cd {git-ceph-repo-path}
 	gitk
@@ -408,57 +462,58 @@ Ceph文档的提交虽然简单，却遵循着严格的惯例：
 最后，点击 **File->Start git gui** 打开图形界面。
 
 
-.. Push the Change
-
 推送变更
 --------
+.. Push the Change
 
 你完成一或多个提交后，必须从本地推送到位于 ``github`` 的仓库。某些图形化工具\
-（如 ``git-gui`` ）有推送菜单。如果你之前创建了分支： ::
+（如 ``git-gui`` ）有推送菜单。如果你之前创建了分支：
+
+.. prompt:: bash $
 
 	git push origin wip-doc-{your-branch-name}
 
-否则： ::
+否则：
+
+.. prompt:: bash $
 
 	git push
 
 
-.. Make a Pull Request
-
 发出接收请求
 ------------
+.. Make a Pull Request
 
 前面已经说过了，你可以依照\ `分支并拉入`_\ 方法共享文档。
 
 
-.. Notify Us
-
 通知我们
 --------
+.. Notify Us
 
 发出接收请求后，请发邮件给 ceph-doc@redhat.com 。
 
 
-.. Documentation Style Guide
-
 文档风格手册
 ============
+.. Documentation Style Guide
 
 Ceph 文档项目的目标之一就是可读性，包括 restructuredText 和\
 渲染后的 HTML 页面的可读性。进入 Ceph 源码库，随便找个文档\
 查看其源码，你会发现它们在终端下就像已经渲染过的 HTML 页面\
 一样清晰明了。另外，也许你还看到 ``ditaa`` 格式的图表渲染\
-的很漂亮。 ::
+的很漂亮。
+
+.. prompt:: bash $
 
 	less doc/architecture.rst
 
 为了维持一致性，请遵守下面的风格手册。
 
 
-.. Headings
-
 标题
 ----
+.. Headings
 
 #. **文档标题：** 标题行的前、后各加一行 ``=`` ，且标题行首、\
    行尾各有一个空格，详情见\ `文档标题`_\ 。
@@ -471,10 +526,9 @@ Ceph 文档项目的目标之一就是可读性，包括 restructuredText 和\
    有空格；段标题前应该有两个空行（除非前面是内嵌引用）。
 
 
-.. Text Body
-
 正文
 ----
+.. Text Body
 
 通常，我们把正文限制在 80 列之内，这样它在任何标准终端内都可以正确显示，行首、\
 行尾都不能有空格。我们应该尽可能维持此惯例，包括文本、项目、文字文本（允许例\
@@ -502,10 +556,9 @@ Ceph 文档项目的目标之一就是可读性，包括 restructuredText 和\
    开始重新编号，详情见\ `显示代码示例`_\ 。
 
 
-.. Paragraph Level Markup
-
 段落分级标记
 ------------
+.. Paragraph Level Markup
 
 Ceph 文档项目用\ `段落分级标记`_\ 来高亮显示要点。
 
@@ -529,10 +582,9 @@ Ceph 文档项目用\ `段落分级标记`_\ 来高亮显示要点。
    见 `topic 指令`_\ 。
 
 
-.. TOC and Hyperlinks
-
 TOC 和超链接
 ------------
+.. TOC and Hyperlinks
 
 所有文档都必须被链接到其他文档或列表内，否则构建时会被警告。
 
@@ -550,7 +602,7 @@ Ceph 文档内的链接可以这样写：反引号（重音符号）、之后跟
 
 .. _Python Sphinx: http://sphinx-doc.org
 .. _resturcturedText: http://docutils.sourceforge.net/rst.html
-.. _分支并拉入: https://help.github.com/articles/using-pull-requests
+.. _分支并拉取: https://help.github.com/articles/using-pull-requests
 .. _github: http://github.com
 .. _ditaa: http://ditaa.sourceforge.net/
 .. _文档标题: http://docutils.sourceforge.net/docs/user/rst/quickstart.html#document-title-subtitle
