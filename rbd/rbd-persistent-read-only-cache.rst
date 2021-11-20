@@ -1,14 +1,13 @@
-.. RBD Persistent Cache
+==================
+ RBD 永久只读缓存
+==================
 
-==============
- RBD 永久缓存
-==============
-
-.. index:: Ceph Block Device; Persistent Cache
-.. Shared, Read-only Parent Image Cache
+.. index:: Ceph Block Device; Persistent Read-only Cache
 
 共享、只读的父映像缓存
 ======================
+.. Shared, Read-only Parent Image Cache
+
 `Cloned RBD images`_ from a parent usually only modify a small portion of
 the image. For example, in a VDI workload, the VMs are cloned from the same
 base image and initially only differ by hostname and IP address. During the
