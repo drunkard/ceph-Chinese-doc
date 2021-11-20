@@ -10,6 +10,7 @@ logo.png
 cephfs/cephfs-architecture.svg
 cephfs/cephfs-top.png
 cephfs/mds-state-diagram.dot
+cephfs/mds-state-diagram.svg
 cephfs/subtree-partitioning.svg
 
 dev/cephadm/design/mockups/OSD_Creation_device_mode.svg
