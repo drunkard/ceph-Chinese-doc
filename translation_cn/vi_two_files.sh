@@ -32,6 +32,11 @@ open_files() {
 		return 1
 	}
 
+	# compare them, hint if they are the same
+	if [ `diff -u $cn_doc $en_doc | wc -l` -eq 0 ]; then
+		echo -e "二者完全相同: $cn_doc == $en_doc\n"
+	fi
+
 	# Convert to relative path
 	cn_doc=`realpath --relative-to=$ZH_REPO $cn_doc`
 	en_doc=`realpath --relative-to=$ZH_REPO $en_doc`
