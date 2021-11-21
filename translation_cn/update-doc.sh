@@ -45,8 +45,8 @@ if cd $CEPH_REPO; then
 	# view "git log" using "tig"
 	# echo "There's `git log --oneline --since=${SYNC_TO} doc/ | wc -l` commits to sync"
 	cd $CEPH_REPO || exit 1
-	echo "command: tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/"
-	tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/
+	echo "command: tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/ src/common/options/"
+	tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/ src/common/options/
 else
 	echo "Failed to enter git repo for ceph: $CEPH_REPO"
 fi
