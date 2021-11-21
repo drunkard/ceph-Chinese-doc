@@ -43,7 +43,7 @@ fi
 # commit ID, because there's too many criss-cross branches which is hard
 # for us to sync by branch/commit ID.
 # sync by $STEP days once, 0 to disable
-SYNC_TO="2021-02-27"
+SYNC_TO="2021-03-06"
 STEP=7
 SYNC_UNTIL=`date -d "$SYNC_TO +$STEP days" +%Y-%m-%d`
 
