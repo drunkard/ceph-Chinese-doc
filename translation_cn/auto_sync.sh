@@ -3,7 +3,6 @@
 . ${0%/*}/env.sh
 
 updates="
-conf.py
 favicon.ico
 logo.png
 
@@ -59,6 +58,15 @@ _templates/
 _themes/
 "
 
+# compares if conf.py from upstream changed, hint if changed.
+compare_conf_py() {
+	should_be=`diff -u $EN_DOC/conf.py $ZH_DOC/conf.py | grep ^[+-] | wc -l`
+	if [ $should_be -ne 4 ]; then
+		echo -e "\n上游配置文件变了，请更新 conf.py"
+		diff -u $EN_DOC/conf.py $ZH_DOC/conf.py
+	fi
+}
+
 # 自动同步 changelog
 if cd $EN_DOC/; then
 	rsync -avrR --del --exclude=__pycache__ $updates $ZH_REPO/
@@ -70,3 +78,4 @@ else
 	echo "$0: failed to enter directory $EN_DOC, sync failed"
 fi
 
+compare_conf_py

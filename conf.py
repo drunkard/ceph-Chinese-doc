@@ -237,7 +237,7 @@ seqdiag_html_image_format = 'SVG'
 
 # ceph_confval
 ceph_confval_imports = glob.glob(os.path.join(top_level,
-                                              'src/common/options',
+                                              'doc-zh/zh_options',
                                               '*.yaml.in'))
 ceph_confval_mgr_module_path = 'src/pybind/mgr'
 ceph_confval_mgr_python_path = 'src/pybind'

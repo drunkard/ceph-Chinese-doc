@@ -12,9 +12,21 @@ else
 fi
 
 open_files() {
-	cn_doc="$ZH_REPO/$1"
-	en_doc="$EN_DOC/$1"
-	cd $ZH_REPO
+	cd $ZH_DOC
+
+	case $1 in
+		*.yaml.in)
+			# *.yaml.in files
+			f=${1##*/}
+			cn_doc="$ZH_DOC/zh_options/$f"
+			en_doc="$CEPH_REPO/src/common/options/$f"
+			;;
+		*)
+			cn_doc="$ZH_DOC/$1"
+			en_doc="$EN_DOC/$1"
+	esac
+
+	echo $cn_doc $en_doc
 
 	if [ ! -e $cn_doc ]; then
 		if [ -e $en_doc ]; then
@@ -38,8 +50,8 @@ open_files() {
 	fi
 
 	# Convert to relative path
-	cn_doc=`realpath --relative-to=$ZH_REPO $cn_doc`
-	en_doc=`realpath --relative-to=$ZH_REPO $en_doc`
+	cn_doc=`realpath --relative-to=$ZH_DOC $cn_doc`
+	# en_doc=`realpath --relative-to=$ZH_DOC $en_doc`
 
 	cat <<-EOF
 	vim -O +"set colorcolumn=64" $cn_doc $en_doc	# 垂直分割（默认）
@@ -60,6 +72,8 @@ remove_prefix() {
 		str=`sed -e 's:^doc/::' <<< "$str"`
 	grep -qe ^doc-en/ <<< "$str" && \
 		str=`sed -e 's:^doc-en/::' <<< "$str"`
+	grep -qe ^/git/ceph/doc-zh/ <<< "$str" && \
+		str=`sed -e 's:^/git/ceph/doc-zh/::' <<< "$str"`
 	echo -n "$str"
 }
 
