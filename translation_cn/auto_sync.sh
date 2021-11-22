@@ -58,6 +58,10 @@ _templates/
 _themes/
 "
 
+yaml_updates="
+CMakeLists.txt
+"
+
 # compares if conf.py from upstream changed, hint if changed.
 compare_conf_py() {
 	should_be=`diff -u $EN_DOC/conf.py $ZH_DOC/conf.py | grep ^[+-] | wc -l`
@@ -67,15 +71,32 @@ compare_conf_py() {
 	fi
 }
 
-# 自动同步 changelog
-if cd $EN_DOC/; then
+sync_doc_files() {
+	echo "$FUNCNAME: syncing docs ..."
+	cd $EN_DOC && \
 	rsync -avrR --del --exclude=__pycache__ $updates $ZH_REPO/
 	retv=$?
 	if [ $retv -ne 0 ]; then
 		echo "$0: sync failed with error code: $retv"
 	fi
+}
+
+
+sync_yaml_files() {
+	echo "$FUNCNAME: syncing yaml files ..."
+	cd $EN_YAML && \
+	rsync -avrR --del --exclude=__pycache__ *.py $yaml_updates $ZH_YAML/
+	retv=$?
+	if [ $retv -ne 0 ]; then
+		echo "$0: sync failed with error code: $retv"
+	fi
+}
+
+if [ -d $EN_DOC ]; then
+	sync_doc_files
+	sync_yaml_files
+
+	compare_conf_py
 else
 	echo "$0: failed to enter directory $EN_DOC, sync failed"
 fi
-
-compare_conf_py

@@ -38,6 +38,9 @@ else
 	exit 2
 fi
 
+EN_YAML="$CEPH_REPO/src/common/options"
+ZH_YAML="$ZH_REPO/zh_options"
+
 # 当前的库同步到了哪里
 # Where we synced with ceph mainline. Note by date is more reliable than
 # commit ID, because there's too many criss-cross branches which is hard

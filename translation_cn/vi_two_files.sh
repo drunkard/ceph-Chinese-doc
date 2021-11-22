@@ -18,8 +18,8 @@ open_files() {
 		*.yaml.in)
 			# *.yaml.in files
 			f=${1##*/}
-			cn_doc="$ZH_DOC/zh_options/$f"
-			en_doc="$CEPH_REPO/src/common/options/$f"
+			cn_doc="$ZH_YAML/$f"
+			en_doc="$EN_YAML/$f"
 			;;
 		*)
 			cn_doc="$ZH_DOC/$1"
