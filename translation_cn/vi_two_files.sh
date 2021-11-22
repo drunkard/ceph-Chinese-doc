@@ -26,10 +26,15 @@ open_files() {
 			en_doc="$EN_DOC/$1"
 	esac
 
-	echo $cn_doc $en_doc
+	# When build doc/, hints has no suffix .rst, so add them automatically
+	if [ ! -e $cn_doc -a -f $cn_doc.rst ] && [ ! -e $en_doc -a -f $en_doc.rst ]; then
+		cn_doc=$cn_doc.rst
+		en_doc=$en_doc.rst
+	fi
 
-	if [ ! -e $cn_doc ]; then
-		if [ -e $en_doc ]; then
+	if [ ! -f $cn_doc ]; then
+		# Check if they are exist
+		if [ -f $en_doc ]; then
 			echo "中文版不存在，复制一个过来 ..."
 			mkdir -p `dirname $cn_doc`
 			cp -v $en_doc $cn_doc
@@ -39,7 +44,7 @@ open_files() {
 			return 1
 		fi
 	fi
-	[ -e $en_doc ] || {
+	[ -f $en_doc ] || {
 		echo "英文版文档不存在: $1"
 		return 1
 	}
