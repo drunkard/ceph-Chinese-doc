@@ -32,6 +32,7 @@ fi
 echo -e "\n英文文档里:"
 if cd $EN_DOC; then
 	grep --color=always -Ri "$words" *
+	grep --color=always -Ri "$words" $EN_YAML
 else
 	echo "未能进入文档库： $ZH_REPO"
 fi
