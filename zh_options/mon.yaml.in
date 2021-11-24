@@ -245,7 +245,7 @@ options:
   type: int
   level: advanced
   desc: max cluster log entries per paxos event
-  fmt_desc: The maximum number of log entries per event.
+  fmt_desc: 每个事件允许的最大日志条数。
   default: 4096
   services:
   - mon
@@ -254,7 +254,7 @@ options:
   type: bool
   level: advanced
   desc: log monitor health to cluster log
-  fmt_desc: Enable sending a health summary to the cluster log periodically.
+  fmt_desc: 是否周期性地向集群日志发送健康信息摘要。
   default: true
   services:
   - mon
@@ -263,10 +263,10 @@ options:
   type: int
   level: advanced
   desc: frequency to log monitor health to cluster log
-  fmt_desc: How often (in seconds) the monitor sends a health summary to the cluster
-    log (a non-positive number disables). Monitors will always
-    send a summary to the cluster log whether or not it differs from
-    the previous summary.
+  fmt_desc: 监视器向集群日志发送健康摘要的频率，单位为秒。
+    非正数表示禁用此功能。
+    不管和前面的摘要相比有没有变化，
+    监视器都会把摘要发给集群日志。
   default: 10_min
   services:
   - mon
@@ -276,10 +276,10 @@ options:
 - name: mon_health_to_clog_tick_interval
   type: float
   level: dev
-  fmt_desc: How often (in seconds) the monitor sends a health summary to the cluster
-    log (a non-positive number disables). If current health summary
-    is empty or identical to the last time, monitor will not send it
-    to cluster log.
+  fmt_desc: 监视器向集群日志发送健康信息摘要的频率，单位为秒。
+    非正数表示禁用此功能。如果当前健康摘要为空或者与上次的相同，
+    监视器就不会发给
+    集群日志了。
   default: 1_min
   services:
   - mon
@@ -309,9 +309,9 @@ options:
   type: int
   level: advanced
   desc: issue MON_DISK_CRIT health error when mon available space below this percentage
-  fmt_desc: Raise ``HEALTH_ERR`` status when the filesystem that houses a
-    monitor's data store reports that its available capacity is
-    less than or equal to this percentage.
+  fmt_desc: 监视器的数据存储磁盘可用空间
+    小于或等于此百分比时
+    触发 ``HEALTH_ERR`` 状态。
   default: 5
   services:
   - mon
@@ -320,9 +320,9 @@ options:
   type: int
   level: advanced
   desc: issue MON_DISK_LOW health warning when mon available space below this percentage
-  fmt_desc: Raise ``HEALTH_WARN`` status when the filesystem that houses a
-    monitor's data store reports that its available capacity is
-    less than or equal to this percentage .
+  fmt_desc: 监视器的数据存储磁盘可用空间
+    小于或等于此百分比时
+    触发 ``HEALTH_WARN`` 状态。
   default: 30
   services:
   - mon
@@ -331,8 +331,8 @@ options:
   type: size
   level: advanced
   desc: issue MON_DISK_BIG health warning when mon database is above this size
-  fmt_desc: Raise ``HEALTH_WARN`` status when a monitor's data
-    store grows to be larger than this size, 15GB by default.
+  fmt_desc: 一个监视器的数据量大于此尺寸时触发 ``HEALTH_WARN`` 状态，
+    默认是 15GB 。
   default: 15_G
   services:
   - mon
@@ -341,7 +341,7 @@ options:
   type: size
   level: advanced
   desc: max bytes of outstanding mon messages mon will read off the network
-  fmt_desc: The message memory cap for metadata server and OSD messages (in bytes).
+  fmt_desc: 给元数据服务器和 OSD 的消息使用的内存空间（字节）。
   default: 400_M
   services:
   - mon
@@ -350,7 +350,7 @@ options:
   type: float
   level: advanced
   desc: maximum time for a mon election (seconds)
-  fmt_desc: On election proposer, maximum waiting time for all ACKs in seconds.
+  fmt_desc: 等待大家确认选举提案的最大时长。单位为秒。
   default: 5
   services:
   - mon
@@ -368,7 +368,7 @@ options:
   desc: lease interval between quorum monitors (seconds)
   long_desc: This setting controls how sensitive your mon quorum is to intermittent
     network issues or other failures.
-  fmt_desc: The length (in seconds) of the lease on the monitor's versions.
+  fmt_desc: 监视器版本租期（秒）。
   default: 5
   services:
   - mon
@@ -380,9 +380,9 @@ options:
   long_desc: Leases must be renewed before they time out.  A smaller value means frequent
     renewals, while a value close to 1 makes a lease expiration more likely.
   fmt_desc: |
-    ``mon_lease`` \* ``mon_lease_renew_interval_factor`` will be the
-    interval for the Leader to renew the other monitor's leases. The
-    factor should be less than ``1.0``.
+    ``mon_lease``_\*_``mon_lease_renew_interval_factor``
+    时长就是 Leader （头领）刷新其他监视器租期的间隔。
+    此系数应该小于 ``1.0`` 。
   default: 0.6
   services:
   - mon
@@ -395,8 +395,8 @@ options:
   type: float
   level: advanced
   desc: multiple of mon_lease for the lease ack interval before calling new election
-  fmt_desc: The Leader will wait ``mon_lease`` \* ``mon_lease_ack_timeout_factor``
-    for the Providers to acknowledge the lease extension.
+  fmt_desc: Leader 会等着各 Provider 确认租期延续，
+    时间不超过 ``mon lease`` \* ``mon lease ack timeout factor`` 。
   default: 2
   services:
   - mon
@@ -410,9 +410,9 @@ options:
   level: advanced
   desc: multiple of mon_lease for follower mons to accept proposed state changes before
     calling a new election
-  fmt_desc: The Leader will wait ``mon_lease`` \* ``mon_accept_timeout_factor``
-    for the Requester(s) to accept a Paxos update. It is also used
-    during the Paxos recovery phase for similar purposes.
+  fmt_desc: Leader 会等着 Requester(s) 接收 Paxos 更新，
+    时间不超过 ``mon lease`` \* ``mon accept timeout factor`` 。
+    出于类似目的，在 Paxos 恢复阶段也会用到此配置。
   default: 2
   services:
   - mon
@@ -467,8 +467,8 @@ options:
   level: advanced
   desc: issue CACHE_POOL_NO_HIT_SET health warning for cache pools that do not have
     hit sets configured
-  fmt_desc: Raise ``HEALTH_WARN`` when a cache pool does not have the ``hit_set_type``
-    value configured. See :ref:`hit_set_type <hit_set_type>` for more details.
+  fmt_desc: 如果某个缓存存储池没配置 ``hit_set_type`` ，
+    触发 ``HEALTH_WARN`` 状态。详情见 :ref:`hit_set_type <hit_set_type>` 。
   default: true
   services:
   - mon
@@ -493,8 +493,8 @@ options:
   level: advanced
   desc: issue OLD_CRUSH_STRAW_CALC_VERSION health warning if the CRUSH map's straw_calc_version
     is zero
-  fmt_desc: Raise ``HEALTH_WARN`` when the CRUSH ``straw_calc_version`` is zero. See
-    :ref:`CRUSH map tunables <crush-map-tunables>` for details.
+  fmt_desc: 如果 CRUSH 的 ``straw_calc_version`` 值为 0 ，触发 ``HEALTH_WARN`` 状态。
+    详情见 :ref:`CRUSH 图的可调选项 <crush-map-tunables>`\ 。
   default: true
   services:
   - mon
@@ -518,10 +518,10 @@ options:
   long_desc: Having mon_osd_down_out_interval set to 0 means that down OSDs are not
     marked out automatically and the cluster does not heal itself without administrator
     intervention.
-  fmt_desc: Raise ``HEALTH_WARN`` when ``mon_osd_down_out_interval`` is zero. Having this
-    option set to zero on the leader acts much like the ``noout`` flag. It's hard to figure
-    out what's going wrong with clusters without the ``noout`` flag set but acting like that
-    just the same, so we report a warning in this case.
+  fmt_desc: 如果 ``mon_osd_down_out_interval`` 是 0 就触发 ``HEALTH_WARN`` 。
+    Leader 上的这个选项设置为 0 时，作用类似 ``noout`` 标记。
+    集群没有设置 ``noout`` 标记，而表现出的行为却一样时很难查出为什么，
+    所以我们对此情况发出警告。
   default: true
   services:
   - mon
@@ -532,7 +532,7 @@ options:
   type: bool
   level: advanced
   desc: issue OLD_CRUSH_TUNABLES health warning if CRUSH tunables are older than mon_crush_min_required_version
-  fmt_desc: Raise ``HEALTH_WARN`` when CRUSH tunables are too old (older than ``mon_min_crush_required_version``)
+  fmt_desc: 如果 CRUSH 可调选项太旧（比 ``mon_min_crush_required_version`` 旧），触发 ``HEALTH_WARN`` 。
   default: true
   services:
   - mon
@@ -543,8 +543,8 @@ options:
   type: str
   level: advanced
   desc: minimum ceph release to use for mon_warn_on_legacy_crush_tunables
-  fmt_desc: The minimum tunable profile required by the cluster. See
-    :ref:`CRUSH map tunables <crush-map-tunables>` for details.
+  fmt_desc: 此集群要求的最低可调配置版本号，
+    详情见 :ref:`CRUSH 图的可调选项 <crush-map-tunables>`\ 。
   default: hammer
   services:
   - mon
@@ -595,7 +595,7 @@ options:
 - name: mon_clock_drift_allowed
   type: float
   level: advanced
-  desc: allowed clock drift (in seconds) between mons before issuing a health warning
+  desc: 监视器之间容许的时钟漂移量，单位为秒，超过就发出健康警告。
   default: 0.05
   services:
   - mon
@@ -604,8 +604,8 @@ options:
 - name: mon_clock_drift_warn_backoff
   type: float
   level: advanced
-  desc: exponential backoff factor for logging clock drift warnings in the cluster
-    log
+  desc: 在集群日志里记录时钟偏移警告的\
+    指数退避因子。
   default: 5
   services:
   - mon
@@ -615,8 +615,8 @@ options:
   type: float
   level: advanced
   desc: frequency of clock synchronization checks between monitors (seconds)
-  fmt_desc: The time check interval (clock drift check) in seconds
-    for the Leader.
+  fmt_desc: Leader 的时间检查间隔（时钟漂移检查），
+    单位为秒。
   default: 5_min
   services:
   - mon
@@ -627,8 +627,8 @@ options:
   level: advanced
   desc: frequency of clock synchronization (re)checks between monitors while clocks
     are believed to be skewed (seconds)
-  fmt_desc: The time check interval (clock drift check) in seconds when in
-    presence of a skew in seconds for the Leader.
+  fmt_desc: 时间检查间隔（时钟漂移检查），单位为秒。
+    出现时间偏差时， Leader 间隔多久检查一次。
   default: 30
   services:
   - mon
@@ -642,9 +642,9 @@ options:
   default: 25
   services:
   - mon
-  fmt_desc: How often (in commits) to stash a full copy of the PaxosService state.
-    Current this setting only affects ``mds``, ``mon``, ``auth`` and ``mgr``
-    PaxosServices.
+  fmt_desc: 多久（按提交数量计算）存储一份完整的 PaxosService 状态。
+    当前这个选项会影响 ``mds`` 、 ``mon`` 、 ``auth`` 和 ``mgr`` 的
+    PaxosService 。
   with_legacy: true
 # max paxos iterations before we must first sync the monitor stores
 - name: paxos_max_join_drift
@@ -653,10 +653,10 @@ options:
   default: 10
   services:
   - mon
-  fmt_desc: The maximum Paxos iterations before we must first sync the
-    monitor data stores. When a monitor finds that its peer is too
-    far ahead of it, it will first sync with data stores before moving
-    on.
+  fmt_desc: 允许的最大 Paxos 迭代量，
+    超过此值必须先同步监视器数据。
+    当某个监视器发现别的互联点比它领先太多的时候，
+    它得先同步数据才能继续工作。
   with_legacy: true
 # gather updates for this long before proposing a map update
 - name: paxos_propose_interval
@@ -665,8 +665,8 @@ options:
   default: 1
   services:
   - mon
-  fmt_desc: Gather updates for this time interval before proposing
-    a map update.
+  fmt_desc: 提议更新之前收集本时间段的\
+    更新。
   with_legacy: true
 # min time to gather updates for after period of inactivity
 - name: paxos_min_wait
@@ -675,8 +675,8 @@ options:
   default: 0.05
   services:
   - mon
-  fmt_desc: The minimum amount of time to gather updates after a period of
-    inactivity.
+  fmt_desc: 经过一段不活跃时间后，
+    收集更新的最小等待时间。
   with_legacy: true
 # minimum number of paxos states to keep around
 - name: paxos_min
@@ -685,7 +685,7 @@ options:
   default: 500
   services:
   - mon
-  fmt_desc: The minimum number of Paxos states to keep around
+  fmt_desc: 保留着的 paxos 状态的最小数量。
   with_legacy: true
 # number of extra proposals tolerated before trimming
 - name: paxos_trim_min
@@ -694,7 +694,7 @@ options:
   default: 250
   services:
   - mon
-  fmt_desc: Number of extra proposals tolerated before trimming
+  fmt_desc: 有多少多余的额外提议才能清理。
   with_legacy: true
 # maximum amount of versions to trim during a single proposal (0 disables it)
 - name: paxos_trim_max
@@ -703,7 +703,7 @@ options:
   default: 500
   services:
   - mon
-  fmt_desc: The maximum number of extra proposals to trim at a time
+  fmt_desc: 一次最多清理多少额外提议。
   with_legacy: true
 # minimum amount of versions to trigger a trim (0 disables it)
 - name: paxos_service_trim_min
@@ -712,7 +712,7 @@ options:
   default: 250
   services:
   - mon
-  fmt_desc: The minimum amount of versions to trigger a trim (0 disables it)
+  fmt_desc: 至少积攒多少个版本再触发清理机制（ 0 禁用此选项）。
   with_legacy: true
 # maximum amount of versions to trim during a single proposal (0 disables it)
 - name: paxos_service_trim_max
@@ -721,7 +721,7 @@ options:
   default: 500
   services:
   - mon
-  fmt_desc: The maximum amount of versions to trim during a single proposal (0 disables it)
+  fmt_desc: 一次提议最多可以清理多少个版本（ 0 禁用此选项）。
   with_legacy: true
 - name: paxos_service_trim_max_multiplier
   type: uint
@@ -757,9 +757,9 @@ options:
   type: int
   level: dev
   desc: force mons to trim mdsmaps/fsmaps up to this epoch
-  fmt_desc: Force monitor to trim mdsmaps up to but not including this FSMap
-    epoch. A value of 0 disables (the default) this config. This command is
-    potentially dangerous, use with care.
+  fmt_desc: 强制让监视器把 mdsmap 裁截到这个 FSMap 时间结，不包括这一个。
+    默认值为 0 ，表示禁用此配置选项。
+    这个命令有潜在危险，慎用！
   default: 0
   services:
   - mon
@@ -776,9 +776,9 @@ options:
   type: bool
   level: advanced
   desc: skip sanity checks on fsmap/mdsmap
-  fmt_desc: Skip safety assertions on FSMap (in case of bugs where we want to
-    continue anyway). Monitor terminates if the FSMap sanity check
-    fails, but we can disable it by enabling this option.
+  fmt_desc: 跳过 FSMap 的安全性检查确认（遇到软件缺陷时还想继续）。
+    如果 FSMap 健全性检查失败，监视器会终止，
+    但我们可以禁止检查，启用此选项即可。
   default: false
   services:
   - mon
@@ -985,10 +985,10 @@ options:
   type: bool
   level: dev
   desc: minimize peering work by priming pg_temp values after a map change
-  fmt_desc: Enables or disables priming the PGMap with the previous OSDs when an ``out``
-    OSD comes back into the cluster. With the ``true`` setting, clients
-    will continue to use the previous OSDs until the newly ``in`` OSDs for
-    a PG have peered.
+  fmt_desc: 当一个先前处于 out 状态的 OSD 回到集群时，
+    捡回（prime ）还是不捡回包含先前各 OSD 的 PGMap 。
+    设置为 ``true`` 时，客户端们会继续使用先前的 OSD 们，
+    直到 PG 的新增 OSD 完成互联。
   default: true
   services:
   - mon
@@ -997,8 +997,8 @@ options:
   type: float
   level: dev
   desc: maximum time to spend precalculating PG mappings on map change (seconds)
-  fmt_desc: How much time in seconds the monitor should spend trying to prime the
-    PGMap when an out OSD comes back into the cluster.
+  fmt_desc: 当某一个先前状态为 out 的 OSD 回到集群、
+    监视器在捡回 PGMap 时尝试的最大时间，单位为秒。
   default: 0.5
   services:
   - mon
@@ -1056,7 +1056,7 @@ options:
   type: str
   level: advanced
   desc: path to mon database
-  fmt_desc: The monitor's data location.
+  fmt_desc: 监视器的数据位置。
   default: /var/lib/ceph/mon/$cluster-$id
   services:
   - mon
@@ -1082,10 +1082,10 @@ options:
   default: false
   services:
   - mon
-  fmt_desc: Compact the database used as Ceph Monitor store on
-    ``ceph-mon`` start. A manual compaction helps to shrink the
-    monitor database and improve the performance of it if the regular
-    compaction fails to work.
+  fmt_desc: |
+    ``ceph-mon`` 启动时压缩监视器存储所用的数据库。
+    如果常规压缩失效，可以执行手动压缩，
+    有助于缩小监视器的数据库、并提升其性能。
   with_legacy: true
 # trigger leveldb compaction on bootstrap
 - name: mon_compact_on_bootstrap
@@ -1094,10 +1094,10 @@ options:
   default: false
   services:
   - mon
-  fmt_desc: Compact the database used as Ceph Monitor store
-    on bootstrap. Monitors probe each other to establish
-    a quorum after bootstrap. If a monitor times out before joining the
-    quorum, it will start over and bootstrap again.
+  fmt_desc: 自举引导期间压缩监视器所用的数据库。
+    监视器完成自举引导后开始互相探测，以建立法定人数；
+    如果一个监视器加入法定人数超时，
+    它会再次从头开始自举引导。
   with_legacy: true
 # compact (a prefix) when we trim old states
 - name: mon_compact_on_trim
@@ -1106,7 +1106,7 @@ options:
   default: true
   services:
   - mon
-  fmt_desc: Compact a certain prefix (including paxos) when we trim its old states.
+  fmt_desc: 清理旧的状态存档时也压缩这个前缀（包括 paxos ）。
   with_legacy: true
 - name: mon_op_complaint_time
   type: secs
@@ -1199,7 +1199,7 @@ options:
   type: int
   level: advanced
   desc: maximum number of OSDMaps to cache in memory
-  fmt_desc: The size of osdmaps cache, not to rely on underlying store's cache
+  fmt_desc: osdmap 缓存的尺寸，与底层存储的缓存无关。
   default: 500
   services:
   - mon
@@ -1218,8 +1218,8 @@ options:
   type: int
   level: dev
   desc: granularity of PG placement calculation background work
-  fmt_desc: We calculate the mapping from placement group to OSDs in chunks.
-    This option specifies the number of placement groups per chunk.
+  fmt_desc: 我们按块计算归置组到 OSD 的映射关系。
+    这个选项指定了每个块的归置组数量。
   default: 4096
   services:
   - mon
@@ -1278,7 +1278,7 @@ options:
   type: int
   level: advanced
   desc: worker threads for CPU intensive background work
-  fmt_desc: Number of threads for performing CPU intensive work on monitor.
+  fmt_desc: 监视器执行 CPU 密集型工作时使用的线程数。
   default: 4
   services:
   - mon
@@ -1287,7 +1287,7 @@ options:
   type: int
   level: advanced
   desc: interval for internal mon background checks
-  fmt_desc: A monitor's tick interval in seconds.
+  fmt_desc: 监视器的心跳间隔，单位为秒。
   default: 5
   services:
   - mon
@@ -1296,8 +1296,8 @@ options:
   type: int
   level: advanced
   desc: close inactive mon client connections after this many seconds
-  fmt_desc: Monitor will terminate inactive sessions stay idle over this
-    time limit.
+  fmt_desc: 会话闲置时间超过此时限，
+    监视器就会终结这个不活跃的会话。
   default: 5_min
   services:
   - mon
@@ -1306,9 +1306,9 @@ options:
   type: float
   level: dev
   desc: subscribe interval for pre-jewel clients
-  fmt_desc: The refresh interval (in seconds) for subscriptions. The
-    subscription mechanism enables obtaining cluster maps
-    and log information.
+  fmt_desc: 订阅内容的刷新间隔（秒），
+    通过订阅机制可以获取\
+    集群运行图和日志信息。
   default: 1_day
   services:
   - mon

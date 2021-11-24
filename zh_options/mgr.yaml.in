@@ -170,7 +170,7 @@ options:
   level: advanced
   desc: number of PGMaps stats over which we calc the average read/write throughput
     of the whole cluster
-  fmt_desc: Ceph will smooth statistics over the last ``N`` PG maps.
+  fmt_desc: Ceph 将平滑最后 ``N`` 个归置组图的统计信息。
   default: 6
   services:
   - mgr
@@ -194,8 +194,8 @@ options:
   level: advanced
   desc: issue CACHE_POOL_NEAR_FULL health warning when cache pool utilization exceeds
     this ratio of usable space
-  fmt_desc: Position between pool's ``cache_target_full`` and ``target_max_object``
-    where we start warning
+  fmt_desc: 存储池使用率达到 ``cache_target_full`` 和 ``target_max_object``
+    的多大比例时发出警告。
   default: 0.66
   services:
   - mgr
