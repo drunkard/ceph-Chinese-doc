@@ -342,6 +342,7 @@
 
     peer
     peering
+        互联点
         （归置组、 OSD ）互联、互联点、正在互联；
 
     period
