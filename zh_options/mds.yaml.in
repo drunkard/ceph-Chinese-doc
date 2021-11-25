@@ -101,10 +101,10 @@ options:
   type: float
   level: advanced
   desc: amount of memory to reserve for future cached objects
-  fmt_desc: The cache reservation (memory or inodes) for the MDS cache to maintain.
-    Once the MDS begins dipping into its reservation, it will recall
-    client state until its cache size shrinks to restore the
-    reservation.
+  fmt_desc: MDS 缓存（子系统）要维持的保留缓存空间（内存量或 inode 数量）。
+    MDS 一旦开始恢复其缓存保留量，
+    它会回调客户端状态，
+    直到它的缓存尺寸也缩减到空出保留值。
   default: 0.05
   services:
   - mds
@@ -121,8 +121,8 @@ options:
   type: float
   level: advanced
   desc: midpoint for MDS cache LRU
-  fmt_desc: The insertion point for new items in the cache LRU
-    (from the top).
+  fmt_desc: 把新条目插入缓存 LRU 时的插入点\
+    （从顶端）。
   default: 0.7
   services:
   - mds
@@ -156,8 +156,8 @@ options:
   type: int
   level: advanced
   desc: maximum size in megabytes for a RADOS write to a directory
-  fmt_desc: The maximum size of a directory update before Ceph breaks it into
-    smaller transactions (MB).
+  fmt_desc: 一个目录更新超过多大时\
+    要拆分为较小的事务（ MB ）。
   default: 10
   services:
   - mds
@@ -173,7 +173,7 @@ options:
 - name: mds_decay_halflife
   type: float
   level: advanced
-  desc: rate of decay for temperature counters on each directory for balancing
+  desc: 用于均衡的各个目录、其热度计数器的衰减速度。
   default: 5
   services:
   - mds
@@ -181,7 +181,7 @@ options:
 - name: mds_beacon_interval
   type: float
   level: advanced
-  desc: interval in seconds between MDS beacon messages sent to monitors
+  desc: MDS 和 监视器们之间发送信标消息的间隔秒数。
   default: 4
   services:
   - mds
@@ -190,8 +190,8 @@ options:
   type: float
   level: advanced
   desc: tolerance in seconds for missed MDS beacons to monitors
-  fmt_desc: The interval without beacons before Ceph declares an MDS laggy
-    (and possibly replace it).
+  fmt_desc: 多久没收到信标消息 Ceph 就认为 MDS 落后了
+    （并可能替换它）。
   default: 15
   services:
   - mds
@@ -380,8 +380,8 @@ options:
 - name: mds_reconnect_timeout
   type: float
   level: advanced
-  desc: timeout in seconds to wait for clients to reconnect during MDS reconnect recovery
-    state
+  desc: MDS 处于重建连接恢复状态时，客户端重连的超时时间，
+    秒数。
   default: 45
   services:
   - mds
@@ -399,7 +399,7 @@ options:
   type: float
   level: advanced
   desc: time in seconds between upkeep tasks
-  fmt_desc: How frequently the MDS performs internal periodic tasks.
+  fmt_desc: MDS 执行内部周期性任务的间隔。
   default: 5
   services:
   - mds
@@ -411,15 +411,15 @@ options:
   default: 1
   services:
   - mds
-  fmt_desc: The minimum interval (in seconds) to try to avoid propagating
-    recursive stats up the tree.
+  fmt_desc: 为避免传播沿着目录树上行的 stat 递归操作，
+    尝试的最小间隔秒数。
   with_legacy: true
 # how quickly dirstat changes propagate up the hierarchy
 - name: mds_scatter_nudge_interval
   type: float
   level: advanced
   desc: minimum interval between scatter lock updates
-  fmt_desc: How quickly dirstat changes propagate up.
+  fmt_desc: dirstat 变更传播多快。
   default: 5
   services:
   - mds
@@ -428,7 +428,7 @@ options:
   type: int
   level: advanced
   desc: number of unused inodes to pre-allocate to clients for file creation
-  fmt_desc: The number of inode numbers to preallocate per client session.
+  fmt_desc: 为每个客户端会话预分配索引节点号的个数。
   default: 1000
   services:
   - mds
@@ -447,8 +447,8 @@ options:
   level: advanced
   desc: additional reply to clients that metadata requests are complete but not yet
     durable
-  fmt_desc: Determines whether the MDS should allow clients to see request
-    results before they commit to the journal.
+  fmt_desc: 请求成功提交到日志前 MDS 是否允许\
+    客户端先看到请求结果。
   default: true
   services:
   - mds
@@ -467,7 +467,7 @@ options:
   type: int
   level: advanced
   desc: hash function to select directory fragment for dentry name
-  fmt_desc: The function to use for hashing files across directory fragments.
+  fmt_desc: 用于哈希文件在目录碎片中分布情况的函数。
   # CEPH_STR_HASH_RJENKINS
   default: 2
   services:
@@ -486,15 +486,15 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: Determines whether the MDS should try to skip corrupt journal
-    events during journal replay.
+  fmt_desc: 在重放日志时，
+    MDS 是否应跳过损坏的日志事件。
   with_legacy: true
 - name: mds_log_max_events
   type: int
   level: advanced
   desc: maximum number of events in the MDS journal (-1 is unlimited)
-  fmt_desc: The maximum events in the journal before we initiate trimming.
-    Set to ``-1`` to disable limits.
+  fmt_desc: 日志里的事件达到多少时开始裁剪，
+    设为 ``-1`` 取消限制。
   default: -1
   services:
   - mds
@@ -520,8 +520,8 @@ options:
   type: uint
   level: advanced
   desc: maximum number of segments which may be untrimmed
-  fmt_desc: The maximum number of segments (objects) in the journal before
-    we initiate trimming. Set to ``-1`` to disable limits.
+  fmt_desc: 日志里的片段（对象）达到多少时开始裁剪，
+    设为 ``-1`` 取消限制。
   default: 128
   services:
   - mds
@@ -596,8 +596,8 @@ options:
   type: float
   level: advanced
   desc: interval in seconds between balancer ticks
-  fmt_desc: Determines how frequently to sample directory temperature
-    (for fragmentation decisions).
+  fmt_desc: 对目录热度取样的频率
+    （作为分片决策的依据）。
   default: 3
   services:
   - mds
@@ -606,8 +606,8 @@ options:
   type: float
   level: advanced
   desc: hot popularity threshold to replicate a subtree
-  fmt_desc: The maximum temperature before Ceph attempts to replicate
-    metadata to other nodes.
+  fmt_desc: 达到多大热度时 Ceph 就\
+    把元数据复制到其它节点。
   default: 8000
   services:
   - mds
@@ -616,8 +616,8 @@ options:
   type: float
   level: advanced
   desc: cold popularity threshold to merge subtrees
-  fmt_desc: The minimum temperature before Ceph stops replicating
-    metadata to other nodes.
+  fmt_desc: 热度低到多少时 Ceph 就不再\
+    把元数据复制到其它节点。
   default: 0
   services:
   - mds
@@ -626,8 +626,8 @@ options:
   type: int
   level: advanced
   desc: minimum size of directory fragment before splitting
-  fmt_desc: The maximum directory size before the MDS will split a directory
-    fragment into smaller bits.
+  fmt_desc: 目录尺寸大到多少时 MDS 就把目录分片\
+    拆分成更小的片段。
   default: 10000
   services:
   - mds
@@ -636,8 +636,8 @@ options:
   type: float
   level: advanced
   desc: hot read popularity threshold for splitting a directory fragment
-  fmt_desc: The maximum directory read temperature before Ceph splits
-    a directory fragment.
+  fmt_desc: 目录的最大读取热度达到多大时 Ceph 将\
+    拆分此片段。
   default: 25000
   services:
   - mds
@@ -646,8 +646,8 @@ options:
   type: float
   level: advanced
   desc: hot write popularity threshold for splitting a directory fragment
-  fmt_desc: The maximum directory write temperature before Ceph splits
-    a directory fragment.
+  fmt_desc: 目录的最大写热度达到多大时 Ceph 将
+    拆分此片段。
   default: 10000
   services:
   - mds
@@ -656,7 +656,7 @@ options:
   type: int
   level: advanced
   desc: power of two child fragments for a fragment on split
-  fmt_desc: The number of bits by which to split a directory fragment.
+  fmt_desc: 把一个目录片段再分割成多大。
   default: 3
   services:
   - mds
@@ -667,8 +667,8 @@ options:
   type: int
   level: advanced
   desc: size of fragments where merging should occur
-  fmt_desc: The minimum directory size before Ceph tries to merge
-    adjacent directory fragments.
+  fmt_desc: 目录尺寸小到多少时 Ceph 就尝试\
+    合并邻近的目录片段。
   default: 50
   services:
   - mds
@@ -677,7 +677,7 @@ options:
   type: int
   level: advanced
   desc: interval between MDS balancer cycles
-  fmt_desc: The frequency (in seconds) of workload exchanges between MDSs.
+  fmt_desc: MDS 服务器之间交替负荷的频率，秒。
   default: 10
   services:
   - mds
@@ -685,8 +685,8 @@ options:
   type: int
   level: advanced
   desc: delay in seconds before interrupting client IO to perform splits
-  fmt_desc: The delay (in seconds) between a fragment being eligible for split
-    or merge and executing the fragmentation change.
+  fmt_desc: 一个片段可以被拆分或合并，在执行分片变更前延迟的时间，
+    单位为秒。
   default: 5
   services:
   - mds
@@ -695,8 +695,8 @@ options:
   type: int
   level: advanced
   desc: maximum size of a directory fragment before new creat/links fail
-  fmt_desc: The maximum size of a fragment before any new entries
-    are rejected with ENOSPC.
+  fmt_desc: 一个片段的最大尺寸，
+    要加入新条目时会收到 ENOSPC 拒绝代码。
   default: 100000
   services:
   - mds
@@ -706,8 +706,8 @@ options:
   type: float
   level: advanced
   desc: ratio of mds_bal_split_size at which fast fragment splitting occurs
-  fmt_desc: The ratio by which frags may exceed the split size before
-    a split is executed immediately (skipping the fragment interval)
+  fmt_desc: 分片的尺寸超过拆分尺寸阈值达到多少比例就立即执行拆分\
+    （跳过 fragment interval 配置的延时）。
   default: 1.5
   services:
   - mds
@@ -728,8 +728,8 @@ options:
   type: float
   level: advanced
   desc: idle metadata popularity threshold before rebalancing
-  fmt_desc: The minimum temperature before Ceph migrates a subtree
-    back to its parent.
+  fmt_desc: 热度低于此值时 Ceph 就把子树
+    迁移回它的父节点。
   default: 0
   services:
   - mds
@@ -740,8 +740,8 @@ options:
   default: -1
   services:
   - mds
-  fmt_desc: The number of iterations to run balancer before Ceph stops.
-    (used for testing purposes only)
+  fmt_desc: 均衡器迭代到这么多次时 Ceph 就停止。
+    （仅适用于测试）
   with_legacy: true
 - name: mds_bal_max_until
   type: int
@@ -749,8 +749,8 @@ options:
   default: -1
   services:
   - mds
-  fmt_desc: The number of seconds to run balancer before Ceph stops.
-    (used for testing purposes only)
+  fmt_desc: 均衡器运行多久就停止，秒数。
+    （仅适用于测试）
   with_legacy: true
 - name: mds_bal_mode
   type: int
@@ -759,18 +759,18 @@ options:
   services:
   - mds
   fmt_desc: |
-    The method for calculating MDS load.
+    计算 MDS 负载的方法。
 
-      - ``0`` = Hybrid.
-      - ``1`` = Request rate and latency.
-      - ``2`` = CPU load.
+      - ``0`` = 混合；
+      - ``1`` = 请求速率和延时；
+      - ``2`` = CPU 负载。
   with_legacy: true
 # must be this much above average before we export anything
 - name: mds_bal_min_rebalance
   type: float
   level: dev
   desc: amount overloaded over internal target before balancer begins offloading
-  fmt_desc: The minimum subtree temperature before Ceph migrates.
+  fmt_desc: 子树热度最小多少时开始迁移。
   default: 0.1
   services:
   - mds
@@ -782,7 +782,7 @@ options:
   default: 0.2
   services:
   - mds
-  fmt_desc: The minimum subtree temperature before Ceph searches a subtree.
+  fmt_desc: 子树热度最小多少时 Ceph 才去搜索子树。
   with_legacy: true
 # take within this range of what we need
 - name: mds_bal_need_min
@@ -791,7 +791,7 @@ options:
   default: 0.8
   services:
   - mds
-  fmt_desc: The minimum fraction of target subtree size to accept.
+  fmt_desc: 允许接受目标子树片段的最小尺寸。
   with_legacy: true
 - name: mds_bal_need_max
   type: float
@@ -799,7 +799,7 @@ options:
   default: 1.2
   services:
   - mds
-  fmt_desc: The maximum fraction of target subtree size to accept.
+  fmt_desc: 允许接受目标子树片段的最大尺寸。
   with_legacy: true
 # any sub bigger than this taken in full
 - name: mds_bal_midchunk
@@ -808,8 +808,8 @@ options:
   default: 0.3
   services:
   - mds
-  fmt_desc: Ceph will migrate any subtree that is larger than this fraction
-    of the target subtree size.
+  fmt_desc: 尺寸大于目标子树的子树，
+    Ceph 将迁移它。
   with_legacy: true
 # never take anything smaller than this
 - name: mds_bal_minchunk
@@ -818,8 +818,8 @@ options:
   default: 0.001
   services:
   - mds
-  fmt_desc: Ceph will ignore any subtree that is smaller than this fraction
-    of the target subtree size.
+  fmt_desc: 尺寸小于目标子树的子树，
+    Ceph 将忽略它。
   with_legacy: true
 # target decay half-life in MDSMap (2x larger is approx. 2x slower)
 - name: mds_bal_target_decay
@@ -844,8 +844,8 @@ options:
   type: float
   level: advanced
   desc: time in seconds between replay of updates to journal by standby replay MDS
-  fmt_desc: The journal poll interval when in standby-replay mode.
-    ("hot standby")
+  fmt_desc: MDS 处于 standby-replay 模式（热备）时的
+    日志滚动间隔。
   default: 1
   services:
   - mds
@@ -856,7 +856,7 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: The interval for polling the cache during MDS shutdown.
+  fmt_desc: MDS 关闭期间缓存更新间隔。
   with_legacy: true
 - name: mds_thrash_exports
   type: int
@@ -864,7 +864,8 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: Ceph will randomly export subtrees between nodes (testing only).
+  fmt_desc: Ceph 会在节点间随机地导出子树。
+    （仅用于测试）
   with_legacy: true
 - name: mds_thrash_fragments
   type: int
@@ -872,7 +873,7 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: Ceph will randomly fragment or merge directories.
+  fmt_desc: Ceph 会随机地分片或合并目录。
   with_legacy: true
 - name: mds_dump_cache_on_map
   type: bool
@@ -880,7 +881,7 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: Ceph will dump the MDS cache contents to a file on each MDSMap.
+  fmt_desc: Ceph 会把各 MDSMap 的 MDS 缓存内容转储到一文件。
   with_legacy: true
 - name: mds_dump_cache_after_rejoin
   type: bool
@@ -888,8 +889,8 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: Ceph will dump MDS cache contents to a file after
-    rejoining the cache (during recovery).
+  fmt_desc: Ceph 重新加入缓存（恢复期间）后
+    会把 MDS 缓存内容转储到一文件。
   with_legacy: true
 - name: mds_verify_scatter
   type: bool
@@ -897,8 +898,8 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: Ceph will assert that various scatter/gather invariants
-    are ``true`` (developers only).
+  fmt_desc: Ceph 将认为各种传播/聚集常量都是 ``true``
+    （仅适合开发者）。
   with_legacy: true
 - name: mds_debug_scatterstat
   type: bool
@@ -906,8 +907,8 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: Ceph will assert that various recursive stat invariants
-    are ``true`` (for developers only).
+  fmt_desc: Ceph 将认为各种递归统计常量都是 ``true``
+    （仅适合开发者）。
   with_legacy: true
 - name: mds_debug_frag
   type: bool
@@ -915,8 +916,8 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: Ceph will verify directory fragmentation invariants
-    when convenient (developers only).
+  fmt_desc: Ceph 将在方便时校验目录分段常量\
+    （仅适合开发者）。
   with_legacy: true
 - name: mds_debug_auth_pins
   type: bool
@@ -924,7 +925,7 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: The debug auth pin invariants (for developers only).
+  fmt_desc: 常量 debug auth pin （仅适合开发者）。
   with_legacy: true
 - name: mds_debug_subtrees
   type: bool
@@ -932,7 +933,7 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: The debug subtree invariants (for developers only).
+  fmt_desc: 常量 debug subtree （仅适合开发者）。
   with_legacy: true
 - name: mds_kill_mdstable_at
   type: int
@@ -940,8 +941,8 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: Ceph will inject MDS failure in MDSTable code
-    (for developers only).
+  fmt_desc: Ceph 将向 MDSTable 代码注入 MDS 失败事件
+    （仅适合开发者）。
   with_legacy: true
 - name: mds_max_export_size
   type: size
@@ -955,8 +956,8 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: Ceph will inject MDS failure in the subtree export code
-    (for developers only).
+  fmt_desc: Ceph 将向子树导出代码注入 MDS 失败事件
+    （仅适合开发者）。
   with_legacy: true
 - name: mds_kill_import_at
   type: int
@@ -964,8 +965,8 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: Ceph will inject MDS failure in the subtree import code
-    (for developers only).
+  fmt_desc: Ceph 将向子树导入代码注入 MDS 失败事件
+    （仅适合开发者）。
   with_legacy: true
 - name: mds_kill_link_at
   type: int
@@ -973,8 +974,8 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: Ceph will inject MDS failure in hard link code
-    (for developers only).
+  fmt_desc: Ceph 将向硬链接代码注入 MDS 失败事件
+    （仅适合开发者）。
   with_legacy: true
 - name: mds_kill_rename_at
   type: int
@@ -982,8 +983,8 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: Ceph will inject MDS failure in the rename code
-    (for developers only).
+  fmt_desc: Ceph 将向重命名代码注入 MDS 失败事件
+    （仅适合开发者）。
   with_legacy: true
 - name: mds_kill_openc_at
   type: int
@@ -1041,8 +1042,8 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: Ceph will delete all client sessions on startup
-    (for testing only).
+  fmt_desc: Ceph 将在启动时删除所有客户端会话
+    （仅适合测试）。
   with_legacy: true
 - name: mds_wipe_ino_prealloc
   type: bool
@@ -1050,8 +1051,8 @@ options:
   default: false
   services:
   - mds
-  fmt_desc: Ceph will delete ino preallocation metadata on startup
-    (for testing only).
+  fmt_desc: Ceph 将在启动时删除索引节点号预分配元数据
+    （仅适合测试）。
   with_legacy: true
 - name: mds_skip_ino
   type: int
@@ -1059,8 +1060,8 @@ options:
   default: 0
   services:
   - mds
-  fmt_desc: The number of inode numbers to skip on startup
-    (for testing only).
+  fmt_desc: 启动时要跳过的索引节点号数量
+    （仅适合测试）。
   with_legacy: true
 - name: mds_enable_op_tracker
   type: bool
@@ -1255,7 +1256,7 @@ options:
 - name: mds_min_caps_per_client
   type: uint
   level: advanced
-  desc: minimum number of capabilities a client may hold
+  desc: 设置一个客户端可以持有的最小容量。
   default: 100
   services:
   - mds

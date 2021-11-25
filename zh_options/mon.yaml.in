@@ -788,12 +788,12 @@ options:
   level: dev
   desc: Duration in seconds that blocklist entries for MDS daemons remain in the OSD
     map
-  fmt_desc: The blocklist duration for failed MDSs in the OSD map. Note,
-    this controls how long failed MDS daemons will stay in the
-    OSDMap blocklist. It has no effect on how long something is
-    blocklisted when the administrator blocklists it manually. For
-    example, ``ceph osd blocklist add`` will still use the default
-    blocklist time.
+  fmt_desc: OSD 运行图里的 MDS 失败后，把它留在黑名单里的时间。
+    注意，此选项控制着失败的 OSD 在 OSDMap 黑名单里呆多长时间，
+    它对管理员手动加进黑名单的东西没影响。
+    例如，
+    ``ceph osd blocklist add``
+    仍将遵循默认的黑名单时间。
   default: 1_day
   services:
   - mon
