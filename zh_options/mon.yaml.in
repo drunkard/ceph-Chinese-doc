@@ -49,8 +49,8 @@ options:
 - name: mon_mgr_beacon_grace
   type: secs
   level: advanced
-  desc: Period in seconds from last beacon to monitor marking a manager daemon as
-    failed
+  desc: 上一个信标收到后过多久没反应就把它标记为\
+    已失效。
   default: 30
   services:
   - mon

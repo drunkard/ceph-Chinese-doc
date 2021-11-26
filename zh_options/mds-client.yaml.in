@@ -15,8 +15,8 @@ options:
   type: float
   level: advanced
   desc: mid-point of client cache LRU
-  fmt_desc: Set client cache midpoint. The midpoint splits the least recently used
-    lists into a hot and warm list.
+  fmt_desc: 设置客户端缓存中点。此中点把最近用过的列表分割为\
+    热列表和暖列表。
   default: 0.75
   services:
   - mds_client
@@ -25,7 +25,7 @@ options:
   type: bool
   level: dev
   desc: issue new requests to a random active MDS
-  fmt_desc: Choose random MDS for each request.
+  fmt_desc: 为各个请求随机选取 MDS 。
   default: false
   services:
   - mds_client
@@ -34,7 +34,7 @@ options:
   type: float
   level: advanced
   desc: timeout for mounting CephFS (seconds)
-  fmt_desc: Set the timeout for CephFS mount in seconds.
+  fmt_desc: 设置挂载 CephFS 时的超时时间，单位为秒。
   default: 5_min
   services:
   - mds_client
@@ -43,14 +43,14 @@ options:
   type: secs
   level: dev
   desc: seconds between client upkeep ticks
-  fmt_desc: Set the interval in seconds between capability renewal and other upkeep.
+  fmt_desc: 设置更新能力及维持其它信息的间隔时长，单位为秒。
   default: 1
   services:
   - mds_client
 - name: client_trace
   type: str
   level: dev
-  desc: file containing trace of client operations
+  desc: 文件路径，内容是客户端操作的追踪结果
   services:
   - mds_client
   with_legacy: true
@@ -58,7 +58,7 @@ options:
   type: size
   level: advanced
   desc: minimum bytes to readahead in a file
-  fmt_desc: Set the minimum number bytes that the client reads ahead.
+  fmt_desc: 设置客户端预读的最小尺寸，单位为字节。
   default: 128_K
   services:
   - mds_client
@@ -67,9 +67,9 @@ options:
   type: size
   level: advanced
   desc: maximum bytes to readahead in a file (zero is unlimited)
-  fmt_desc: Set the maximum number of bytes that the client reads ahead for
-    future read operations. Overridden by the ``client_readahead_max_periods``
-    setting.
+  fmt_desc: 设置客户端预读数据的最大尺寸，
+    单位为字节。
+    本选项可被 ``client_readahead_max_periods`` 覆盖。
   default: 0
   services:
   - mds_client
@@ -79,9 +79,9 @@ options:
   type: int
   level: advanced
   desc: maximum stripe periods to readahead in a file
-  fmt_desc: Set the number of file layout periods (object size * number of
-    stripes) that the client reads ahead. Overrides the
-    ``client_readahead_max_bytes`` setting.
+  fmt_desc: 设置客户端预读的文件布局分片最大数量
+    （对象尺寸 * 条带数量）。
+    本选项会覆盖 ``client_readahead_max_bytes`` 选项。
   default: 4
   services:
   - mds_client
@@ -89,7 +89,7 @@ options:
 - name: client_reconnect_stale
   type: bool
   level: advanced
-  desc: reconnect when the session becomes stale
+  desc: 是否自动重连过期的会话。
   default: false
   services:
   - mds_client
@@ -97,7 +97,7 @@ options:
   type: str
   level: advanced
   desc: pseudo directory for snapshot access to a directory
-  fmt_desc: Set the snapshot directory name.
+  fmt_desc: 设置快照目录名。
   default: .snap
   services:
   - mds_client
@@ -106,15 +106,15 @@ options:
   type: str
   level: advanced
   desc: default mount-point
-  fmt_desc: Directory to mount on the CephFS file system. An alternative to the
-    ``-r`` option of the ``ceph-fuse`` command.
+  fmt_desc: 指定要挂载的 CephFS 文件系统目录。
+    此选项的作用类似 ``ceph-fuse`` 命令的 ``-r`` 选项。
   default: /
   services:
   - mds_client
 - name: client_mount_uid
   type: int
   level: advanced
-  desc: uid to mount as
+  desc: 设置 CephFS 挂载后的用户 ID 。
   default: -1
   services:
   - mds_client
@@ -124,7 +124,7 @@ options:
   type: int
   level: advanced
   desc: gid to mount as
-  fmt_desc: Set the group ID of CephFS mount.
+  fmt_desc: 设置 CephFS 挂载后的组 ID 。
   default: -1
   services:
   - mds_client
@@ -149,16 +149,16 @@ options:
   default: 5
   services:
   - mds_client
-  fmt_desc: Set the delay between capability releases in seconds. The delay
-    sets how many   seconds a client waits to release capabilities that it no
-    longer needs in case the capabilities are needed for another user space
-    operation.
+  fmt_desc: 设置释放能力的延时，单位为秒。
+    这个延时控制着客户端不再需要能力时，
+    再等多少秒就释放，
+    以便其它需要这些能力的用户空间操作使用。
   with_legacy: true
 - name: client_quota_df
   type: bool
   level: advanced
   desc: show quota usage for statfs (df)
-  fmt_desc: Report root directory quota for the ``statfs`` operation.
+  fmt_desc: 让 ``statfs`` 操作报告根目录的配额。
   default: true
   services:
   - mds_client
@@ -175,7 +175,7 @@ options:
   type: size
   level: advanced
   desc: maximum size of object cache
-  fmt_desc: Set how many bytes of data will the client cache.
+  fmt_desc: 设置客户端可缓存的数据上限，单位为字节。
   default: 200_M
   services:
   - mds_client
@@ -187,7 +187,7 @@ options:
   type: size
   level: advanced
   desc: maximum size of dirty pages in object cache
-  fmt_desc: Set the maximum number of dirty bytes in the object cache.
+  fmt_desc: 设置对象缓存的脏数据上限，单位为字节。
   default: 100_M
   services:
   - mds_client
@@ -199,7 +199,7 @@ options:
   type: size
   level: advanced
   desc: target size of dirty pages object cache
-  fmt_desc: Set the target size of dirty data. We recommend to keep this number low.
+  fmt_desc: 设置认定为脏数据的目标尺寸。我们建议这个数字尽量小些。
   default: 8_M
   services:
   - mds_client
@@ -210,8 +210,8 @@ options:
   type: float
   level: advanced
   desc: maximum age of dirty pages in object cache (seconds)
-  fmt_desc: Set the maximum age in seconds of dirty data in the object cache
-    before writeback.
+  fmt_desc: 用于设置回写之前，脏数据在对象缓存中的最大存留时间，
+    单位为秒。
   default: 5
   services:
   - mds_client
@@ -222,7 +222,7 @@ options:
   type: int
   level: advanced
   desc: maximum number of objects in cache
-  fmt_desc: Set the maximum number of objects in the object cache.
+  fmt_desc: 设置对象缓存允许的最大对象数。
   default: 1000
   services:
   - mds_client
@@ -236,6 +236,7 @@ options:
   default: false
   services:
   - mds_client
+  fmt_desc: 检查 MDS 的响应是否有想要的能力。
   with_legacy: true
 # always read synchronously (go to osds)
 - name: client_debug_force_sync_read
@@ -244,8 +245,8 @@ options:
   default: false
   services:
   - mds_client
-  fmt_desc: If set to ``true``, clients read data directly from OSDs instead
-    of using a local page cache.
+  fmt_desc: 设置为 ``true`` 时，客户端会跳过本地页缓存、
+    直接从 OSD 读取数据。
   with_legacy: true
 - name: client_debug_inject_tick_delay
   type: secs
@@ -253,15 +254,16 @@ options:
   default: 0
   services:
   - mds_client
+  fmt_desc: 在客户端动作之间人为地加入延时。
 - name: client_max_inline_size
   type: size
   level: dev
   default: 4_K
   services:
   - mds_client
-  fmt_desc: Set the maximum size of inlined data stored in a file inode rather
-    than in a separate data object in RADOS. This setting only applies if the
-    ``inline_data`` flag is set on the MDS map.
+  fmt_desc: 控制内联数据的最大尺寸，小于此尺寸就存储到文件的索引节点内，
+    超过则存到单独的 RADOS 对象内。
+    本选项只有设置了 MDS 图的 ``inline_data`` 标志时有效。
   with_legacy: true
 # synthetic client bug for testing
 - name: client_inject_release_failure
@@ -283,8 +285,8 @@ options:
   type: str
   level: advanced
   desc: metadata key=value comma-delimited pairs appended to session metadata
-  fmt_desc: Comma-delimited strings for client metadata sent to each MDS, in addition
-    to the automatically generated version, host name, and other metadata.
+  fmt_desc: 客户端向各 MDS 发送元数据时，除了自动生成的版本号、主机名等信息，
+    还可以附加逗号分隔的字符串作为附加元数据。
   services:
   - mds_client
   with_legacy: true
@@ -292,9 +294,9 @@ options:
   type: str
   level: advanced
   desc: ACL type to enforce (none or "posix_acl")
-  fmt_desc: Set the ACL type. Currently, only possible value is ``"posix_acl"`` to
-    enable POSIX ACL, or an empty string. This option only takes effect when the
-    ``fuse_default_permissions`` is set to ``false``.
+  fmt_desc: 设置 ACL 类型。现在还只能设置为 ``"posix_acl"``
+    表示启用 POSIX ACL ，或者可设置为空字符串。此选项只有在
+    ``fuse_default_permissions`` 被设置为 ``false`` 时有效。
   services:
   - mds_client
   with_legacy: true
@@ -302,7 +304,7 @@ options:
   type: bool
   level: advanced
   desc: client-enforced permission checking
-  fmt_desc: Check client permissions on all I/O operations.
+  fmt_desc: 检查所有 I/O 操作的客户端权限。
   default: true
   services:
   - mds_client
@@ -311,9 +313,9 @@ options:
   type: bool
   level: advanced
   desc: set the directory size as the number of file bytes recursively used
-  long_desc: This option enables a CephFS feature that stores the recursive directory
-    size (the bytes used by files in the directory and its descendents) in the st_size
-    field of the stat structure.
+  long_desc: 此选项可以启用一个 CephFS 功能，
+    就是用 stat 数据结构的 st_size 字段存储递归目录的尺寸
+    （此目录内的文件及其子孙们占用的空间）。
   default: true
   services:
   - mds_client
@@ -353,10 +355,10 @@ options:
   type: bool
   level: advanced
   desc: pass default_permisions to FUSE on mount
-  fmt_desc: When set to ``false``, ``ceph-fuse`` utility checks does its own
-    permissions checking, instead of relying on the permissions enforcement in
-    FUSE. Set to ``false`` together with the ``client acl type=posix_acl``
-    option to enable POSIX ACL.
+  fmt_desc: 设置为 ``false`` 时， ``ceph-fuse`` 工具会用自己的权限验证机制，
+    而非依靠 FUSE 的强制权限。
+    启用 POSIX ACL 需把此选项设置为 ``false`` 、
+    同时设置 ``client acl type=posix_acl`` 。
   default: false
   services:
   - mds_client
@@ -397,8 +399,8 @@ options:
   long_desc: Set the maximum number of bytes in a single write operation that may
     pass atomically through FUSE. The FUSE default is 128kB and may be indicated by
     setting this option to 0.
-  fmt_desc: Set the maximum number of bytes in a single write operation. A value of
-    0 indicates no change; the FUSE default of 128 kbytes remains in force.
+  fmt_desc: 设置单次写入操作的最大字节数。
+    值为 0 表示维持不变，还是用 FUSE 的默认值 128kB 。
   default: 0
   services:
   - mds_client

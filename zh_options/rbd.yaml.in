@@ -100,7 +100,7 @@ options:
   type: bool
   level: advanced
   desc: whether to enable caching (writeback unless rbd_cache_max_dirty is 0)
-  fmt_desc: Enable caching for RADOS Block Device (RBD).
+  fmt_desc: 允许为 RADOS 块设备提供缓存。
   default: true
   services:
   - rbd
@@ -121,11 +121,11 @@ options:
   level: advanced
   desc: whether to make writeback caching writethrough until flush is called, to be
     sure the user of librbd will send flushes so that writeback is safe
-  fmt_desc: Start out in ``writethrough`` mode, and switch to ``writeback``
-    after the first flush request is received. Enabling is a
-    conservative but safe strategy in case VMs running on RBD volumes
-    are too old to send flushes, like the ``virtio`` driver in Linux
-    kernels older than 2.6.32.
+  fmt_desc: 开始进入 write-through 模式，并且\
+    在首个 flush 请求收到后切回 write-back 模式。
+    启用它是个保守、但安全的策略，
+    以防 rbd 之上的虚拟机内核太老、不能发送 flush ，
+    像 2.6.32 之前的 Linux 内核带着的 ``virtio`` 驱动。
   default: true
   services:
   - rbd
@@ -133,7 +133,7 @@ options:
   type: size
   level: advanced
   desc: cache size in bytes
-  fmt_desc: The per-volume RBD client cache size in bytes.
+  fmt_desc: 每个卷的 RBD 客户端的缓存尺寸，字节。
   default: 32_M
   policies: write-back and write-through
   services:
@@ -142,8 +142,8 @@ options:
   type: size
   level: advanced
   desc: dirty limit in bytes - set to 0 for write-through caching
-  fmt_desc: The ``dirty`` limit in bytes at which the cache triggers write-back.
-    If ``0``, uses write-through caching.
+  fmt_desc: 使缓存触发写回的 ``dirty`` 临界点，单位为字节。
+    若为 ``0`` ，直接使用写透缓存。
   default: 24_M
   constraint: Must be less than ``rbd_cache_size``.
   policies: write-around and write-back
@@ -153,8 +153,8 @@ options:
   type: size
   level: advanced
   desc: target dirty limit in bytes
-  fmt_desc: The ``dirty target`` before the cache begins writing data to the data
-    storage. Does not block writes to the cache.
+  fmt_desc: 缓存脏到什么程度（ ``dirty target`` ）开始写回数据。
+    不会阻塞到缓存的写动作。
   default: 16_M
   constraint: Must be less than ``rbd_cache_max_dirty``.
   policies: write-back
@@ -164,7 +164,7 @@ options:
   type: float
   level: advanced
   desc: seconds in cache before writeback starts
-  fmt_desc: The number of seconds dirty data is in the cache before writeback starts.
+  fmt_desc: 写回开始前，脏数据在缓存中的暂存时间，单位为秒。
   default: 1
   policies: write-back
   services:
@@ -249,7 +249,7 @@ options:
 - name: rbd_readahead_trigger_requests
   type: uint
   level: advanced
-  desc: number of sequential requests necessary to trigger readahead
+  desc: 能够触发预读的顺序读请求数量。
   default: 10
   services:
   - rbd
@@ -257,7 +257,7 @@ options:
   type: size
   level: advanced
   desc: set to 0 to disable readahead
-  fmt_desc: Maximum size of a read-ahead request.  If zero, read-ahead is disabled.
+  fmt_desc: 预读请求最大尺寸， 0 是禁用预读。
   default: 512_K
   services:
   - rbd
@@ -265,10 +265,10 @@ options:
   type: size
   level: advanced
   desc: how many bytes are read in total before readahead is disabled
-  fmt_desc: After this many bytes have been read from an RBD image, read-ahead
-    is disabled for that image until it is closed.  This allows the
-    guest OS to take over read-ahead once it is booted.  If zero,
-    read-ahead stays enabled.
+  fmt_desc: 从 RBD 映像读取这么多字节后，
+    预读功能将被禁用，直到关闭。
+    这样客户操作系统启动后就可以接管预读了，
+    设为 0 时则仍旧开着。
   default: 50_M
   services:
   - rbd
