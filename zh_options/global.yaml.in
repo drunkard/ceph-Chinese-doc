@@ -443,7 +443,7 @@ options:
   type: str
   level: basic
   desc: path to log file
-  fmt_desc: The location of the logging file for your cluster.
+  fmt_desc: 集群日志文件的位置。
   daemon_default: /var/log/ceph/$cluster-$name.log
   see_also:
   - log_to_file
@@ -457,7 +457,7 @@ options:
   type: int
   level: advanced
   desc: max unwritten log entries to allow before waiting to flush to the log
-  fmt_desc: The maximum number of new log files.
+  fmt_desc: 新日志文件的最大数量。
   default: 1000
   see_also:
   - log_max_recent
@@ -467,12 +467,12 @@ options:
   type: int
   level: advanced
   desc: recent log entries to keep in memory to dump in the event of a crash
-  long_desc: The purpose of this option is to log at a higher debug level only to
-    the in-memory buffer, and write out the detailed log messages only if there is
-    a crash.  Only log entries below the lower log level will be written unconditionally
-    to the log.  For example, debug_osd=1/5 will write everything <= 1 to the log
-    unconditionally but keep entries at levels 2-5 in memory.  If there is a seg fault
-    or assertion failure, all entries will be dumped to the log.
+  long_desc: 这个选项的目的是在调试级别比较高时，日志只记录到内存中的缓冲区，
+    只有在崩溃时才写出详细日志信息。
+    只有低于较低日志级别的那些日志才会无条件地写入日志文件。
+    例如， debug_osd=1/5 表示所有级别 <= 1 的会无条件写入日志文件，
+    但是 2-5 级别的日志保留在内存里；
+    如果出现了段错误、或断言失败，所有条目就会写入日志文件。
   default: 500
   daemon_default: 10000
   # default changed by common_preinit()
@@ -490,7 +490,7 @@ options:
   type: bool
   level: basic
   desc: send log lines to stderr
-  fmt_desc: Determines if logging messages should appear in ``stderr``.
+  fmt_desc: 设置日志消息是否输出到标准错误（ ``stderr`` ）。
   default: true
   daemon_default: false
   with_legacy: true
@@ -498,7 +498,7 @@ options:
   type: bool
   level: basic
   desc: send critical error log lines to stderr
-  fmt_desc: Determines if error messages should appear in ``stderr``.
+  fmt_desc: 设置错误消息是否输出到标准错误（ ``stderr`` ）。
   default: false
   daemon_default: true
   with_legacy: true
@@ -515,21 +515,21 @@ options:
   type: bool
   level: basic
   desc: send log lines to syslog facility
-  fmt_desc: Determines if logging messages should appear in ``syslog``.
+  fmt_desc: 设置日志消息是否输出到 ``syslog`` 。
   default: false
   with_legacy: true
 - name: err_to_syslog
   type: bool
   level: basic
   desc: send critical error log lines to syslog facility
-  fmt_desc: Determines if error messages should appear in ``syslog``.
+  fmt_desc: 设置错误消息是否输出到 ``syslog`` 。
   default: false
   with_legacy: true
 - name: log_flush_on_exit
   type: bool
   level: advanced
   desc: set a process exit handler to ensure the log is flushed on exit
-  fmt_desc: Determines if Ceph should flush the log files after exit.
+  fmt_desc: 设置 Ceph 退出后是否回写日志文件。
   default: false
   with_legacy: true
 - name: log_stop_at_utilization
@@ -613,7 +613,7 @@ options:
   type: str
   level: advanced
   desc: Make daemons send cluster log messages to monitors
-  fmt_desc: Determines if ``clog`` messages should be sent to monitors.
+  fmt_desc: 设置是否把 ``clog`` 消息发送给监视器。
   default: default=true
   flags:
   - runtime
@@ -626,7 +626,8 @@ options:
   type: str
   level: advanced
   desc: Make daemons send cluster log messages to syslog
-  fmt_desc: Determines if ``clog`` messages should be sent to syslog.
+  fmt_desc: 设置是否把 ``clog`` 输出到 syslog 。
+    etermines if ``clog`` messages should be sent to syslog.
   default: 'false'
   flags:
   - runtime
@@ -2336,13 +2337,13 @@ options:
 - name: journaler_write_head_interval
   type: int
   level: advanced
-  desc: Interval in seconds between journal header updates (to help bound replay time)
+  desc: 更新日志 header 的间隔秒数（帮助界定重放时间）
   default: 15
 # * journal object size
 - name: journaler_prefetch_periods
   type: uint
   level: advanced
-  desc: Number of striping periods to prefetch while reading MDS journal
+  desc: 读取 MDS 日志时预取多少 striping period 。
   default: 10
   # we need at least 2 periods to make progress.
   min: 2
@@ -5399,7 +5400,7 @@ options:
   type: bool
   level: dev
   default: false
-  fmt_desc: Debugging check on synchronization. This is an expensive operation.
+  fmt_desc: 调试同步检查，这个操作代价大。
 
   with_legacy: true
 - name: filestore_omap_header_cache_size

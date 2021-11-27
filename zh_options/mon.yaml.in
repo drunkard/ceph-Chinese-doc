@@ -96,7 +96,7 @@ options:
   type: str
   level: advanced
   desc: Make monitor send cluster log messages to syslog
-  fmt_desc: Determines if the cluster log should be output to the syslog.
+  fmt_desc: 设置集群日志是否输出到 syslog 。
   default: default=false
   services:
   - mon
@@ -147,14 +147,14 @@ options:
     of key/value pairs where the key is the log channel and the value is the filename,
     which may include $cluster and $channel metavariables
   fmt_desc: |
-    The locations of the cluster's log files. There are two channels in
-    Ceph: ``cluster`` and ``audit``. This option represents a mapping
-    from channels to log files, where the log entries of that
-    channel are sent to. The ``default`` entry is a fallback
-    mapping for channels not explicitly specified. So, the following
-    default setting will send cluster log to ``$cluster.log``, and
-    send audit log to ``$cluster.audit.log``, where ``$cluster`` will
-    be replaced with the actual cluster name.
+    集群各日志文件的位置。 Ceph 里有两个通道：
+    ``cluster`` 和 ``audit`` 。
+    这个选项表示从通道至日志文件的映射，
+    ``default`` 配置是个退路，
+    在通道没有明确配置时用到。
+    所以，下面的默认配置将把集群日志发送到 ``$cluster.log`` 、
+    审计日志发送到 ``$cluster.audit.log`` ，
+    其中， ``$cluster`` 将被替换成具体的集群名字。
   default: default=/var/log/ceph/$cluster.$channel.log cluster=/var/log/ceph/$cluster.log
   services:
   - mon
