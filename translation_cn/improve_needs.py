@@ -22,7 +22,7 @@ IGNORE_FILES = [
 
 
 def compare_file_existency():
-    cnfl, enfl = get_file_list(doc_cn), get_file_list(doc_en)
+    cnfl, enfl = _get_file_list(doc_cn), _get_file_list(doc_en)
     cn_uniq, en_uniq = [], []
     # print(cnfl)
     for c in cnfl:
@@ -38,13 +38,13 @@ def compare_file_existency():
 
 
 def compare_file_length():
-    cnfl, enfl = get_file_list(doc_cn), get_file_list(doc_en)
+    cnfl, enfl = _get_file_list(doc_cn), _get_file_list(doc_en)
     fl = [cf for cf in cnfl
           if cf in enfl and
           (cf.endswith('.rst') or cf.endswith('.conf'))]
     print('"译文"和"原文"共有文件行数差别（行数差大于 {} 的）：'.format(LEN_DIFF_THRESHOLD))
     for f in fl:
-        cn, en = file_row_counts(doc_cn, f), file_row_counts(doc_en, f)
+        cn, en = _file_row_counts(doc_cn, f), _file_row_counts(doc_en, f)
         d = abs(cn - en)
         if d > LEN_DIFF_THRESHOLD:
             ss = '{} - {}'.format(cn, en)
@@ -53,11 +53,11 @@ def compare_file_length():
                   .format(f.ljust(DIFF_ALIGN), ss, d, diff_align=(DIFF_ALIGN / 3.1)))
 
 
-def file_row_counts(*file_names):
+def _file_row_counts(*file_names):
     return len(open(os.path.join(*file_names)).readlines())
 
 
-def get_file_list(directory):
+def _get_file_list(directory):
     """
     返回一目录下的所有普通文件列表，递归，排序好。
     """
