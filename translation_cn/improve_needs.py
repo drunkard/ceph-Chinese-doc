@@ -81,6 +81,11 @@ def _get_file_list(directory):
     return sorted(efl)
 
 
+def translate_progress():
+    # 按行比较，全英文的视为没翻译
+    pass  # TODO
+
+
 if __name__ == "__main__":
     compare_file_existency()
     compare_file_length()

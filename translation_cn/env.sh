@@ -46,11 +46,12 @@ ZH_YAML="$ZH_REPO/zh_options"
 # commit ID, because there's too many criss-cross branches which is hard
 # for us to sync by branch/commit ID.
 # sync by $STEP days once, 0 to disable
-SYNC_TO="2021-07-31"
+SYNC_TO="2021-10-23"
 STEP=7
 SYNC_UNTIL=`date -d "$SYNC_TO +$STEP days" +%Y-%m-%d`
 
 PROGRESS_FILE="translation_cn/env.sh"
 
+# vim options
 # 64 if align chars strictly; 80 for split by sentence;
 VI_COLUMN=64,80
