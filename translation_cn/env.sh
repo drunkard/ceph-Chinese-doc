@@ -51,3 +51,6 @@ STEP=7
 SYNC_UNTIL=`date -d "$SYNC_TO +$STEP days" +%Y-%m-%d`
 
 PROGRESS_FILE="translation_cn/env.sh"
+
+# 64 if align chars strictly; 80 for split by sentence;
+VI_COLUMN=64,80

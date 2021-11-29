@@ -59,10 +59,10 @@ open_files() {
 	# en_doc=`realpath --relative-to=$ZH_DOC $en_doc`
 
 	cat <<-EOF
-	vim -O +"set colorcolumn=64" $cn_doc $en_doc	# 垂直分割（默认）
-	vim -o +"set colorcolumn=64" $cn_doc $en_doc	# 水平分割
+	vim -O +"set colorcolumn=$VI_COLUMN" $cn_doc $en_doc	# 垂直分割（默认）
+	vim -o +"set colorcolumn=$VI_COLUMN" $cn_doc $en_doc	# 水平分割
 	EOF
-	vim -O +"set colorcolumn=64" $cn_doc $en_doc
+	vim -O +"set colorcolumn=$VI_COLUMN" $cn_doc $en_doc
 }
 
 remove_prefix() {
