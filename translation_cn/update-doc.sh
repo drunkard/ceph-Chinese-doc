@@ -28,7 +28,7 @@ auto_sync() {
 
 update_ceph_repo() {
 	# If ceph repo has outdated more than $CEPH_REPO_OUTDATE_DAYS, do 'git pull' first.
-	differ=$(( `date -d 'now' +%s` - `git -C $CEPH_REPO log -1 --date=short --format=%at` ))
+	differ=$(( `date -d 'now' +%s` - `git -C $CEPH_REPO log -20 --date=short --format=%at | sort -nr | head -1` ))
 	if [ $differ -ge $(( 86400 * $CEPH_REPO_OUTDATE_DAYS )) ]; then
 		echo "Ceph git repo outdated more than $CEPH_REPO_OUTDATE_DAYS days, updating ..."
 		git -C $CEPH_REPO pull
