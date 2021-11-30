@@ -19,6 +19,7 @@ IGNORE_FILES = [
     # directory
     'translation_cn',
     'zh_options',
+    'scripts/__pycache__',
 ]
 
 
