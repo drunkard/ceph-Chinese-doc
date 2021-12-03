@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-import glob
 import os
+import path
 
 
 doc_cn = '/git/DRUNKARD/ceph-Chinese-doc'
@@ -17,14 +17,16 @@ IGNORE_FILES = [
     'vi_two_files.sh',
 
     # directory
+    '.git',
+    'scripts/__pycache__',
     'translation_cn',
     'zh_options',
-    'scripts/__pycache__',
 ]
 
 
 def compare_file_existency():
-    cnfl, enfl = _get_file_list(doc_cn), _get_file_list(doc_en)
+    cnfl = _get_file_list(doc_cn, relpath=True)
+    enfl = _get_file_list(doc_en, relpath=True)
     cn_uniq, en_uniq = [], []
     # print(cnfl)
     for c in cnfl:
@@ -35,12 +37,15 @@ def compare_file_existency():
             en_uniq.append(e)
     # 去重
     cn_uniq, en_uniq = sorted(list(set(cn_uniq))), sorted(list(set(en_uniq)))
+    cn_uniq = [str(f) for f in cn_uniq]
+    en_uniq = [str(f) for f in en_uniq]
     print("译文和原文文件差异：")
-    print('    译文版独有文件：{}\n    原文版独有文件：{}\n\n'.format(cn_uniq or '无', en_uniq or '无'))
+    print('    译文版独有文件：{}\n    原文版独有文件：{}\n'.format(cn_uniq or '无', en_uniq or '无'))
 
 
 def compare_file_length():
-    cnfl, enfl = _get_file_list(doc_cn), _get_file_list(doc_en)
+    cnfl = _get_file_list(doc_cn, relpath=True)
+    enfl = _get_file_list(doc_en, relpath=True)
     fl = [cf for cf in cnfl
           if cf in enfl and
           (cf.endswith('.rst') or cf.endswith('.conf'))]
@@ -53,22 +58,30 @@ def compare_file_length():
             # 文件名缩进4， 行数相减右对齐，然后 = ，然后结果左对齐。
             print('    {} {:>{diff_align}} === {:}'
                   .format(f.ljust(DIFF_ALIGN), ss, d, diff_align=(DIFF_ALIGN / 3.1)))
+    print()
 
 
 def _file_row_counts(*file_names):
     return len(open(os.path.join(*file_names)).readlines())
 
 
-def _get_file_list(directory):
+def _get_file_list(directory, only_rst=False, relpath=False):
     """
     返回一目录下的所有普通文件列表，递归，排序好。
+
+    only_rst 是否只要 .rst 结尾的文件；
+    relpath 是否返回相对于 <directory> 的路径；
     """
-    if not os.path.isdir(directory):
-        print('Not directory, please fix in code: {}'.format(directory))
+    p = path.Path(directory)
+    if not p.exists():
+        print('Not exists, please check work directory: {}'.format(p))
+        os.exit(127)
+    if not p.isdir():
+        print('Not directory, please fix in code: {}'.format(p))
         os.exit(2)
-    p = str(directory) + '/**'
-    fl = [os.path.relpath(f, start=directory)
-         for f in glob.glob(p, recursive=True) if os.path.isfile(f)]
+    fl = p.walkfiles('*.rst') if only_rst else p.walkfiles()
+    if relpath:
+        fl = [f.relpath(directory) for f in fl]
     # Exclude files in IGNORE_FILES
     efl = []
     for f in fl:
