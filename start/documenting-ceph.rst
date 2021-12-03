@@ -197,8 +197,8 @@ TOC ，你可以在这里添加新文件名。所有文档都必须有标题，�
 	cd ceph
 
 .. note::
-   The directory that contains ``build-doc`` and ``serve-doc`` must be included
-   in the ``PATH`` environment variable in order for these commands to work.
+   包含 ``build-doc`` 和 ``serve-doc`` 的目录必须加进 ``PATH`` 环境变量里，
+   这些命令才能好好运行。
 
 在 Debian/Ubuntu 、 Fedora 或 CentOS/RHEL 上执行此命令构建文档：
 

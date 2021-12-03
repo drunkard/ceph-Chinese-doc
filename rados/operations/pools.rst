@@ -862,8 +862,7 @@ true ，否则它会拒绝删除存储池。
 	ceph osd dump | grep 'replicated size'
 
 Ceph 会列出存储池，且高亮 ``replicated size`` 属性。默认情况\
-下， Ceph 会创建一对象的两个副本（一共三个副本，或 size 值为
-3 ）。
+下， Ceph 会创建一对象的两个副本（一共三个副本，或 size 值为 3 ）。
 
 
 
