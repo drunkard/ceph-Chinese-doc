@@ -9,7 +9,7 @@ import re
 doc_cn = '/git/DRUNKARD/ceph-Chinese-doc'
 doc_en = '/git/ceph/doc'
 
-LEN_DIFF_THRESHOLD = 20  # 译文和原文行数差别大于此值才显示
+LEN_DIFF_THRESHOLD = 5  # 译文和原文行数差别大于此值才显示
 DIFF_ALIGN = 51     # 等号对齐列数
 IGNORE_FILES = [
     # plain file
