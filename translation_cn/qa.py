@@ -75,8 +75,8 @@ def compare_file_length():
     print('"译文"和"原文"共有文件行数差别（行数差大于 {} 的）：'.format(LEN_DIFF_THRESHOLD))
     for f in fl:
         cn, en = _file_row_counts(doc_cn, f), _file_row_counts(doc_en, f)
-        d = abs(cn - en)
-        if d > LEN_DIFF_THRESHOLD:
+        d = cn - en
+        if abs(d) > LEN_DIFF_THRESHOLD:
             ss = '{} - {}'.format(cn, en)
             # 文件名缩进4， 行数相减右对齐，然后 = ，然后结果左对齐。
             print('    {} {:>{diff_align}} === {:}'
