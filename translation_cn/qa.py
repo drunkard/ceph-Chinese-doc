@@ -25,6 +25,12 @@ IGNORE_FILES = [
     'zh_options',
 ]
 
+RST_ROLES = [
+    'tip', 'note', 'warning', 'important',
+    'versionadded', 'versionchanged', 'deprecated',
+    'topic'
+]
+
 # 翻译进度，需要统计的子系统列表
 SUBSYS = [
     # 'api',
@@ -88,6 +94,7 @@ def count_file_progress(f):
     ''' 单个文件的翻译进度 '''
     cn, total = 0, 0
     with open(f) as fo:
+        # TODO count full section of rst role
         for line in fo.readlines():
             if should_ignore(line):
                 continue  # don't count blank line
@@ -163,6 +170,9 @@ def should_ignore(line):
     comment = re.compile(r'^..\ [a-zA-Z]')
     if line == '\n' or br.fullmatch(line) or tr.fullmatch(line):
         return True
+    for role in RST_ROLES:
+        if line.startswith(f'.. {role}::'):
+            return False
     if comment.match(line):
         return True
     return False
