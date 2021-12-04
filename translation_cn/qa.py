@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/cc/bin/python3
 
 import os
 import pandas as pd
