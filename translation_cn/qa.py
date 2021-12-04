@@ -160,7 +160,7 @@ def translate_progress():
     idx = 0
     print('Progress by subsys:')
     for subsys in SUBSYS:
-        print('{:<36}'.format(f'    counting subsys {subsys}/'), end='')
+        print('{:<20}'.format(f'    {subsys}/'), end='')
         files = _get_file_list(subsys, only_rst=True)
         for f in files:
             trans, total = count_file_progress(f)
@@ -174,8 +174,8 @@ def translate_progress():
     tp = progress.agg({'translated': sum, 'total': sum})
     print('Overall progress:   {}%'.format(to_pct(tp.translated, tp.total)))
 
-    print('\nProgress by file: \n',
-          progress.where(progress.pct != 1)\
+    print('Progress by file: \n',
+          progress.where(progress.pct != 100)\
           .sort_values('pct', ascending=False)\
           .dropna()\
           .head(50))
