@@ -170,6 +170,8 @@ def should_ignore(line):
     comment = re.compile(r'^..\ [a-zA-Z]')
     if line == '\n' or br.fullmatch(line) or tr.fullmatch(line):
         return True
+    if line.startswith('.. _'):  # ignore links
+        return True
     for role in RST_ROLES:
         if line.startswith(f'.. {role}::'):
             return False
