@@ -89,6 +89,8 @@ def count_file_progress(f):
     cn, total = 0, 0
     with open(f) as fo:
         for line in fo.readlines():
+            if should_ignore(line):
+                continue  # don't count blank line
             total += 1
             if is_translated(line):
                 cn += 1
@@ -144,6 +146,25 @@ def is_translated(line):
         return True
     if FILEP:
         print(line, end='')  # debug, to catch exceptions of re expr
+    return False
+
+
+def should_ignore(line):
+    '''我们只统计需要翻译的，所以以下忽略掉：
+
+    空行，包括只含有空格的行；
+    注释行；
+    标题下的那行符号 [=\-~_`'\.\*\+\^]+
+    命令行、终端内容（暂时未实现）；
+    ditaa 图；
+    '''
+    br = re.compile(r'\s+')
+    tr = re.compile(r'[=\-~_`\'\.\*\+\^]+')
+    comment = re.compile(r'^..\ [a-zA-Z]')
+    if line == '\n' or br.fullmatch(line) or tr.fullmatch(line):
+        return True
+    if comment.match(line):
+        return True
     return False
 
 
