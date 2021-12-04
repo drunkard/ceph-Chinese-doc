@@ -207,11 +207,12 @@ def translate_progress():
     tp = progress.agg({'translated': sum, 'total': sum})
     print('Overall progress:   {}%'.format(to_pct(tp.translated, tp.total)))
 
-    print('Progress by file: \n',
+    shown = 50
+    print(F'Progress by file (near finished {shown} files): \n',
           progress.where(progress.pct != 100)\
           .sort_values('pct', ascending=False)\
           .dropna()\
-          .head(50))
+          .head(shown))
 
 
 if __name__ == "__main__":
