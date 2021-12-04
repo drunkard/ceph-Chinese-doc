@@ -148,7 +148,7 @@ def is_translated(line):
 
 
 def to_pct(a, b):
-    return '{}%'.format(round(a / b * 100, 2))
+    return round(a / b * 100, 2)
 
 
 def translate_progress():
@@ -164,15 +164,15 @@ def translate_progress():
         files = _get_file_list(subsys, only_rst=True)
         for f in files:
             trans, total = count_file_progress(f)
-            progress.loc[idx] = [subsys, f, trans, total, trans / total]
+            progress.loc[idx] = [subsys, f, trans, total, to_pct(trans, total)]
             idx += 1
         subsys_prog = progress[progress.subsys == subsys]
         r = subsys_prog.agg({'translated': sum, 'total': sum})
-        print(to_pct(r.translated, r.total))
+        print('{}%'.format(to_pct(r.translated, r.total)))
 
     # 总进度
     tp = progress.agg({'translated': sum, 'total': sum})
-    print('Overall progress: \t\t{}'.format(to_pct(tp.translated, tp.total)))
+    print('Overall progress:   {}%'.format(to_pct(tp.translated, tp.total)))
 
     print('\nProgress by file: \n',
           progress.where(progress.pct != 1)\
