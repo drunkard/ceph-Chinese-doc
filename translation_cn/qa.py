@@ -94,10 +94,16 @@ def count_file_progress(f):
     ''' 单个文件的翻译进度 '''
     cn, total = 0, 0
     with open(f) as fo:
-        # TODO count full section of rst role
+        count_role = False  # mark as rst role section
         for line in fo.readlines():
-            if should_ignore(line):
+            if is_role(line):
+                count_role = True
+            # if count_role is True: print(line, end='')  # debug role section
+            if is_blank_row(line):
+                count_role = False
                 continue  # don't count blank line
+            if count_role is False and is_ignored(line):
+                continue
             total += 1
             if is_translated(line):
                 cn += 1
@@ -138,6 +144,22 @@ def _get_file_list(directory, only_rst=False, relpath=False):
     return sorted(efl)
 
 
+def is_blank_row(line):
+    br = re.compile(r'\s+')
+    if line == '\n' or br.fullmatch(line):
+        return True
+    return False
+
+
+def is_role(line):
+    # TODO count full section of rst role, current implement didn't count full
+    # role section yet.
+    for role in RST_ROLES:
+        if line.startswith(f'.. {role}::'):
+            return True
+    return False
+
+
 def is_translated(line):
     '''
     比较规则：
@@ -151,12 +173,11 @@ def is_translated(line):
         return True
     if cn_char.search(line) or starts.match(line):
         return True
-    if FILEP:
-        print(line, end='')  # debug, to catch exceptions of re expr
+    # if FILEP: print(line, end='')  # debug, to catch exceptions of re expr
     return False
 
 
-def should_ignore(line):
+def is_ignored(line):
     '''我们只统计需要翻译的，所以以下忽略掉：
 
     空行，包括只含有空格的行；
@@ -165,16 +186,12 @@ def should_ignore(line):
     命令行、终端内容（暂时未实现）；
     ditaa 图；
     '''
-    br = re.compile(r'\s+')
     tr = re.compile(r'[=\-~_`\'\.\*\+\^]+')
     comment = re.compile(r'^..\ [a-zA-Z]')
-    if line == '\n' or br.fullmatch(line) or tr.fullmatch(line):
+    if tr.fullmatch(line):
         return True
     if line.startswith('.. _'):  # ignore links
         return True
-    for role in RST_ROLES:
-        if line.startswith(f'.. {role}::'):
-            return False
     if comment.match(line):
         return True
     return False
