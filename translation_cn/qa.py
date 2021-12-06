@@ -216,12 +216,12 @@ def translate_progress():
 
 
 if __name__ == "__main__":
-    compare_file_existency()
-    compare_file_length()
-
     if FILEP:
         print(FILEP, count_file_progress(FILEP))
     else:
+        compare_file_existency()
+        compare_file_length()
+
         # DataFrame 显示所有数据
         # pd.set_option('display.max_rows', 100)
         # pd.set_option('display.max_columns', None)
