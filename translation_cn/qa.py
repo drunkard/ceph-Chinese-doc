@@ -26,7 +26,7 @@ IGNORE_FILES = [
 ]
 
 RST_ROLES = [
-    'tip', 'note', 'warning', 'important',
+    'tip', 'note', 'caution', 'warning', 'important',
     'versionadded', 'versionchanged', 'deprecated',
     'topic'
 ]
