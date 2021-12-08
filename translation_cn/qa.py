@@ -61,7 +61,6 @@ def compare_file_existency():
     cnfl = _get_file_list(doc_cn, relpath=True)
     enfl = _get_file_list(doc_en, relpath=True)
     cn_uniq, en_uniq = [], []
-    # print(cnfl)
     for c in cnfl:
         if c not in enfl:
             cn_uniq.append(c)
@@ -99,6 +98,7 @@ def count_file_progress(f):
     cn, total = 0, 0
     with open(f) as fo:
         count_role = False  # mark as rst role section
+        translated = True  # to count title, some title not translated
         for line in fo.readlines():
             if is_role(line):
                 count_role = True
@@ -109,8 +109,15 @@ def count_file_progress(f):
             if count_role is False and is_ignored(line):
                 continue
             total += 1
+            if translated == False and is_title(line):
+                translated = True
+                cn += 1
+                total -= 1  # remove counted title row
+                continue
             if is_translated(line):
                 cn += 1
+            else:
+                translated = False
     return (cn, total)
 
 
@@ -164,6 +171,13 @@ def is_role(line):
     return False
 
 
+def is_title(line):
+    tr = re.compile(r'[=\-~_`\'\.\*\+\^]+\n')
+    if tr.fullmatch(line):
+        return True
+    return False
+
+
 def is_translated(line):
     '''
     比较规则：
@@ -171,13 +185,13 @@ def is_translated(line):
     以 [a-zA-Z] 打头的才计算；
     空行、[.-`*#:\] 、\s\t 打头的不算；
     '''
-    cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：]')  # 匹配汉字
+    cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：、]')  # 匹配汉字
     starts = re.compile(r'^[\.\-=~_\^+|`*#:\(\)\[\]\\\s\t\"\'0-9]')  # 匹配行首
     if not line:  # 空行
         return True
     if cn_char.search(line) or starts.match(line):
         return True
-    # if FILEP: print(line, end='')  # debug, to catch exceptions of re expr
+    if FILEP: print(line, end='')  # debug, to catch exceptions of re expr
     return False
 
 
@@ -190,10 +204,7 @@ def is_ignored(line):
     命令行、终端内容（暂时未实现）；
     ditaa 图；
     '''
-    tr = re.compile(r'[=\-~_`\'\.\*\+\^]+')
     comment = re.compile(r'^..\ [a-zA-Z]')
-    if tr.fullmatch(line):
-        return True
     if line.startswith('.. _'):  # ignore links
         return True
     if comment.match(line):
@@ -239,8 +250,14 @@ def translate_progress():
 if __name__ == "__main__":
     print(usage)
 
+    if len(sys.argv) >= 2:
+        FILEP = sys.argv[1:]
     if FILEP:
-        print(FILEP, count_file_progress(FILEP))
+        if isinstance(FILEP, list):
+            for f in FILEP:
+                print(f, count_file_progress(f))
+        else:
+            print(FILEP, count_file_progress(FILEP))
     else:
         compare_file_existency()
         compare_file_length()
