@@ -4,7 +4,11 @@ import os
 import pandas as pd
 import path
 import re
+import sys
 
+usage = '''Counts file existence, row amount diffs, translated percentage.
+Without files specified, counts all files.
+Usage: {} [file_to_count ...]\n'''.format(sys.argv[0])
 
 doc_cn = '/git/DRUNKARD/ceph-Chinese-doc'
 doc_en = '/git/ceph/doc'
@@ -233,6 +237,8 @@ def translate_progress():
 
 
 if __name__ == "__main__":
+    print(usage)
+
     if FILEP:
         print(FILEP, count_file_progress(FILEP))
     else:
