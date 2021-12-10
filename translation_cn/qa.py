@@ -73,17 +73,23 @@ def compare_file_existency():
     print('    译文版独有文件：{}\n    原文版独有文件：{}\n'.format(cn_uniq or '无', en_uniq or '无'))
 
 
-def compare_file_length():
-    cnfl = _get_file_list(doc_cn, relpath=True)
-    enfl = _get_file_list(doc_en, relpath=True)
-    fl = [cf for cf in cnfl
-          if cf in enfl and
-          (cf.endswith('.rst') or cf.endswith('.conf'))]
+def compare_file_length(files=None):
+    "arg files: None or list."
+    show_anyway = False  # show result, ignore LEN_DIFF_THRESHOLD
+    if files:
+        fl = files
+        show_anyway = True
+    else:
+        cnfl = _get_file_list(doc_cn, relpath=True)
+        enfl = _get_file_list(doc_en, relpath=True)
+        fl = [cf for cf in cnfl
+            if cf in enfl and
+            (cf.endswith('.rst') or cf.endswith('.conf'))]
     print('"译文"和"原文"共有文件行数差别（行数差大于 {} 的）：'.format(LEN_DIFF_THRESHOLD))
     for f in fl:
         cn, en = _file_row_counts(doc_cn, f), _file_row_counts(doc_en, f)
         d = cn - en
-        if abs(d) > LEN_DIFF_THRESHOLD:
+        if abs(d) > LEN_DIFF_THRESHOLD or show_anyway:
             ss = '{} - {}'.format(cn, en)
             # 文件名缩进4， 行数相减右对齐，然后 = ，然后结果左对齐。
             print('    {} {:>{diff_align}} === {:}'
@@ -253,6 +259,7 @@ if __name__ == "__main__":
     if len(sys.argv) >= 2:
         FILEP = sys.argv[1:]
     if FILEP:
+        compare_file_length(FILEP)
         for f in FILEP:
             print(f, count_file_progress(f))
     else:
