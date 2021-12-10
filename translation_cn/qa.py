@@ -53,8 +53,6 @@ SUBSYS = [
     'security',
     'start',
 ]
-# Single file to debug, will be ignored if it's empty
-FILEP = ''
 
 
 def compare_file_existency():
@@ -250,14 +248,13 @@ def translate_progress():
 if __name__ == "__main__":
     print(usage)
 
+    # Single file to debug, will be ignored if it's empty
+    FILEP = None
     if len(sys.argv) >= 2:
         FILEP = sys.argv[1:]
     if FILEP:
-        if isinstance(FILEP, list):
-            for f in FILEP:
-                print(f, count_file_progress(f))
-        else:
-            print(FILEP, count_file_progress(FILEP))
+        for f in FILEP:
+            print(f, count_file_progress(f))
     else:
         compare_file_existency()
         compare_file_length()
