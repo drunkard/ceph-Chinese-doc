@@ -18,9 +18,10 @@ DIFF_ALIGN = 51     # 等号对齐列数
 IGNORE_FILES = [
     # plain file
     'grep_words.sh',
+    'qa',
     'README.md',    # empty file in ceph/doc as placeholder
     'README.rst',
-    'vi_two_files.sh',
+    'vim',
 
     # directory
     '.git',
@@ -191,6 +192,7 @@ def is_translated(line):
     '''
     cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：、]')  # 匹配汉字
     starts = re.compile(r'^[\.\-=~_\^+|`*#:\(\)\[\]\\\s\t\"\'0-9]')  # 匹配行首
+    # TODO: do not ignore long row starts with spaces, but not command
     if not line:  # 空行
         return True
     if cn_char.search(line) or starts.match(line):
@@ -208,9 +210,11 @@ def is_ignored(line):
     命令行、终端内容（暂时未实现）；
     ditaa 图；
     '''
-    comment = re.compile(r'^..\ [a-zA-Z]')
-    if line.startswith('.. _'):  # ignore links
+    # ignore links
+    if line.startswith('.. _'):
         return True
+    # ignore comment
+    comment = re.compile(r'^..\ [a-zA-Z]')
     if comment.match(line):
         return True
     return False
