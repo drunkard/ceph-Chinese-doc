@@ -21,6 +21,10 @@
     active/standby
         活跃/备用
 
+    allocation-file
+        分配信息文件
+        BlueStore 内部的
+
     ancestor type
         父级类型
 
@@ -47,6 +51,9 @@
     beacon message
         信标消息
         MDS 和监视器之间发送的；
+
+    behind shard
+        落伍分片
 
     bitrot
         位翻转
@@ -308,6 +315,9 @@
 
     messenger layer
         信使层
+
+    multipart object
+        多块对象；
 
     nearfull ratio
         将满比率
@@ -587,7 +597,7 @@
         裁截 => 清理?
 
     unlink bucket
-        断开、切断桶链接、解绑桶，视具体语境采用。
+        断开、切断桶链接、解绑桶、解除连接，视具体语境采用。
 
     writeback
         不译。通常译作回写模式，但由于配置时也要写 writeback ，干脆不译，在\
