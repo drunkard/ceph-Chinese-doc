@@ -1,4 +1,3 @@
-.. Erasure code
 .. _ecpool:
 
 ========
@@ -13,10 +12,10 @@ meaning every object is copied on multiple disks. The `Erasure Code
 instead to save space.
 
 
-.. Creating a sample erasure coded pool
-
 创建纠删码存储池样板
 --------------------
+.. Creating a sample erasure coded pool
+
 The simplest erasure coded pool is equivalent to `RAID5
 <https://en.wikipedia.org/wiki/Standard_RAID_levels#RAID_5>`_ and
 requires at least three hosts::
@@ -28,10 +27,9 @@ requires at least three hosts::
     ABCDEFGHI
 
 
-.. Erasure code profiles
-
 纠删码配置
 ----------
+.. Erasure code profiles
 
 默认的纠删码配置可容忍两个 OSD 的损失，相当于副本数为三的\
 多副本存储池，但只需 2TB 的空间即可存储 1TB 数据，而无需 3TB 。\
@@ -44,14 +42,15 @@ requires at least three hosts::
     crush-failure-domain=host
     technique=reed_sol_van
 
-确定合理的配置文件很重要，因为存储池创建后就不能再修改了。要改\
-的话，只能另外创建一个采用新配置的存储池，然后再把所有对象挪过\
-去。
+确定合理的配置文件很重要，因为存储池创建后就不能再修改了。
+要改的话，只能另外创建一个采用新配置的存储池，
+然后再把所有对象挪过去。
 
 配置文件里最重要的参数是 *K* 、 *M* 和
-*crush-failure-domain* ，因为它们决定了存储的开销和数据的\
-持久性。例如，假设期望的系统架构必须能承受两个故障机架和 67%
-的开销，可以用下列配置文件： ::
+*crush-failure-domain* ，因为它们决定了存储的开销和数据的持久性。
+例如，假设期望的系统架构必须能承受\
+两个故障机架和 67% 的开销，
+可以用下列配置文件： ::
 
     $ ceph osd erasure-code-profile set myprofile \
        k=3 \
@@ -62,10 +61,11 @@ requires at least three hosts::
     $ rados --pool ecpool get NYAN -
     ABCDEFGHI
 
-对象 *NYAN* 将被分割成三块（ *K=3* ）、并额外创建两个\
-*校验块*\ （ *M=2* ）。 *M* 值决定了在不丢数据的前提下可以同时\
-失去多少 OSD 。 *crush-failure-domain=rack* 能使创建的
-CRUSH 规则可确保两个\ *校验块*\ 不会存储在同一机架上。
+对象 *NYAN* 将被分割成三块（ *K=3* ）、
+并额外创建两个 *校验块*\ （ *M=2* ）。
+*M* 值决定了在不丢数据的前提下可以同时失去多少 OSD 。
+*crush-failure-domain=rack* 能使创建的 CRUSH 规则\
+可确保两个\ *校验块*\ 不会存储在同一机架上。
 
 .. ditaa::
 
@@ -117,10 +117,9 @@ More information can be found in the `erasure code profiles
 <../erasure-code-profile>`_ documentation.
 
 
-.. Erasure Coding with Overwrites
-
 在纠删码存储池上启用重写功能
 ----------------------------
+.. Erasure Coding with Overwrites
 
 默认情况下，纠删码存储池只适用于像 RGW 这样进行完整对象写入和\
 追加的场景。
@@ -148,10 +147,9 @@ bluestore 上差得多。
 设置为默认的数据存储池。
 
 
-.. Erasure coded pool and cache tiering
-
 纠删码存储池与缓存分级
 ----------------------
+.. Erasure coded pool and cache tiering
 
 纠删码存储池与副本存储池相比需要的计算资源更多，而且还缺少一些\
 功能，像 omap 。要消除这些局限性，可以在纠删码存储池前加一个\
@@ -170,10 +168,10 @@ bluestore 上差得多。
 更详细的文档请参阅\ `分级缓存 <../cache-tiering>`_\ 。
 
 
-.. Erasure coded pool recovery
-
 纠删码存储池的恢复
 ------------------
+.. Erasure coded pool recovery
+
 If an erasure coded pool loses some shards, it must recover them from the others.
 This generally involves reading from the remaining shards, reconstructing the data, and
 writing it to the new peer.
@@ -188,10 +186,9 @@ mode but also meant pools with lost OSDs but no data loss were unable to recover
 without manual intervention to change the *min_size*.
 
 
-.. Glossary
-
 术语
 ----
+.. Glossary
 
 *chunk*
    when the encoding function is called, it returns chunks of the same
