@@ -15,6 +15,7 @@ doc_en = '/git/ceph/doc'
 
 LEN_DIFF_THRESHOLD = 5  # 译文和原文行数差别大于此值才显示
 DIFF_ALIGN = 51     # 等号对齐列数
+EN_COLS = 80        # 英文版列数
 IGNORE_FILES = [
     # plain file
     'grep_words.sh',
@@ -196,6 +197,9 @@ def is_translated(line):
     if not line:  # 空行
         return True
     if cn_char.search(line) or starts.match(line):
+        return True
+    if len(line) < (EN_COLS / 5):
+        # ignore short rows, too many symbols in them.
         return True
     if FILEP: print(line, end='')  # debug, to catch exceptions of re expr
     return False
