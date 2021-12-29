@@ -66,6 +66,11 @@
     bucket policy
         桶、桶索引（ ``bi`` ）、桶策略
 
+    channel
+        信道
+        ``ceph --watch-channel cluster``
+        可用信道有 cluster 、 audit 、 cephadm 、 * 表示所有
+
     chunk
         块、校验块。EC术语。
 
@@ -241,6 +246,13 @@
     grace time
         宽限期；宽限时间；
 
+    guest disk
+        客座磁盘
+
+    guest OS
+    guest operating system
+        客座操作系统
+
     immutable object
         不可变对象
 
@@ -374,6 +386,9 @@
     out
         <不翻译> => 出列、出局?
 
+    overlay pool
+        马甲存储池
+
     partial filter
         局部过滤器，LDAP 术语
 
@@ -450,6 +465,10 @@
     proposal
     proposer
         (PAXOS) 提议、提案
+
+    pubsub topic
+        发布订阅话题， pubsub 话题？
+        rgw 相关；
 
     purge
         擦净。
@@ -605,8 +624,12 @@
     thin provisioning / thick provisioning
         简配、全配
 
+    threading model
+        线程池模型
+
     throttling
         抑制
+        throttler -> 减速器
 
     tier type
         <不翻译> RGW 术语。
