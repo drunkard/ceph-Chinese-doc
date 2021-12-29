@@ -179,7 +179,7 @@ def is_role(line):
 
 
 def is_title(line):
-    tr = re.compile(r'[=\-~_`\'\.\*\+\^]+\n')
+    tr = re.compile(r'[=\-~_`\'\.\*\+\^]+')
     if tr.fullmatch(line):
         return True
     return False
