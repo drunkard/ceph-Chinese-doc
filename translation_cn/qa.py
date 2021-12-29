@@ -97,6 +97,7 @@ def compare_file_length(files=None):
 
 def count_file_progress(f):  # noqa
     ''' 单个文件的翻译进度 '''
+    # TODO rewrite in list() instead of file.readlines()
     cn, total = 0, 0
     global RN
     with open(f) as fo:
@@ -330,6 +331,7 @@ if __name__ == "__main__":
     print(usage)
 
     # Single file to debug, will be ignored if it's empty
+    # TODO supports debug of subsys
     FILEP = None
     if len(sys.argv) >= 2:
         FILEP = sys.argv[1:]
