@@ -50,6 +50,8 @@ SUBSYS = [
     'start',
 ]
 
+RN = 0  # current row number
+
 
 def compare_file_existency():
     cnfl = _get_file_list(doc_cn, relpath=True)
@@ -96,9 +98,11 @@ def compare_file_length(files=None):
 def count_file_progress(f):
     ''' 单个文件的翻译进度 '''
     cn, total = 0, 0
+    global RN
     with open(f) as fo:
         trans_flag = True  # to count title, some title not translated
         for line in fo.readlines():
+            RN += 1
             # clean up first
             line = line.rstrip('\n')    # remove \n
             line = line.rstrip(' ')     # remove spaces
@@ -198,7 +202,7 @@ def is_translated(line):
     if len(line) < (EN_COLS / 5):
         # ignore short rows, too many symbols in them.
         return True
-    if FILEP: print(line)  # debug, to catch exceptions of re expr
+    if FILEP: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
     return False
 
 
