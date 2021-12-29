@@ -106,6 +106,10 @@ def count_file_progress(f):
         count_role = False  # mark as rst role section
         translated = True  # to count title, some title not translated
         for line in fo.readlines():
+            # clean up first
+            line = line.rstrip('\n')    # remove \n
+            line = line.rstrip(' ')     # remove spaces
+
             if is_role(line):
                 count_role = True
             # if count_role is True: print(line, end='')  # debug role section
@@ -163,7 +167,7 @@ def _get_file_list(directory, only_rst=False, relpath=False):
 
 def is_blank_row(line):
     br = re.compile(r'\s+')
-    if line == '\n' or br.fullmatch(line):
+    if not line or br.fullmatch(line):
         return True
     return False
 
@@ -201,7 +205,7 @@ def is_translated(line):
     if len(line) < (EN_COLS / 5):
         # ignore short rows, too many symbols in them.
         return True
-    if FILEP: print(line, end='')  # debug, to catch exceptions of re expr
+    if FILEP: print(line)  # debug, to catch exceptions of re expr
     return False
 
 
