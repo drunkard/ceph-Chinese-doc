@@ -268,7 +268,7 @@ def is_translated(line):
         return True
     if line.count('`') == 2 and line.endswith('`_'):  # is hyperlink, could ignore
         return True
-    if FILEP: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
+    if FILES: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
     return False
 
 
@@ -332,12 +332,12 @@ if __name__ == "__main__":
 
     # Single file to debug, will be ignored if it's empty
     # TODO supports debug of subsys
-    FILEP = None
+    FILES = None
     if len(sys.argv) >= 2:
-        FILEP = sys.argv[1:]
-    if FILEP:
-        compare_file_length(FILEP)
-        for f in FILEP:
+        FILES = sys.argv[1:]
+    if FILES:
+        compare_file_length(FILES)
+        for f in FILES:
             print(f, count_file_progress(f))
     else:
         compare_file_existency()
