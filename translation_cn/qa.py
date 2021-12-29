@@ -95,11 +95,18 @@ def compare_file_length(files=None):
     print()
 
 
-def count_file_progress(f):
+def count_file_progress(f):  # noqa
     ''' 单个文件的翻译进度 '''
     cn, total = 0, 0
     global RN
     with open(f) as fo:
+        # Command should be ignored
+        # if the following paragraph is command, 0=not, 1=enter, 2=end
+        # Decides if it's cmd by counting the leading spaces, reset cmd_flag=0
+        # if indent changed.
+        cmd_flag = 0
+        cmd_indent = 0
+
         trans_flag = True  # to count title, some title not translated
         for line in fo.readlines():
             RN += 1
@@ -107,11 +114,27 @@ def count_file_progress(f):
             line = line.rstrip('\n')    # remove \n
             line = line.rstrip(' ')     # remove spaces
 
+            if line.endswith('::'):
+                cmd_flag = 1
             # if is_role(line):
             #     code_flag += 1
             # if code_flag > 0: print(line)  # debug role section
             if is_blank_row(line):
+                if cmd_flag >= 1:
+                    cmd_flag += 1
                 continue  # don't count blank line
+            if cmd_flag >= 2:
+                if cmd_indent == 0:
+                    cmd_indent = get_indent(line)
+                    continue
+                # cmd_indent != 0, check if it changed
+                if get_indent(line) >= cmd_indent:
+                    # still indented as command, ignore it
+                    continue
+                else:
+                    if cmd_flag > 2:  # got 2 blank rows, cmd block maybe ended
+                        cmd_flag = 0
+                        cmd_indent = 0
                 continue
             total += 1
             if trans_flag == False and is_title(line):
@@ -119,6 +142,7 @@ def count_file_progress(f):
                 cn += 1
                 total -= 1  # remove counted title row
                 continue
+            # print('ddd', cmd_indent, get_indent(line), line)  # debug
             if is_translated(line):
                 cn += 1
             else:
@@ -158,6 +182,15 @@ def _get_file_list(directory, only_rst=False, relpath=False):
         if not should_ignore:
             efl.append(f)
     return sorted(efl)
+
+
+def get_indent(line):
+    '获取一行的缩进数量'
+    r = re.compile(r'^\s+')
+    rr = r.match(line)
+    if rr:
+        return rr.end()
+    return 0
 
 
 def is_blank_row(line):
