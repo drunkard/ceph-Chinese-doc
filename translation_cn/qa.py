@@ -103,31 +103,31 @@ def count_file_progress(f):
     ''' 单个文件的翻译进度 '''
     cn, total = 0, 0
     with open(f) as fo:
-        count_role = False  # mark as rst role section
-        translated = True  # to count title, some title not translated
+        role_flag = False  # mark as rst role section
+        trans_flag = True  # to count title, some title not translated
         for line in fo.readlines():
             # clean up first
             line = line.rstrip('\n')    # remove \n
             line = line.rstrip(' ')     # remove spaces
 
             if is_role(line):
-                count_role = True
-            # if count_role is True: print(line, end='')  # debug role section
+                role_flag = True
+            # if role_flag is True: print(line, end='')  # debug role section
             if is_blank_row(line):
-                count_role = False
+                role_flag = False
                 continue  # don't count blank line
-            if count_role is False and is_ignored(line):
+            if role_flag is False and is_ignored(line):
                 continue
             total += 1
-            if translated == False and is_title(line):
-                translated = True
+            if trans_flag == False and is_title(line):
+                trans_flag = True
                 cn += 1
                 total -= 1  # remove counted title row
                 continue
             if is_translated(line):
                 cn += 1
             else:
-                translated = False
+                trans_flag = False
     return (cn, total)
 
 
