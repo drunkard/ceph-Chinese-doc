@@ -31,12 +31,6 @@ IGNORE_FILES = [
     'zh_options',
 ]
 
-RST_ROLES = [
-    'tip', 'note', 'caution', 'warning', 'important',
-    'versionadded', 'versionchanged', 'deprecated',
-    'topic'
-]
-
 # 翻译进度，需要统计的子系统列表
 SUBSYS = [
     # 'api',
@@ -103,20 +97,17 @@ def count_file_progress(f):
     ''' 单个文件的翻译进度 '''
     cn, total = 0, 0
     with open(f) as fo:
-        role_flag = False  # mark as rst role section
         trans_flag = True  # to count title, some title not translated
         for line in fo.readlines():
             # clean up first
             line = line.rstrip('\n')    # remove \n
             line = line.rstrip(' ')     # remove spaces
 
-            if is_role(line):
-                role_flag = True
-            # if role_flag is True: print(line, end='')  # debug role section
+            # if is_role(line):
+            #     code_flag += 1
+            # if code_flag > 0: print(line)  # debug role section
             if is_blank_row(line):
-                role_flag = False
                 continue  # don't count blank line
-            if role_flag is False and is_ignored(line):
                 continue
             total += 1
             if trans_flag == False and is_title(line):
@@ -173,10 +164,12 @@ def is_blank_row(line):
 
 
 def is_role(line):
-    # TODO count full section of rst role, current implement didn't count full
-    # role section yet.
-    for role in RST_ROLES:
-        if line.startswith(f'.. {role}::'):
+    roles = [
+        'tip', 'note', 'caution', 'warning', 'important',
+        'topic',
+    ]
+    for role in roles:
+        if line.count(f'.. {role}::') > 0:
             return True
     return False
 
