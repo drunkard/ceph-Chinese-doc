@@ -281,11 +281,12 @@ def is_ignored(line):
     ditaa 图；
     '''
     # ignore links
-    if line.startswith('.. _'):
+    if line.startswith('.. _') and (line.endswith(':') or line.count(': ') == 1):
         return True
     # ignore comment
-    comment = re.compile(r'^..\ [a-zA-Z]')
-    if comment.match(line):
+    comment = re.compile(r'^\.\.\ [a-zA-Z]')
+    if comment.match(line) and not (line.count(':: ') == 1 or line.endswith('::')):
+        # print('comment debug:', get_indent(line), line)
         return True
     return False
 
