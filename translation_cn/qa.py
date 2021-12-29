@@ -107,6 +107,9 @@ def count_file_progress(f):  # noqa
         cmd_flag = 0
         cmd_indent = 0
 
+        # Decide if this section is code/role, co-used by code/role
+        # 0=not, 1=yes, >=3 end
+        code_flag = 0
         trans_flag = True  # to count title, some title not translated
         for line in fo.readlines():
             RN += 1
@@ -119,9 +122,13 @@ def count_file_progress(f):  # noqa
             # if is_role(line):
             #     code_flag += 1
             # if code_flag > 0: print(line)  # debug role section
+            if is_code(line):
+                code_flag += 1
             if is_blank_row(line):
                 if cmd_flag >= 1:
                     cmd_flag += 1
+                if code_flag >= 1:
+                    code_flag += 1
                 continue  # don't count blank line
             if cmd_flag >= 2:
                 if cmd_indent == 0:
@@ -135,6 +142,13 @@ def count_file_progress(f):  # noqa
                     if cmd_flag > 2:  # got 2 blank rows, cmd block maybe ended
                         cmd_flag = 0
                         cmd_indent = 0
+            if is_ignored(line):
+                continue
+            if code_flag >= 1:
+                if get_indent(line) >= 3:  # not blank row, but indented
+                    continue
+                if code_flag >= 3:
+                    code_flag = 0
                 continue
             total += 1
             if trans_flag == False and is_title(line):
@@ -200,6 +214,21 @@ def is_blank_row(line):
     return False
 
 
+def is_code(line):
+    '''If matched the rst role, it needs two more blank row to end this block.
+    '''
+    roles = [
+        'code', 'code-block', 'prompt',
+        'ditaa', 'image',
+        'deprecated', 'versionadded', 'versionchanged',
+        'index', 'toctree',
+    ]
+    for role in roles:
+        if line.count(f'.. {role}::') > 0:
+            return True
+    return False
+
+
 def is_role(line):
     roles = [
         'tip', 'note', 'caution', 'warning', 'important',
@@ -226,14 +255,17 @@ def is_translated(line):
     空行、[.-`*#:\] 、\s\t 打头的不算；
     '''
     cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：、]')  # 匹配汉字
-    starts = re.compile(r'^[\.\-=~_\^+|`*#:\(\)\[\]\\\s\t\"\'0-9]')  # 匹配行首
-    # TODO: do not ignore long row starts with spaces, but not command
+    starts = re.compile(r'^[\-=~_\^+|`#:\(\)\[\]\\\t\"\'0-9]')  # 匹配行首
     if not line:  # 空行
         return True
     if cn_char.search(line) or starts.match(line):
+        # print('trans debug:', line)  # debug
         return True
+    # do not ignore long row starts with spaces, but not command
     if len(line) < (EN_COLS / 5):
         # ignore short rows, too many symbols in them.
+        return True
+    if line.count('`') == 2 and line.endswith('`_'):  # is hyperlink, could ignore
         return True
     if FILEP: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
     return False
