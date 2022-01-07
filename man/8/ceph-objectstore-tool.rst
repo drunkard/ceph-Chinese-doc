@@ -4,15 +4,12 @@
 ceph-objectstore-tool -- 修改或检查一个 OSD 的状态
 ==================================================
 
-Synopsis
-========
-
+提纲
+====
 
 | **ceph-objectstore-tool** --data-path *path to osd* [--op *list* ]
 
-
-
-Possible object operations:
+支持的对象操作：
 
 * (get|set)-bytes [file]
 * set-(attr|omap) [file]
@@ -27,18 +24,17 @@ Possible object operations:
 * clear-data-digest
 * remove-clone-metadata 
 
+描述
+====
 
-Description
-===========
+**ceph-objectstore-tool** 工具是用于修改 OSD 状态的。它能够修改对象内容、删除对象、罗列 omap 、修改 omap 头部、修改 omap 键、罗列对象属性、修改对象属性键。
 
-**ceph-objectstore-tool** is a tool for modifying the state of an OSD. It facilitates manipulating an object's content, removing an object, listing the omap, manipulating the omap header, manipulating the omap key, listing object attributes, and manipulating object attribute keys.
-
-**ceph-objectstore-tool** provides two main modes: (1) a mode that specifies the "--op" argument (for example, **ceph-objectstore-tool** --data-path $PATH_TO_OSD --op $SELECT_OPERATION [--pgid $PGID] [--dry-run]), and (2) a mode for positional object operations. If the second mode is used, the object can be specified by ID or by the JSON output of the --op list. 
+**ceph-objectstore-tool** 有两个主要用法： (1) 指定了 "--op" 参数的模式（例如 **ceph-objectstore-tool** --data-path $PATH_TO_OSD --op $SELECT_OPERATION [--pgid $PGID] [--dry-run]），还有 (2) 定位对象操作，在此模式下，对象可以按 ID 或 ``--op list`` 的 JSON 格式输出来指定。
 
 | **ceph-objectstore-tool** --data-path *path to osd* [--pgid *$PG_ID* ][--op *command*]
 | **ceph-objectstore-tool** --data-path *path to osd* [ --op *list $OBJECT_ID*]
 
-Possible -op commands::
+支持的 --op 命令： ::
 
 * info
 * log
@@ -69,424 +65,424 @@ Possible -op commands::
 * dump-export
 * trim-pg-log
 
-Installation
-============
+安装
+====
 
-The `ceph-osd` package provides **ceph-objectstore-tool**.
+**ceph-objectstore-tool** 在 `ceph-osd` 软件包里。
 
+实例
+====
 
-Examples
-========
+对象的修改
+----------
+.. Modifying Objects
 
-Modifying Objects
------------------
-These commands modify state of an OSD. The OSD must not be running when ceph-objectstore-tool is used.
+这些命令可修改一个 OSD 的状态，使用 ceph-objectstore-tool 时这个 OSD 一定不能运行。
 
-Listing Objects and Placement Groups
-------------------------------------
+罗列对象和归置组
+----------------
+.. Listing Objects and Placement Groups
 
-Make sure that the target OSD is down::
+确保目标 OSD 处于停机状态::
 
    systemctl status ceph-osd@$OSD_NUMBER
 
-List objects with ceph-objectstore-tool::
+用 ceph-objectstore-tool 罗列对象::
 
     systemctl status ceph-osd@$OSD_NUMBER
 
-Identify all objects within an OSD::
+找出一个 OSD 内的所有对象::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --op list
 
-Identify all objects within a placement group::
+找出一个归置组内的所有对象::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID --op list
 
-Identify the placement group (PG) that an object belongs to::
+找出一个对象所属的归置组（ PG ）::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --op list $OBJECT_ID
 
+丢失对象的修正
+--------------
+.. Fixing Lost Objects   
 
-Fixing Lost Objects   
--------------------
-
-Make sure the OSD is down::
+确保此 OSD 处于停机状态::
 
    systemctl status ceph-osd@OSD_NUMBER
 
-Fix all lost objects::
+修正所有丢失的对象::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --op fix-lost
 
-Fix all the lost objects within a specified placement group::
+修正指定归置组内、所有丢失的对象::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID --op fix-lost
 
-Fix a lost object by its identifier::
+根据标识符修正一个丢失的对象::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --op fix-lost $OBJECT_ID
 
-Fix legacy lost objects::
+修正以前丢失的对象::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --op fix-lost
 
+修改一个对象的内容
+------------------
+.. Manipulating an object's content
 
-Manipulating an object's content
---------------------------------
+1. 确保目标 OSD 处于停机状态::
 
-1. Make sure that the target OSD is down::
-   
     systemctl status ceph-osd@$OSD_NUMBER
 
-2. Find the object by listing the objects of the OSD or placement group.
+2. 通过罗列此 OSD 或归置组内的对象找到要修改的对象。
 
-3. Before setting the bytes on the object, make a backup and a working copy of the object. Here is the syntactic form of that command::
+3. 在对象中写入字节串之前，先做此对象的备份和工作副本。下面是此命令的语法格式::
    
     ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT get-bytes > $OBJECT_FILE_NAME
 
-For example::
+例如::
 
    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' get-bytes > zone_info.default.backup
 
    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' get-bytes > zone_info.default.working-copy
 
-The first command creates the back-up copy, and the second command creates the working copy.
+第一个命令创建了备份副本，而第二个命令创建的是工作副本。
 
-4. Edit the working copy object file.
+4. 编辑工作副本那个对象文件。
 
-5. Set the bytes of the object::
+5. 填入此对象的变更字节::
      
      ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT set-bytes < $OBJECT_FILE_NAME
 
-For example::
+例如::
 
    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' set-bytes < zone_info.default.working-copy
- 
 
-Removing an Object
-------------------
+对象的删除
+----------
+.. Removing an Object
 
-Use **ceph-objectstore-tool** to remove objects. When an object is removed, its contents and references are removed from the placement group (PG).
+用 **ceph-objectstore-tool** 删除对象。对象被删除后，其内容以及引用都会从归置组（ PG ）删除。
 
-Remove an object (syntax)::
+删除一个对象（语法）::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT remove
 
-Remove an object (example)::
+删除一个对象（实例）::
 
-[root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' remove
+    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' remove
 
+罗列对象图
+----------
+.. Listing the Object Map
 
-Listing the Object Map
-----------------------
+用 ceph-objectstore-tool 罗列对象图（ OMAP ）的内容。其输出是一系列键名。
 
-Use the ceph-objectstore-tool to list the contents of the object map (OMAP). The output is a list of keys.
+1. 确认此 OSD 处于停机状态：
 
-
-1. Verify the appropriate OSD is down:
-
-   Syntax::
+   语法::
 
     systemctl status ceph-osd@$OSD_NUMBER
 
-   Example::
+   实例::
 
     [root@osd ~]# systemctl status ceph-osd@1
 
-2. List the object map:
+2. 罗列其对象图：
 
-   Syntax::
+   语法::
 
     ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT list-omap
 
-   Example::
+   实例::
 
     [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' list-omap
 
+修改 OMAP 的头部
+----------------
+.. Manipulating the Object Map Header
 
-Manipulating the Object Map Header
-----------------------------------
-The **ceph-objectstore-tool** utility will output the object map (OMAP) header with the values associated with the object's keys.
+**ceph-objectstore-tool** 工具可以按键值对输出 OMAP 头部。
 
-Note: If using FileStore as the OSD backend object store, then add the `--journal-path $PATH_TO_JOURNAL` argument when getting or setting the object map header, where the `$PATH_TO_JOURNAL` variable is the absolute path to the OSD journal; for example `/var/lib/ceph/osd/ceph-0/journal`.
+注意：如果用 FileStore 作为 OSD 后端对象存储库，那么获取或设置 omap 头时需要加 `--journal-path $PATH_TO_JOURNAL` 参数，其中 `$PATH_TO_JOURNAL` 变量是 OSD 日志的绝对路径，例如 `/var/lib/ceph/osd/ceph-0/journal` 。
 
-Prerequisites
-^^^^^^^^^^^^^
+必备条件
+^^^^^^^^
 
-    * Having root access to the Ceph OSD node.
-    * Stopping the ceph-osd daemon. 
+    * 有 Ceph OSD 节点的 root 权限
+    * 停掉 ceph-osd 守护进程
 
-Procedure
-^^^^^^^^^
+流程
+^^^^
 
-  Verify that the target OSD is down:
+确保目标 OSD 处于停机状态：
 
-  Syntax::
+  语法::
 
     systemctl status ceph-osd@$OSD_NUMBER
 
-  Example::
+  实例::
 
     [root@osd ~]# systemctl status ceph-osd@1
 
-  Get the object map header:
+取出 omap 头：
 
-  Syntax::
+  语法::
 
         ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT get-omaphdr > $OBJECT_MAP_FILE_NAME
 
-  Example::
+  实例::
 
-        [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}'  get-omaphdr > zone_info.default.omaphdr.txt
+    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}'  get-omaphdr > zone_info.default.omaphdr.txt
 
-  Set the object map header:
+设置 omap 头：
 
-  Syntax::
+  语法::
 
-        ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT get-omaphdr < $OBJECT_MAP_FILE_NAME
+    ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT get-omaphdr < $OBJECT_MAP_FILE_NAME
 
-  Example::
+  实例::
 
-   [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}'  set-omaphdr < zone_info.default.omaphdr.txt
+    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}'  set-omaphdr < zone_info.default.omaphdr.txt
 
+修改 OMAP 的某个键
+------------------
+.. Manipulating the Object Map Key
 
-Manipulating the Object Map Key
--------------------------------
+使用 **ceph-objectstore-tool** 工具更改 OMAP 键，你得提供数据路径、归置组标识符（ PG ID ）、对象、和 OMAP 的键名。
 
-Use the **ceph-objectstore-tool** utility to change the object map (OMAP) key. You need to provide the data path, the placement group identifier (PG ID), the object, and the key in the OMAP.
-Note
+注意：如果用 FileStore 作为 OSD 后端对象存储库，那么获取、设置或删除 omap 键时需要加 `--journal-path $PATH_TO_JOURNAL` 参数，其中 `$PATH_TO_JOURNAL` 变量是 OSD 日志的绝对路径，例如 `/var/lib/ceph/osd/ceph-0/journal` 。
 
-If using FileStore as the OSD backend object store, then add the `--journal-path $PATH_TO_JOURNAL` argument when getting, setting or removing the object map key, where the `$PATH_TO_JOURNAL` variable is the absolute path to the OSD journal; for example `/var/lib/ceph/osd/ceph-0/journal`.
+必备条件
 
-Prerequisites
+    * 有 Ceph OSD 节点的 root 权限
+    * 停掉 ceph-osd 守护进程
 
-    * Having root access to the Ceph OSD node.
-    * Stopping the ceph-osd daemon. 
+流程
 
-Procedure
+    获取 OMAP 键：
 
-    Get the object map key:
-
-    Syntax::
+    语法::
      
        ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT get-omap $KEY > $OBJECT_MAP_FILE_NAME
 
-   Example::
+   实例::
 
     [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}'  get-omap "" > zone_info.default.omap.txt
 
-   Set the object map key:
+   设置此 OMAP 键：
 
-   Syntax::
+   语法::
 
     ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT set-omap $KEY < $OBJECT_MAP_FILE_NAME
 
-   Example::
+   实例::
 
     [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' set-omap "" < zone_info.default.omap.txt
 
-   Remove the object map key:
+   删除这个 OMAP 键：
 
-   Syntax::
+   语法::
 
     ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT rm-omap $KEY
 
-   Example::
+   实例::
 
     [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' rm-omap ""
 
+罗列一个对象的属性
+------------------
+.. Listing an Object's Attributes
 
-Listing an Object's Attributes
--------------------------------
+用 **ceph-objectstore-tool** 工具罗列某一对象的属性。其输出是此对象的键名和值。
 
-Use the **ceph-objectstore-tool** utility to list an object's attributes. The output provides you with the object's keys and values.
-Note
+注意：如果用 FileStore 作为 OSD 后端对象存储库，而且日志位于不同的磁盘上，那么罗列此对象的属性时需要加 `--journal-path $PATH_TO_JOURNAL` 参数，其中 `$PATH_TO_JOURNAL` 变量是 OSD 日志的绝对路径，例如 `/var/lib/ceph/osd/ceph-0/journal` 。
 
-If you are using FileStore as the OSD backend object store and the journal is on a different disk, you must add the `--journal-path $PATH_TO_JOURNAL` argument when listing an object's attributes, where the `$PATH_TO_JOURNAL` variable is the absolute path to the OSD journal; for example `/var/lib/ceph/osd/ceph-0/journal`.
+必备条件
+^^^^^^^^
 
-Prerequisites
-^^^^^^^^^^^^^
+    * 有 Ceph OSD 节点的 root 权限
+    * 停掉 ceph-osd 守护进程
 
-    * Having root access to the Ceph OSD node.
-    * Stopping the ceph-osd daemon. 
+流程
+^^^^
 
-Procedure
-^^^^^^^^^
+   确保目标 OSD 处于停机状态：
 
-   Verify that the target OSD is down:
-
-   Syntax::
+   语法::
 
     systemctl status ceph-osd@$OSD_NUMBER
 
-   Example::
+   实例::
 
     [root@osd ~]# systemctl status ceph-osd@1
 
-   List the object's attributes:
+   罗列此对象的属性：
 
-   Syntax::
+   语法::
 
     ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT list-attrs
 
-   Example::
+   实例::
 
     [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' list-attrs
 
+修改对象的属性键
+----------------
+.. MANIPULATING THE OBJECT ATTRIBUTE KEY
 
-MANIPULATING THE OBJECT ATTRIBUTE KEY
--------------------------------------
+用 ceph-objectstore-tool 工具更改一个对象的属性。要修改此对象的属性，你得有数据和日志路径、归置组标识符（ PG ID ）、对象、还有对象属性的键名。
 
-Use the ceph-objectstore-tool utility to change an object's attributes. To manipulate the object's attributes you need the data and journal paths, the placement group identifier (PG ID), the object, and the key in the object's attribute.
-Note
+注意：如果用 FileStore 作为 OSD 后端对象存储库，而且日志位于不同的磁盘上，那么获取、设置或删除对象属性时需要加 `--journal-path $PATH_TO_JOURNAL` 参数，其中 `$PATH_TO_JOURNAL` 变量是 OSD 日志的绝对路径，例如 `/var/lib/ceph/osd/ceph-0/journal` 。
 
-If you are using FileStore as the OSD backend object store and the journal is on a different disk, you must add the `--journal-path $PATH_TO_JOURNAL` argument when getting, setting or removing the object's attributes. Where the `$PATH_TO_JOURNAL` variable is the absolute path to the OSD journal, for example `/var/lib/ceph/osd/ceph-0/journal`.
+必备条件
 
-Prerequisites
+    * 有 Ceph OSD 节点的 root 权限
+    * 停掉 ceph-osd 守护进程
 
-    * Having root access to the Ceph OSD node.  
-    * Stopping the ceph-osd daemon. 
+流程
 
-Procedure
+确保目标 OSD 处于停机状态：
 
-    Verify that the target OSD is down.
-
- Syntax::
+ 语法::
 
     systemctl status ceph-osd@$OSD_NUMBER
 
- Example::
+ 实例::
 
     [root@osd ~]# systemctl status ceph-osd@1
 
- Get the object's attributes:
+ 获取此对象的属性：
 
- Syntax::
+ 语法::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT get-attrs $KEY > $OBJECT_ATTRS_FILE_NAME
 
- Example::
+ 实例::
 
    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0  --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' get-attrs "oid" > zone_info.default.attr.txt
 
- Set an object's attributes:
+ 设置一个对象的属性：
 
- Syntax::
+ 语法::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT  set-attrs $KEY < $OBJECT_ATTRS_FILE_NAME
 
- Example::
+ 实例::
 
    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' set-attrs "oid" < zone_info.default.attr.txt
 
- Remove an object's attributes:
+ 删除对象属性：
 
- Syntax::
+ 语法::
 
    ceph-objectstore-tool --data-path $PATH_TO_OSD --pgid $PG_ID $OBJECT rm-attrs $KEY
 
- Example::
+ 实例::
 
    [root@osd ~]# ceph-objectstore-tool --data-path /var/lib/ceph/osd/ceph-0 --pgid 0.1c '{"oid":"zone_info.default","key":"","snapid":-2,"hash":235010478,"max":0,"pool":11,"namespace":""}' rm-attrs "oid"
 
 
-Options
-=======
+选项
+====
 
 .. option:: --help          
 
-   produce help message
+   输出帮助消息
 
 .. option:: --type arg        
 
-   Arg is one of [bluestore (default), filestore, memstore]. This option is needed only if the tool can't tell the type from --data-path.
+   参数 arg 是 [bluestore (默认的), filestore, memstore] 其中之一。此工具不能确定 --data-path 的类型时需要加此选项。
  
 .. option:: --data-path arg
 
-   path to object store, mandatory
+   对象存储器的路径，必备参数；
    
 .. option:: --journal-path arg
 
-   path to journal, use if tool can't find it
+   日志路径，此工具找不到时需要加。
    
 .. option:: --pgid arg
 
-   PG id, mandatory for info, log, remove, export, export-remove, mark-complete, trim-pg-log, and mandatory for apply-layout-settings if --pool is not specified
-                             
+   PG id, info, log, remove, export, export-remove, mark-complete, trim-pg-log 命令必备，另外 apply-layout-settings 如果没 --pool 时就必须加此选项。
+
 .. option:: --pool arg
 
-   Pool name, mandatory for apply-layout-settings if --pgid is not specified
+   存储池名字， apply-layout-settings 如果没指定 --pgid 就必须加此选项。
 
 .. option:: --op arg
 
-   Arg is one of [info, log, remove, mkfs, fsck, repair, fuse, dup, export, export-remove, import, list, fix-lost, list-pgs, dump-journal, dump-super, meta-list, get-osdmap, set-osdmap, get-inc-osdmap, set-inc-osdmap, mark-complete, reset-last-complete, apply-layout-settings, update-mon-db, dump-export, trim-pg-log]
+   参数 arg 是 [info, log, remove, mkfs, fsck, repair, fuse, dup, export, export-remove, import, list, fix-lost, list-pgs, dump-journal, dump-super, meta-list, get-osdmap, set-osdmap, get-inc-osdmap, set-inc-osdmap, mark-complete, reset-last-complete, apply-layout-settings, update-mon-db, dump-export, trim-pg-log] 其中之一。
 
 .. option:: --epoch arg
 
-   epoch# for get-osdmap and get-inc-osdmap, the current epoch in use if not specified
+   为 get-osdmap 和 get-inc-osdmap 指定 epoch 号，如果没指定就用当前的 epoch 号。
 
 .. option:: --file arg             
    
-   path of file to export, export-remove, import, get-osdmap, set-osdmap, get-inc-osdmap or set-inc-osdmap
+   export, export-remove, import, get-osdmap, set-osdmap, get-inc-osdmap 或  set-inc-osdmap 操作所需的文件路径。
 
 .. option:: --mon-store-path arg
 
-   path of monstore to update-mon-db
+   update-mon-db 所需的 monstore 路径。
 
 .. option:: --fsid arg
 
-   fsid for new store created by mkfs
+   mkfs 新建存储的 fsid 。
 
 .. option:: --target-data-path arg
 
-   path of target object store (for --op dup)
+   目标对象存储器的路径（ --op dup 需要）。
    
 .. option:: --mountpoint arg
 
-   fuse mountpoint
+   fuse 挂载点。
 
 .. option:: --format arg (=json-pretty) 
 
-   Output format which may be json, json-pretty, xml, xml-pretty
+   输出格式，可以是 json, json-pretty, xml, xml-pretty
 
 .. option:: --debug
 
-   Enable diagnostic output to stderr
+   让诊断信息输出到 stderr 。
 
 .. option:: --force
 
-   Ignore some types of errors and proceed with operation - USE WITH CAUTION: CORRUPTION POSSIBLE NOW OR IN THE FUTURE
+   忽略某些类型的错误、并继续操作 - **慎用：可能损坏数据，现在或将来都是！**
 
 .. option:: --skip-journal-replay
 
-   Disable journal replay
+   禁用日志重放。
 
 .. option:: --skip-mount-omap
 
-   Disable mounting of omap
+   禁用 omap 的挂载。
 
 .. option:: --head
 
-   Find head/snapdir when searching for objects by name
+   按名字搜索对象时也去 head 、 snapdir 里找。
 
 .. option:: --dry-run
 
-   Don't modify the objectstore
+   不要真的修改 objectstore
 
 .. option:: --namespace arg
 
-   Specify namespace when searching for objects
+   搜索对象时指定命名空间。
 
 .. option:: --rmtype arg      
 
-   Specify corrupting object removal 'snapmap' or 'nosnapmap' - TESTING USE ONLY
+   已损坏对象删除时指定 'snapmap' 或是 'nosnapmap' - **仅用于测试**
 
 
+错误码
+======
+"Mount failed with '(11) Resource temporarily unavailable" - 可能是\
+你试图在一个运行着的 OSD 上运行 **ceph-objectstore-tool** 。
 
-Error Codes
-===========
-"Mount failed with '(11) Resource temporarily unavailable" - This might mean that you have attempted to run **ceph-objectstore-tool** on a running OSD.
+使用范围
+========
 
-Availability
-============
-
-**ceph-objectstore-tool** is part of Ceph, a massively scalable, open-source, distributed storage system. **ceph-objectstore-tool** is provided by the package `ceph-osd`. Refer to the Ceph documentation at htpp://ceph.com/docs for more information.
+**rgw-orphan-list** 是 Ceph 的一部分，这是个伸缩力强、开源、
+分布式的存储系统，更多信息参见 https://docs.ceph.com 。
