@@ -222,7 +222,7 @@ BlueStore 打开块设备时加了 O_DIRECT 标记，并且频繁调用 fsync �
 或者同步地写入非易失性缓存中。
 
 这两种模式的切换可以通过在硬件配置里启用（ enabling ）或\
-禁用（ disabling ）写（易失性）缓存来实现。易失性缓存启用时， 
+禁用（ disabling ）写（易失性）缓存来实现。易失性缓存启用时，
 Linux 会以 write back 模式使用此设备，禁用时以 write through 模式。
 
 默认配置（缓存通常都是开启的）未必是最优的，
@@ -238,41 +238,41 @@ Linux 会以 write back 模式使用此设备，禁用时以 write through 模�
 
 .. code-block:: console
 
-  # hdparm -W /dev/sda
+    # hdparm -W /dev/sda
 
-  /dev/sda:
-   write-caching =  1 (on)
+    /dev/sda:
+     write-caching =  1 (on)
 
-  # sdparm --get WCE /dev/sda
-      /dev/sda: ATA       TOSHIBA MG07ACA1  0101
-  WCE           1  [cha: y]
-  # smartctl -g wcache /dev/sda
-  smartctl 7.1 2020-04-05 r5049 [x86_64-linux-4.18.0-305.19.1.el8_4.x86_64] (local build)
-  Copyright (C) 2002-19, Bruce Allen, Christian Franke, www.smartmontools.org
+    # sdparm --get WCE /dev/sda
+        /dev/sda: ATA       TOSHIBA MG07ACA1  0101
+    WCE           1  [cha: y]
+    # smartctl -g wcache /dev/sda
+    smartctl 7.1 2020-04-05 r5049 [x86_64-linux-4.18.0-305.19.1.el8_4.x86_64] (local build)
+    Copyright (C) 2002-19, Bruce Allen, Christian Franke, www.smartmontools.org
 
-  Write cache is:   Enabled
+    Write cache is:   Enabled
 
-  # cat /sys/class/scsi_disk/0\:0\:0\:0/cache_type
-  write back
+    # cat /sys/class/scsi_disk/0\:0\:0\:0/cache_type
+    write back
 
 同样可以用那些工具来禁用：
 
 .. code-block:: console
 
-  # hdparm -W0 /dev/sda
+    # hdparm -W0 /dev/sda
 
-  /dev/sda:
-   setting drive write-caching to 0 (off)
-   write-caching =  0 (off)
+    /dev/sda:
+     setting drive write-caching to 0 (off)
+     write-caching =  0 (off)
 
-  # sdparm --clear WCE /dev/sda
-      /dev/sda: ATA       TOSHIBA MG07ACA1  0101
-  # smartctl -s wcache,off /dev/sda
-  smartctl 7.1 2020-04-05 r5049 [x86_64-linux-4.18.0-305.19.1.el8_4.x86_64] (local build)
-  Copyright (C) 2002-19, Bruce Allen, Christian Franke, www.smartmontools.org
+    # sdparm --clear WCE /dev/sda
+        /dev/sda: ATA       TOSHIBA MG07ACA1  0101
+    # smartctl -s wcache,off /dev/sda
+    smartctl 7.1 2020-04-05 r5049 [x86_64-linux-4.18.0-305.19.1.el8_4.x86_64] (local build)
+    Copyright (C) 2002-19, Bruce Allen, Christian Franke, www.smartmontools.org
 
-  === START OF ENABLE/DISABLE COMMANDS SECTION ===
-  Write cache disabled
+    === START OF ENABLE/DISABLE COMMANDS SECTION ===
+    Write cache disabled
 
 通常，用 ``hdparm`` 、 ``sdparm`` 、或 ``smartctl`` 禁用缓存会\
 导致 cache_type 自动切换为 write through 。
@@ -282,12 +282,12 @@ Linux 会以 write back 模式使用此设备，禁用时以 write through 模�
 
 .. code-block:: console
 
-  # echo "write through" > /sys/class/scsi_disk/0\:0\:0\:0/cache_type
+    # echo "write through" > /sys/class/scsi_disk/0\:0\:0\:0/cache_type
 
-  # hdparm -W /dev/sda
+    # hdparm -W /dev/sda
 
-  /dev/sda:
-   write-caching =  0 (off)
+    /dev/sda:
+     write-caching =  0 (off)
 
 .. tip:: 这条 udev 规则（在 CentOS 8 上已经测试过）会把\
    所有 SATA/SAS 设备的 cache_type 设置为 write through ：
