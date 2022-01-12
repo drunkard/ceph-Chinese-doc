@@ -262,8 +262,6 @@ def is_translated(line):
     if len(line) < (EN_COLS / 5):
         # ignore short rows, too many symbols in them.
         return True
-    if line.count('`') == 2 and line.endswith('`_'):  # is hyperlink, could ignore
-        return True
     if FILES: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
     return False
 
@@ -279,6 +277,8 @@ def is_ignored(line):
     '''
     # ignore links
     if line.startswith('.. _') and (line.endswith(':') or line.count(': ') == 1):
+        return True
+    if line.count('`') == 2 and line.endswith('`_'):  # is hyperlink, could ignore
         return True
     # ignore comment
     comment = re.compile(r'^\.\.\ [a-zA-Z]')
