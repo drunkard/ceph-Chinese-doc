@@ -112,6 +112,10 @@ def count_file_progress(f):  # noqa
         # 0=not, 1=yes, >=3 end
         code_flag = 0
         trans_flag = True  # to count title, some title not translated
+
+        # ignore 'Synopsis' section in man pages
+        man_synopsis = 1 if 'man' in f.splitall() else 0
+
         for line in fo.readlines():
             RN += 1
             # clean up first
@@ -122,6 +126,15 @@ def count_file_progress(f):  # noqa
                 cmd_flag = 1
             if is_code(line):
                 code_flag += 1
+            if man_synopsis > 0:
+                if line in ['描述', 'Description']:  # section header as flag.
+                    # Synopsis section finished, turn this flag off.
+                    man_synopsis = 0
+                    continue
+                if line in ['提纲', 'Synopsis']:  # section header as flag.
+                    man_synopsis = 2
+                if man_synopsis == 2:
+                    continue
             if is_blank_row(line):
                 if cmd_flag >= 1:
                     cmd_flag += 1
