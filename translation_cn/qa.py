@@ -50,6 +50,12 @@ SUBSYS = [
     'start',
 ]
 
+# 统计结果暂存
+TP = pd.DataFrame(columns=['subsys', 'file', 'translated', 'total', 'pct'])
+# TODO: left align 'file' when show_all
+# pd.style.set_properties(**{'text-align': 'left'})\
+#     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
+IDX = 0  # index for pandas.DataFrame
 RN = 0  # current row number
 
 
@@ -124,6 +130,10 @@ def count_file_progress(f):  # noqa
         # ignore 'Synopsis' section in man pages
         man_synopsis = 1 if 'man' in f.splitall() else 0
 
+        # count titles, 0=ignore, 1=count in
+        # Ignore titles, treat all of them as translated.
+        count_titles = 0
+
         for line in fo.readlines():
             RN += 1
             # clean up first
@@ -182,6 +192,15 @@ def count_file_progress(f):  # noqa
             else:
                 trans_flag = False
     return (cn, total)
+
+
+def count_files(files):
+    global IDX, TP
+    for f in files:
+        subsys = str(f.splitall()[1])
+        trans, total = count_file_progress(f)
+        TP.loc[IDX] = [subsys, f, trans, total, to_pct(trans, total)]
+        IDX += 1
 
 
 def _file_row_counts(*file_names):
@@ -313,31 +332,38 @@ def is_ignored(line):
     return False
 
 
+def path_to_files(paths):
+    '''Check path types of all element in 'paths', grab files for directories'''
+    files = []
+    for p in paths:
+        p = path.Path(p)
+        if p.isdir():
+            files += _get_file_list(p, only_rst=True)
+        elif p.isfile():
+            files.append(p)
+        else:
+            raise TypeError(f'Unknown file type: {p} type= {type(p)} cwd= {p.getcwd()}')
+    return files
+
+
 def to_pct(a, b):
     return round(a / b * 100, 2)
 
 
-def translate_progress():
-    # 统计结果暂存
-    progress = pd.DataFrame(columns=['subsys', 'file', 'translated', 'total', 'pct'])
-    # TODO: left align 'file' when show_all
-    # pd.style.set_properties(**{'text-align': 'left'})\
-    #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
-    idx = 0
-    print('Progress by subsys:')
-    for subsys in SUBSYS:
-        print('{:<20}'.format(f'    {subsys}/'), end='')
-        files = _get_file_list(subsys, only_rst=True)
-        for f in files:
-            trans, total = count_file_progress(f)
-            progress.loc[idx] = [subsys, f, trans, total, to_pct(trans, total)]
-            idx += 1
-        subsys_prog = progress[progress.subsys == subsys]
-        r = subsys_prog.agg({'translated': sum, 'total': sum})
-        print('{}%'.format(to_pct(r.translated, r.total)))
+def translate_progress(files=None):
+    global TP
+    if files:
+        count_files(files)
+    else:
+        print('Progress by subsys:')
+        for subsys in SUBSYS:
+            print('{:<20}'.format(f'    {subsys}/'), end='')
+            files = _get_file_list(subsys, only_rst=True)
+            count_files(files)
+            subsys_prog = TP[TP.subsys == subsys]
+            r = subsys_prog.agg({'translated': sum, 'total': sum})
+            print('{}%'.format(to_pct(r.translated, r.total)))
 
-    # 总进度
-    tp = progress.agg({'translated': sum, 'total': sum})
     print('Overall progress:   {}%'.format(to_pct(tp.translated, tp.total)))
 
     shown = 50
@@ -349,24 +375,20 @@ def translate_progress():
 
 
 if __name__ == "__main__":
-    print(usage)
+    # Single file(s)/subsys to debug, will be ignored if it's empty
+    FILES = path_to_files(sys.argv[1:]) if len(sys.argv) >= 2 else []
 
-    # Single file to debug, will be ignored if it's empty
-    # TODO supports debug of subsys
-    FILES = None
-    if len(sys.argv) >= 2:
-        FILES = sys.argv[1:]
-    if FILES:
-        compare_file_length(FILES)
-        for f in FILES:
-            print(f, count_file_progress(f))
-    else:
+    if not FILES:
+        print(usage)
+
+        # Don't run this when processes specified files
         compare_file_existency()
-        compare_file_length()
 
-        # DataFrame 显示所有数据
-        # pd.set_option('display.max_rows', 100)
-        # pd.set_option('display.max_columns', None)
-        # pd.set_option('display.width', None)
-        # pd.set_option('display.max_colwidth', None)
-        translate_progress()
+    compare_file_length(files=FILES)
+
+    # DataFrame 显示所有数据
+    # pd.set_option('display.max_rows', 100)
+    # pd.set_option('display.max_columns', None)
+    # pd.set_option('display.width', None)
+    # pd.set_option('display.max_colwidth', None)
+    translate_progress(files=FILES)
