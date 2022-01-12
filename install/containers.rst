@@ -5,23 +5,21 @@ Ceph 容器映像
 .. Ceph Container Images
 
 .. important::
+   不鼓励使用 ``:latest`` 标签。如果你用了 ``:latest`` 标签，
+   没法保证所有主机上的映像相同，在这样的状态下，
+   升级后可能无法正常运行。记着， ``:latest``
+   是个相对标签、还是个不断移动的目标。
 
-   Using the ``:latest`` tag is discouraged. If you use the ``:latest`` 
-   tag, there is no guarantee that the same image will be on each of 
-   your hosts.  Under these conditions, upgrades might not work 
-   properly. Remember that ``:latest`` is a relative tag, and a moving
-   target.
-
-   Instead of the ``:latest`` tag, use explicit tags or image IDs. For
-   example:
+   请使用显式的标签或映像 ID ，而非 ``:latest`` 标签。例如：
 
    ``podman pull ceph/ceph:v15.2.0``
+
 
 官方发布
 --------
 .. Official Releases
 
-Ceph Container images are available from both Quay and Docker Hub::
+Ceph 容器映像发布到了 Quay 和 Docker Hub::
 
   https://quay.io/repository/ceph/ceph
   https://hub.docker.com/r/ceph
@@ -29,87 +27,87 @@ Ceph Container images are available from both Quay and Docker Hub::
 ceph/ceph
 ^^^^^^^^^
 
-- General purpose Ceph container with all necessary daemons and
-  dependencies installed.
+- 通用 Ceph 容器，安装了所有必需的守护进程及其依赖关系。
 
 +----------------------+--------------------------------------------------------------+
-| Tag                  | Meaning                                                      |
+| 标签                 | 含义                                                         |
 +----------------------+--------------------------------------------------------------+
-| vRELNUM              | Latest release in this series (e.g., *v14* = Nautilus)       |
+| vRELNUM              | 这个系列里的最新版（例如 *v14* = Nautilus ）                 |
 +----------------------+--------------------------------------------------------------+
-| vRELNUM.2            | Latest *stable* release in this stable series (e.g., *v14.2*)|
+| vRELNUM.2            | 这个稳定系列里的最新稳定版 *stable* （例如 *v14.2* ）        |
 +----------------------+--------------------------------------------------------------+
-| vRELNUM.Y.Z          | A specific release (e.g., *v14.2.4*)                         |
+| vRELNUM.Y.Z          | 某个特定的版本（例如 *v14.2.4* ）                            |
 +----------------------+--------------------------------------------------------------+
-| vRELNUM.Y.Z-YYYYMMDD | A specific build (e.g., *v14.2.4-20191203*)                  |
+| vRELNUM.Y.Z-YYYYMMDD | 某个特定的构建（例如 *v14.2.4-20191203* ）                   |
 +----------------------+--------------------------------------------------------------+
 
-Legacy container images
------------------------
 
-Legacy container images are available from Docker Hub at::
+遗留的容器映像
+--------------
+.. Legacy container images
+
+遗留的容器映像位于 Docker Hub 的： ::
 
   https://hub.docker.com/r/ceph
 
 ceph/daemon-base
 ^^^^^^^^^^^^^^^^
 
-- General purpose Ceph container with all necessary daemons and
-  dependencies installed.
-- Basically the same as *ceph/ceph*, but with different tags.
-- Note that all of the *-devel* tags (and the *latest-master* tag) are based on
-  unreleased and generally untested packages from https://shaman.ceph.com.
+- 通用 Ceph 容器，安装了所有必需的守护进程及其依赖关系。
+- 和 *ceph/ceph* 基本相同，就是标签不同。
+- 注意，所有的 *-devel* 标签（和 *latest-master* 标签）
+  都基于没正式发布的、而且一般也没测试过的软件包，来自 https://shaman.ceph.com 。
 
-:note: This image will soon become an alias to *ceph/ceph*.
+:注意: 这个映像很快会变成 *ceph/ceph* 的别名。
 
 +------------------------+---------------------------------------------------------+
-| Tag                    | Meaning                                                 |
+| 标签                   | 含义                                                    |
 +------------------------+---------------------------------------------------------+
-| latest-master          | Build of master branch a last ceph-container.git update |
+| latest-master          | ceph-container.git 最近一次更新的 master 分支构建       |
 +------------------------+---------------------------------------------------------+
-| latest-master-devel    | Daily build of the master branch                        |
+| latest-master-devel    | master 分支的每日构建                                   |
 +------------------------+---------------------------------------------------------+
-| latest-RELEASE-devel   | Daily build of the *RELEASE* (e.g., nautilus) branch    |
+| latest-RELEASE-devel   | *RELEASE* （例如 nautilus ）分支的每日构建              |
 +------------------------+---------------------------------------------------------+
-
 
 ceph/daemon
 ^^^^^^^^^^^
 
-- *ceph/daemon-base* plus a collection of BASH scripts that are used
-  by ceph-nano and ceph-ansible to manage a Ceph cluster.
+- *ceph/daemon-base* 加上一堆 BASH 脚本，
+  就可以让 ceph-nano 和 ceph-ansible 管理 Ceph 集群。
 
 +------------------------+---------------------------------------------------------+
-| Tag                    | Meaning                                                 |
+| 标签                   | 含义                                                    |
 +------------------------+---------------------------------------------------------+
-| latest-master          | Build of master branch a last ceph-container.git update |
+| latest-master          | ceph-container.git 最近一次更新的 master 分支构建       |
 +------------------------+---------------------------------------------------------+
-| latest-master-devel    | Daily build of the master branch                        |
+| latest-master-devel    | master 分支的每日构建                                   |
 +------------------------+---------------------------------------------------------+
-| latest-RELEASE-devel   | Daily build of the *RELEASE* (e.g., nautilus) branch    |
+| latest-RELEASE-devel   | *RELEASE* （例如 nautilus ）分支的每日构建              |
 +------------------------+---------------------------------------------------------+
 
 
-Development builds
-------------------
+开发代码构建
+------------
+.. Development builds
 
-We automatically build container images for development ``wip-*``
-branches in the ceph-ci.git repositories and push them to Quay at::
+我们会为开发分支 ``wip-*`` 自动构建容器映像，
+在 ceph-ci.git 代码库里，并把它们推送到了 Quay::
 
   https://quay.io/organization/ceph-ci
 
 ceph-ci/ceph
 ^^^^^^^^^^^^
 
-- This is analogous to the ceph/ceph image above
-- TODO: remove the ``wip-*`` limitation and also build ceph.git branches.
+- 这个和上面的 ceph/ceph 映像相似。
+- TODO: 解除 ``wip-*`` 限制，也构建 ceph.git 里的其它分支。
 
 +------------------------------------+------------------------------------------------------+
-| Tag                                | Meaning                                              |
+| 标签                               | 含义                                                 |
 +------------------------------------+------------------------------------------------------+
-| BRANCH                             | Latest build of a given GIT branch (e.g., *wip-foo*) |
+| BRANCH                             | 指定 GIT 分支的最新构建（例如 *wip-foo* ）           |
 +------------------------------------+------------------------------------------------------+
-| BRANCH-SHORTSHA1-BASEOS-ARCH-devel | A specific build of a branch                         |
+| BRANCH-SHORTSHA1-BASEOS-ARCH-devel | 某个具体分支的构建                                   |
 +------------------------------------+------------------------------------------------------+
-| SHA1                               | A specific build                                     |
+| SHA1                               | 某个特定的构建                                       |
 +------------------------------------+------------------------------------------------------+
