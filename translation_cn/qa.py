@@ -194,6 +194,8 @@ def count_file_progress(f):  # noqa
             # print('ddd', cmd_indent, get_indent(line), line)  # debug
             if is_translated(line):
                 cn += 1
+                trans_flag = True
+                continue
             else:
                 trans_flag = False
     return (cn, total)
