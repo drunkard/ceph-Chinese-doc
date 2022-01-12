@@ -220,7 +220,6 @@ def is_code(line):
         'code', 'code-block', 'prompt',
         'ditaa', 'image',
         'deprecated', 'versionadded', 'versionchanged',
-        'highlight',
         'index', 'toctree',
     ]
     for role in roles:
@@ -275,6 +274,15 @@ def is_ignored(line):
     if comment.match(line) and not (line.count(':: ') == 1 or line.endswith('::')):
         # print('comment debug:', get_indent(line), line)
         return True
+    # ignore some rst roles, just this row, following still counts
+    roles = [
+        'confval', 'program', 'option',
+        'describe',
+        'highlight',
+    ]
+    for role in roles:
+        if line.count(f'.. {role}::') > 0:
+            return True
     return False
 
 
