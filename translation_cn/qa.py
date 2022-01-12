@@ -246,8 +246,6 @@ def is_translated(line):
     空行、[.-`*#:\] 、\s\t 打头的不算；
     '''
     cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：、]')  # 匹配汉字
-    if not line:  # 空行
-        return True
     if cn_char.search(line):
         return True
     # do not ignore long row starts with spaces, but not command
