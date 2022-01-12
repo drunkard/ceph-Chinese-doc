@@ -249,7 +249,7 @@ def is_translated(line):
     if cn_char.search(line):
         return True
     # do not ignore long row starts with spaces, but not command
-    if len(line) < (EN_COLS / 5):
+    if len(line) < (EN_COLS / 3) and not is_title(line):
         # ignore short rows, too many symbols in them.
         return True
     if FILES: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
