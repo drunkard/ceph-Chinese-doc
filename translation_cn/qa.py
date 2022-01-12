@@ -84,14 +84,22 @@ def compare_file_length(files=None):
             if cf in enfl and
             (cf.endswith('.rst') or cf.endswith('.conf'))]
     print('"译文"和"原文"共有文件行数差别（行数差大于 {} 的）：'.format(LEN_DIFF_THRESHOLD))
+    eqs = []
     for f in fl:
         cn, en = _file_row_counts(doc_cn, f), _file_row_counts(doc_en, f)
         d = cn - en
-        if abs(d) > LEN_DIFF_THRESHOLD or show_anyway:
+        if d == 0:
+            eqs.append(f)
+        elif abs(d) > LEN_DIFF_THRESHOLD or show_anyway:
             ss = '{} - {}'.format(cn, en)
             # 文件名缩进4， 行数相减右对齐，然后 = ，然后结果左对齐。
             print('    {} {:>{diff_align}} === {:}'
                   .format(f.ljust(DIFF_ALIGN), ss, d, diff_align=(DIFF_ALIGN / 3.1)))
+    if eqs and len(FILES) >= 1:
+        print('行数相同的：', end='')
+        for f in eqs:
+            print(str(f), end=' ')
+        print()
     print()
 
 
