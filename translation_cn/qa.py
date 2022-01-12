@@ -238,9 +238,11 @@ def is_role(line):
 
 
 def is_title(line):
-    tr = re.compile(r'[=\-~_`\'\.\*\+\^]+')
-    if tr.fullmatch(line):
-        return True
+    syms = ['=', '-', '`', '\'', '.', '~', '*', '+', '_', '^']
+    for sym in syms:
+        # print('is_title', RN, line, '{} vs {}'.format(line.count(sym), len(line)))  # debug
+        if line.count(sym) == len(line):
+            return True
     return False
 
 
