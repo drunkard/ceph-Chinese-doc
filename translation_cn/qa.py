@@ -130,7 +130,9 @@ def count_file_progress(f):  # noqa
             line = line.rstrip('\n')    # remove \n
             line = line.rstrip(' ')     # remove spaces
 
-            if line.endswith('::'):
+            # There's file specific cases.
+            if line.endswith('::') or \
+                    (f.name == 'cephfs-shell.rst' and line.endswith('：')):
                 cmd_flag = 1
             if is_code(line):
                 code_flag += 1
