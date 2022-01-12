@@ -133,6 +133,7 @@ def count_file_progress(f):  # noqa
         # count titles, 0=ignore, 1=count in
         # Ignore titles, treat all of them as translated.
         count_titles = 0
+        # TODO has bug, fix it
 
         for line in fo.readlines():
             RN += 1
@@ -161,6 +162,8 @@ def count_file_progress(f):  # noqa
                 if code_flag >= 1:
                     code_flag += 1
                 continue  # don't count blank line
+            # if RN >= 45: print(f'RN={RN} cmd_flag={cmd_flag} cmd_indent={cmd_indent}')  # debug
+            # if RN >= 45: print(f'RN={RN} code_flag={code_flag} trans_flag={trans_flag}')  # debug
             if cmd_flag >= 2:
                 if cmd_indent == 0:
                     cmd_indent = get_indent(line)
@@ -181,6 +184,7 @@ def count_file_progress(f):  # noqa
                 elif code_flag >= 3:
                     code_flag = 0
             total += 1
+            # print(f'ttt trans_flag={trans_flag}', line)
             if trans_flag == False and is_title(line):
                 trans_flag = True
                 cn += 1
@@ -292,8 +296,9 @@ def is_translated(line):
     # do not ignore long row starts with spaces, but not command
     if len(line) < (EN_COLS / 3) and not is_title(line):
         # ignore short rows, too many symbols in them.
+        # print('{:<3}:'.format(RN), line)  # debug, what translated row looks like
         return True
-    if FILES: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
+    if len(FILES) == 1: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
     return False
 
 
@@ -364,14 +369,20 @@ def translate_progress(files=None):
             r = subsys_prog.agg({'translated': sum, 'total': sum})
             print('{}%'.format(to_pct(r.translated, r.total)))
 
+    # Progress overall
+    tp = TP.agg({'translated': sum, 'total': sum})
     print('Overall progress:   {}%'.format(to_pct(tp.translated, tp.total)))
 
+    # Progress by file
     shown = 50
-    print(F'Progress by file (near finished {shown} files): \n',
-          progress.where(progress.pct != 100)\
-          .sort_values('pct', ascending=False)\
-          .dropna()\
-          .head(shown))
+    print(F'Progress by file (near finished {shown} files):')
+    if len(FILES) == 1:
+        print(TP)
+    else:
+        print(TP.where(TP.pct != 100)\
+            .sort_values('pct', ascending=False)\
+            .dropna()\
+            .head(shown))
 
 
 if __name__ == "__main__":
