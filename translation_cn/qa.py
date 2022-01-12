@@ -252,11 +252,9 @@ def is_translated(line):
     空行、[.-`*#:\] 、\s\t 打头的不算；
     '''
     cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：、]')  # 匹配汉字
-    starts = re.compile(r'^[\-=~_\^+|`#:\(\)\[\]\\\t\"\'0-9]')  # 匹配行首
     if not line:  # 空行
         return True
-    if cn_char.search(line) or starts.match(line):
-        # print('trans debug:', line)  # debug
+    if cn_char.search(line):
         return True
     # do not ignore long row starts with spaces, but not command
     if len(line) < (EN_COLS / 5):
