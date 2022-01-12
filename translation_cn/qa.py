@@ -201,11 +201,7 @@ def _get_file_list(directory, only_rst=False, relpath=False):
 
 def get_indent(line):
     '获取一行的缩进数量'
-    r = re.compile(r'^\s+')
-    rr = r.match(line)
-    if rr:
-        return rr.end()
-    return 0
+    return len(line) - len(line.lstrip())
 
 
 def is_blank_row(line):
