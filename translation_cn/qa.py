@@ -274,6 +274,10 @@ def is_ignored(line):
     if comment.match(line) and not (line.count(':: ') == 1 or line.endswith('::')):
         # print('comment debug:', get_indent(line), line)
         return True
+    # ignore table
+    if (line.startswith('+-') and line.endswith('-+')) or \
+            (line.startswith('|') and line.endswith('|')):
+        return True
     # ignore some rst roles, just this row, following still counts
     roles = [
         'confval', 'program', 'option',
