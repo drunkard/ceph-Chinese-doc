@@ -145,6 +145,7 @@ def count_file_progress(f):  # noqa
             if line.endswith('::') or \
                     (f.name == 'cephfs-shell.rst' and line.endswith('：')):
                 cmd_flag = 1
+                cmd_indent = 0  # init new cmd block
             if is_code(line):
                 code_flag += 1
             if man_synopsis > 0:
