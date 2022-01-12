@@ -120,9 +120,6 @@ def count_file_progress(f):  # noqa
 
             if line.endswith('::'):
                 cmd_flag = 1
-            # if is_role(line):
-            #     code_flag += 1
-            # if code_flag > 0: print(line)  # debug role section
             if is_code(line):
                 code_flag += 1
             if is_blank_row(line):
@@ -148,9 +145,8 @@ def count_file_progress(f):  # noqa
             if code_flag >= 1:
                 if get_indent(line) >= 3:  # not blank row, but indented
                     continue
-                if code_flag >= 3:
+                elif code_flag >= 3:
                     code_flag = 0
-                continue
             total += 1
             if trans_flag == False and is_title(line):
                 trans_flag = True
@@ -214,22 +210,18 @@ def is_blank_row(line):
 def is_code(line):
     '''If matched the rst role, it needs two more blank row to end this block.
     '''
+    # TODO split needed, some roles should be ignored.
     roles = [
+        # Never skip these roles.
+        # 'topic', 'tip', 'note', 'caution', 'warning', 'important', 'DANGER',
+        # 'describe',  # Just ignore this row, in is_ignored()
+        # Just ignore THE row, following still counts, see is_ignored()
+        # 'confval', 'program', 'option',
         'code', 'code-block', 'prompt',
         'ditaa', 'image',
         'deprecated', 'versionadded', 'versionchanged',
+        'highlight',
         'index', 'toctree',
-    ]
-    for role in roles:
-        if line.count(f'.. {role}::') > 0:
-            return True
-    return False
-
-
-def is_role(line):
-    roles = [
-        'tip', 'note', 'caution', 'warning', 'important',
-        'topic',
     ]
     for role in roles:
         if line.count(f'.. {role}::') > 0:
