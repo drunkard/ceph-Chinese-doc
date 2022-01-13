@@ -21,6 +21,10 @@
     active/standby
         活跃/备用
 
+    advisory lock
+        咨询锁
+        https://www.cnblogs.com/wy123/archive/2020/08/14/13499526.html
+
     allocation-file
         分配信息文件
         BlueStore 内部的
@@ -43,6 +47,10 @@
 
     backfill
         回填
+
+    backlog
+        积压
+        入栈但还没来得及处理的数据量、或最大空间。
 
     balancer
         均衡器；
@@ -90,6 +98,9 @@
 
     complete filter
         完整过滤器。 LDAP 术语，还有 partial filter
+
+    compression hint
+        压缩提示
 
     config-key
         <不翻译>，来自代码的名词
@@ -376,6 +387,9 @@
 
         此翻译不能准确表达原文的含义，但尚未想到更好的词。
 
+    orphans
+        孤儿对象
+
     orphans search, find orphans
         捡漏
 
@@ -500,6 +514,10 @@
 
         region 是地理空间的逻辑划分，它包含一个或多个 zone 。一个包含多个
         region 的集群必须指定一个主 region 。
+
+    registry
+        注册处
+        cephadm 相关。
 
     replica
         副本
@@ -640,6 +658,9 @@
 
     token
         (OpenStack) 令牌
+
+    transcript file
+        笔录文件、目录文件？
 
     trim
     trimming
