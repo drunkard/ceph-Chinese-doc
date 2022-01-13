@@ -188,8 +188,8 @@ def count_file_progress(f):  # noqa
             # print(f'ttt trans_flag={trans_flag}', line)
             if trans_flag == False and is_title(line):
                 trans_flag = True
-                cn += 1
-                total -= 1  # remove counted title row
+                cn += count_titles
+                total += -(count_titles + 1)  # remove counted title row
                 continue
             # print('ddd', cmd_indent, get_indent(line), line)  # debug
             if is_translated(line):
