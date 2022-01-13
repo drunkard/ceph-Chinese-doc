@@ -226,13 +226,13 @@ parallelism client will see when doing IO, even when a pool is mostly
 empty.  Setting the lower bound prevents Ceph from reducing (or
 recommending you reduce) the PG number below the configured number.
 
-You can set the minimum number of PGs for a pool with::
+你可以设置一个存储池的最小或最大 PG 数，用命令： ::
 
   ceph osd pool set <pool-name> pg_num_min <num>
+  ceph osd pool set <pool-name> pg_num_max <num>
 
-You can also specify the minimum PG count at pool creation time with
-the optional ``--pg-num-min <num>`` argument to the ``ceph osd pool
-create`` command.
+你还可以在创建存储池时指定最小或最大 PG 数，给 ``ceph osd pool create`` 命令\
+加上可选参数 ``--pg-num-min <num>`` 或 ``--pg-num-max <num>`` 。
 
 
 .. _preselection:
