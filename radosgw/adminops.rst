@@ -60,12 +60,12 @@ None.
 
 查看使用率
 ==========
+.. Get Usage
 
 请求带宽利用率信息。
 
 注意：此功能默认是禁用的，可以在 ceph.conf 里的适当段落加上
-``rgw enable usage log = true`` 来启用，更改配置后需重启
-radosgw 进程才能生效。
+``rgw enable usage log = true`` 来启用，更改配置后需重启 radosgw 进程才能生效。
 
 :caps: usage=read
 

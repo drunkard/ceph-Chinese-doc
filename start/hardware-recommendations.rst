@@ -65,11 +65,7 @@ RAM 内存
 .. Metadata servers (ceph-mds)
 
 元数据守护进程的内存使用量取决于给它配置的缓存有多大。
-对于大多数系统我们都建议 1GB 起步，
-见 :confval:`mds_cache_memory` 。
-
-OSDs (ceph-osd)
----------------
+对于大多数系统我们都建议 1GB 起步，见 :confval:`mds_cache_memory` 。
 
 
 内存
@@ -84,7 +80,8 @@ Bluestore 用它自己的内存缓存数据，而不是靠操作系统的页缓�
   它没法保持那么低的内存使用量，还会导致非常差的性能。
 
 - 把内存量设置为 2GB - 4GB 一般可以用，但性能提不起来，
-  因为在 IO 操作时元数据得从磁盘读取，除非活跃的数据集相当较小。
+  因为在 IO 操作时元数据得从磁盘读取，
+  除非活跃的数据集相当较小。
 
 - 4GB 是 osd_memory_target 选项的当前默认值，设置成这样后，
   一般的使用场景下都可以均衡内存需求量和 OSD 性能。
@@ -211,7 +208,7 @@ BlueStore 打开块设备时加了 O_DIRECT 标记，并且频繁调用 fsync �
 
 .. code-block:: console
 
-  # fio --name=/dev/sdX --ioengine=libaio --direct=1 --fsync=1 --readwrite=randwrite --blocksize=4k --runtime=300
+   # fio --name=/dev/sdX --ioengine=libaio --direct=1 --fsync=1 --readwrite=randwrite --blocksize=4k --runtime=300
 
 写缓存
 ------
@@ -362,7 +359,8 @@ VLAN 使用 802.1q 协议，还需要采用支持 VLAN 功能的网卡和交换�
 管理和部署工具也普遍会使用 BMC ，
 尤其是通过 IPMI 或 Redfish ，
 所以请权衡带外网络管理的成本/效益，
-此程序管理着 SSH 访问、 VM 映像上传、操作系统安装、端口管理、等等，
+此程序管理着 SSH 访问、 VM 映像上传、
+操作系统安装、端口管理、等等，
 会徒增网络负载。运营 3 个网络有点夸张了，
 但是每条流量路径都表明，部署一个大型数据集群前\
 要仔细考虑潜在容量、吞吐量、性能瓶颈。

@@ -1,14 +1,13 @@
-.. CephFS health messages
 .. _cephfs-health-messages:
 
 =================
  CephFS 健康消息
 =================
-
-.. Cluster health checks
+.. CephFS health messages
 
 集群健康检查
 ============
+.. Cluster health checks
 
 在文件系统映射图结构（以及封闭式的 MDS 映射图）变为特定状态时，
 Ceph 监视器守护进程会产生健康消息。
@@ -184,7 +183,7 @@ other daemons, please see :ref:`health-checks`.
     MDS 没能成功削减缓存，未能降到管理员设置的上限之下。\
        如果 MDS 缓存涨得太大，守护进程可能会耗尽内存然后崩溃。\
        默认情况下，如果实际的缓存尺寸（在内存里的）比\
-       ``mds_cache_memory_limit`` （默认为 1GB ）大至少 50% ，\
+       ``mds_cache_memory_limit`` （默认为 4GB ）大至少 50% ，\
        这个消息就会出现。更改 ``mds_health_cache_threshold``
        可设置超出的告警比率。
 

@@ -33,13 +33,17 @@ CephFS Shell 的行为可以用 ``cephfs-shell.conf`` 调整。
 选项
 ====
 
+.. option:: -b, --batch FILE
+
+   批处理文件的路径。
+
 .. option:: -c, --config FILE
 
    cephfs-shell.conf 的路径。
 
-.. option:: -b, --batch FILE
+.. option:: -f, --fs FS
 
-   批处理文件的路径。
+   要挂载的文件系统的名字。
 
 .. option:: -t, --test FILE
 
@@ -64,24 +68,24 @@ mkdir
 
 如果指定目录不存在，就创建它们。
 
-用法： 
-        
-    mkdir [-option] <directory>... 
+用法：
+
+    mkdir [-option] <directory>...
 
 * directory - 将要创建的目录名
 
 选项：
   -m MODE    设置新目录的访问模式。
   -p, --parent         如有必要，创建其父目录。加上此选项后，目录已存在也不会报错。
- 
+
 put
 ---
 
 把本地文件系统上的一个文件、目录复制到 Ceph 文件系统。
 
-用法： 
-    
-        put [options] <source_path> [target_path]
+用法：
+
+    put [options] <source_path> [target_path]
 
 * source_path - 要复制到 cephfs 的本地文件、目录的路径
     * 如果是 `.` 就复制当前工作目录内的所有文件、目录。
@@ -99,7 +103,7 @@ get
 
 把 Ceph 文件系统上的一个文件复制到本地文件系统。
 
-用法： 
+用法：
 
     get [options] <source_path> [target_path]
 
@@ -118,8 +122,8 @@ ls
 
 罗列出当前工作目录内的所有文件和目录。
 
-用法： 
-    
+用法：
+
     ls [option] [directory]...
 
 * directory - 目录名，会罗列出它里面的文件、目录
@@ -138,7 +142,7 @@ cat
 
 连结文件内容并打印在标准输出上。
 
-用法： 
+用法：
 
     cat  <file>....
 
@@ -149,7 +153,7 @@ cd
 
 改变当前工作目录。
 
-用法： 
+用法：
 
     cd [directory]
 
@@ -160,9 +164,9 @@ cwd
 ---
 
 获取当前工作目录。
- 
-用法： 
-    
+
+用法：
+
     cwd
 
 
@@ -175,9 +179,9 @@ chmod
 -----
 
 更改文件、目录的权限。
- 
-用法： 
-    
+
+用法：
+
     chmod <mode> <file/directory>
 
 mv
@@ -185,8 +189,8 @@ mv
 
 把文件、目录从源头移动到目的地。
 
-用法： 
-    
+用法：
+
     mv <source_path> <destination_path>
 
 rmdir
@@ -194,8 +198,8 @@ rmdir
 
 删除一或多个目录。
 
-用法： 
-    
+用法：
+
     rmdir <directory_name>.....
 
 rm
@@ -203,8 +207,8 @@ rm
 
 删除一或多个文件。
 
-用法： 
-    
+用法：
+
     rm <file_name/pattern>...
 
 
@@ -213,8 +217,8 @@ write
 
 创建并写入一个文件。
 
-用法： 
-        
+用法：
+
         write <file_name>
         <Enter Data>
         Ctrl+D Exit.
@@ -224,8 +228,8 @@ lls
 
 罗列指定目录里的所有文件和目录。如果没指定 path ，就会罗列出当前本地目录内的文件和目录。
 
-用法： 
-    
+用法：
+
     lls <path>.....
 
 lcd
@@ -233,8 +237,8 @@ lcd
 
 进入指定的本地目录。
 
-用法： 
-    
+用法：
+
     lcd <path>
 
 lpwd
@@ -242,8 +246,8 @@ lpwd
 
 打印出当前本地目录的绝对路径。
 
-用法： 
-    
+用法：
+
     lpwd
 
 
@@ -252,8 +256,8 @@ umask
 
 设置和获取文件模式的创建掩码。
 
-用法： 
-    
+用法：
+
     umask [mode]
 
 alias
@@ -261,7 +265,7 @@ alias
 
 定义或显示别名。
 
-用法： 
+用法：
 
     alias [name] | [<name> <value>]
 
@@ -273,8 +277,8 @@ run_pyscript
 
 在控制台里运行一个 python 脚本。
 
-用法： 
-    
+用法：
+
     run_pyscript <script_path> [script_arguments]
 
 * 在这个脚本里，可以用 cmd （你的自定义命令）执行控制台命令。
@@ -288,7 +292,7 @@ py
 
 调用 python 命令、 shell 或脚本。
 
-用法： 
+用法：
 
         py <command>: 执行一个 Python 命令。
         py: 进入交互式 Python 模式。
@@ -307,8 +311,8 @@ history
 
 查看、运行、编辑、和保存之前输入的命令。
 
-用法： 
-    
+用法：
+
     history [-h] [-r | -e | -s | -o FILE | -t TRANSCRIPT] [arg]
 
 选项：
@@ -324,8 +328,8 @@ unalias
 
 取消别名。
 
-用法： 
-    
+用法：
+
     unalias [-a] name [name ...]
 
 * name - 要取消的别名名字
@@ -338,7 +342,7 @@ set
 
 设置一个可设置参数、或显示参数的当前设置。
 
-用法： 
+用法：
 
     set [-h] [-a] [-l] [settable [settable ...]]
 
@@ -354,7 +358,7 @@ edit
 
 在一个文本编辑器内编辑文件。
 
-用法：  
+用法：
 
     edit [file_path]
 
@@ -367,8 +371,8 @@ run_script
 运行脚本文件里的命令，文本编码格式为 ASCII 或 UTF-8 。
 脚本里的各个命令应该用换行符分隔。
 
-用法：  
-    
+用法：
+
     run_script <file_path>
 
 * file_path - 脚本文件的路径
@@ -381,8 +385,8 @@ shell
 
 像在操作系统提示符下一样，执行一个命令。
 
-用法：  
-    
+用法：
+
     shell <command> [arguments]
 
 locate

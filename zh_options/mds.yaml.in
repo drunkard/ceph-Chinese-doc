@@ -1382,7 +1382,7 @@ options:
   type: secs
   level: advanced
   desc: interval in seconds for sending ping messages to active MDSs.
-  long_desc: interval in seconds for rank 0 to send ping messages to all active MDSs.
+  long_desc: rank 0 向所有活跃 MDS 们发送探测消息的间隔秒数。
   default: 5
   services:
   - mds
@@ -1392,8 +1392,8 @@ options:
   type: secs
   level: advanced
   desc: interval in seconds for metrics data update.
-  long_desc: interval in seconds after which active MDSs send client metrics data
-    to rank 0.
+  long_desc: 活跃的 MDS 们把客户端指标数据发给 rank 0 的\
+    间隔秒数。
   default: 2
   services:
   - mds
@@ -1403,9 +1403,31 @@ options:
   type: uint
   level: advanced
   desc: maximum number of entries per directory before new creat/links fail
-  long_desc: The maximum number of entries before any new entries
-    are rejected with ENOSPC.
+  long_desc: 目录里的最大条数，超过时再新建就会被拒绝，
+    遇到 ENOSPC 错误。
   default: 0
+  services:
+  - mds
+  flags:
+  - runtime
+- name: mds_sleep_rank_change
+  type: float
+  level: dev
+  default: 0.0
+  flags:
+  - runtime
+- name: mds_connect_bootstrapping
+  type: bool
+  level: dev
+  default: false
+  flags:
+  - runtime
+- name: mds_symlink_recovery
+  type: bool
+  level: advanced
+  desc: 把符号链接目标存储在符号链接文件的第一个数据对象里。
+    这样就能用恢复工具来恢复符号链接了。
+  default: true
   services:
   - mds
   flags:

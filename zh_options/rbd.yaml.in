@@ -481,6 +481,9 @@ options:
   type: uint
   level: advanced
   desc: default order (data block object size) for new images
+  long_desc: 配置新映像的默认对象尺寸。这个值是作为 2 的幂次用的，
+    意思是 ``default_object_size = 2 ^ rbd_default_order`` 。
+    配置的值在 12 和 25 （包含）之间时，将转译成从 4KiB 到 32MiB 之间的 2 的幂次。
   default: 22
   services:
   - rbd

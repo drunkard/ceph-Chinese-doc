@@ -263,6 +263,7 @@ def is_code(line):
     roles = [
         # Never skip these roles.
         # 'topic', 'tip', 'note', 'caution', 'warning', 'important', 'DANGER',
+        # 'sidebar',
         # 'describe',  # Just ignore this row, in is_ignored()
         # Just ignore THE row, following still counts, see is_ignored()
         # 'confval', 'program', 'option',
@@ -337,6 +338,14 @@ def is_ignored(line):
     for role in roles:
         if line.count(f'.. {role}::') > 0:
             return True
+    return False
+
+
+def man_ignore(line):
+    if line.startswith('|'):
+        return True
+    if line.startswith(':command:'):
+        return True
     return False
 
 
