@@ -79,6 +79,10 @@ def compare_file_existency():
 
 def compare_file_length(files=None):
     "arg files: None or list."
+    def file_rows(*file_names):
+        with open(os.path.join(*file_names)) as f:
+            return len(f.readlines())
+
     show_anyway = False  # show result, ignore LEN_DIFF_THRESHOLD
     if files:
         fl = files
@@ -92,7 +96,7 @@ def compare_file_length(files=None):
     print('"译文"和"原文"共有文件行数差别（行数差大于 {} 的）：'.format(LEN_DIFF_THRESHOLD))
     eqs = []
     for f in fl:
-        cn, en = _file_row_counts(doc_cn, f), _file_row_counts(doc_en, f)
+        cn, en = file_rows(doc_cn, f), file_rows(doc_en, f)
         d = cn - en
         if d == 0:
             eqs.append(f)
@@ -208,10 +212,6 @@ def count_files(files):
         trans, total = count_file_progress(f)
         TP.loc[IDX] = [subsys, f, trans, total, to_pct(trans, total)]
         IDX += 1
-
-
-def _file_row_counts(*file_names):
-    return len(open(os.path.join(*file_names)).readlines())
 
 
 def _get_file_list(directory, only_rst=False, relpath=False):
