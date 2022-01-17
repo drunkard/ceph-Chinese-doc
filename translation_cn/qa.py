@@ -56,7 +56,91 @@ TP = pd.DataFrame(columns=['subsys', 'file', 'translated', 'total', 'pct'])
 # pd.style.set_properties(**{'text-align': 'left'})\
 #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
 IDX = 0  # index for pandas.DataFrame
-RN = 0  # current row number
+
+
+class Stat(object):
+    """
+    This is translation stat of a single file.
+    All stats saved in this object instance, and functions operates on it.
+    """
+    def __init__(self, file_path):
+        self.f = file_path  # current processing file
+        self.lines = self.file_lines()  # all cleaned lines, shouldn't change anymore
+
+        self.i = self.get_idx_init()    # current index
+        self.imax_default = len(self.lines) - 1
+        self.imax = self.get_idx_max()  # rows of this file
+
+        self.done = 0   # translated
+        self.done_idxs = []
+        self.total = 0  # total lines of file
+
+    def clean_lines(self, ctx):
+        # clean up first
+        r = []
+        for line in ctx:
+            line = line.rstrip('\n')    # remove \n
+            line = line.rstrip(' ')     # remove spaces
+            r.append(line)
+        return r
+
+    def file_lines(self):
+        with open(self.f) as fo:
+            return self.clean_lines(fo.readlines())
+
+    def get_idx_init(self):
+        if not self.is_man:
+            return -1
+        # Ignore contents of whole 'Synopsis/提纲' section in man pages, that
+        # is contents from head of file, to 描述/Description section title,
+        # this code sets self.i (start index) as start point of counting.
+        for w in ['描述', 'Description']:  # section header as flag.
+            if (i := index_of_element(w, self.lines)) is not None:
+                return i + 1
+        print(f'WARN: been here, there may have bug in is_man() or get_idx_init(), file: {self.f}')
+        return -1
+
+    def get_idx_max(self):
+        if not self.is_man:
+            return self.imax_default
+        # ignore 'See also' or '参考' section
+        for w in ['参考', 'See also']:
+            if (i := index_of_element(w, self.lines)) is not None:
+                return i - 1
+        # This man page do not have 'See also' section, return the defaults
+        return self.imax_default
+
+    def ignore_line(self):
+        return ignore_one_line(self.line)
+
+    @property
+    def is_man(self):
+        "Check if this is man pages"
+        if 'man/8/' in self.f:
+            return True
+        return False
+
+    @property
+    def line(self):
+        # current line
+        if self.i == -1:
+            return None  # not started yet
+        return self.lines[self.i]
+
+    @property
+    def linen(self):
+        # next line
+        return self.lines[self.i + 1] if self.i < self.imax else None
+
+    @property
+    def linep(self):
+        # previous line
+        return self.lines[self.i - 1]
+
+    def record(self):
+        'record current line as translated'
+        self.done += 1
+        self.done_idxs.append(self.i)
 
 
 def compare_file_existency():
@@ -115,102 +199,59 @@ def compare_file_length(files=None):
 
 def count_file_progress(f):  # noqa
     ''' 单个文件的翻译进度 '''
-    # TODO rewrite in list() instead of file.readlines()
-    cn, total = 0, 0
-    global RN
-    with open(f) as fo:
-        # Command should be ignored
-        # if the following paragraph is command, 0=not, 1=enter, 2=end
-        # Decides if it's cmd by counting the leading spaces, reset cmd_flag=0
-        # if indent changed.
-        cmd_flag = 0
-        cmd_indent = 0
+    global S
+    S = Stat(f)
+    # print(stat_debug(S))
 
-        # Decide if this section is code/role, co-used by code/role
-        # 0=not, 1=yes, >=3 end
-        code_flag = 0
-        trans_flag = True  # to count title, some title not translated
+    # section to ignore, one transaction once, so reuse this flag
+    blk_flag = 0
+    blk_indent = 0
 
-        # ignore 'Synopsis' section in man pages
-        man_synopsis = 1 if 'man' in f.splitall() else 0
+    while S.i < S.imax:
+        # print(stat_debug(S))
+        # if S.i >= 210: print(stat_debug(S))
+        S.i += 1
 
-        # count titles, 0=ignore, 1=count in
-        # Ignore titles, treat all of them as translated.
-        count_titles = 0
-        # TODO has bug, fix it
-
-        for line in fo.readlines():
-            RN += 1
-            # clean up first
-            line = line.rstrip('\n')    # remove \n
-            line = line.rstrip(' ')     # remove spaces
-
-            # There's file specific cases.
-            if line.endswith('::') or \
-                    (f.name == 'cephfs-shell.rst' and line.endswith('：')):
-                cmd_flag = 1
-                cmd_indent = 0  # init new cmd block
-            if is_code(line):
-                code_flag += 1
-            if man_synopsis > 0:
-                if line in ['描述', 'Description']:  # section header as flag.
-                    # Synopsis section finished, turn this flag off.
-                    man_synopsis = 0
-                    continue
-                if line in ['提纲', 'Synopsis']:  # section header as flag.
-                    man_synopsis = 2
-                if man_synopsis == 2:
-                    continue
-            if is_blank_row(line):
-                if cmd_flag >= 1:
-                    cmd_flag += 1
-                if code_flag >= 1:
-                    code_flag += 1
-                continue  # don't count blank line
-            # if RN >= 45: print(f'RN={RN} cmd_flag={cmd_flag} cmd_indent={cmd_indent}')  # debug
-            # if RN >= 45: print(f'RN={RN} code_flag={code_flag} trans_flag={trans_flag}')  # debug
-            if cmd_flag >= 2:
-                if cmd_indent == 0:
-                    cmd_indent = get_indent(line)
-                    continue
-                # cmd_indent != 0, check if it changed
-                if get_indent(line) >= cmd_indent:
-                    # still indented as command, ignore it
-                    continue
-                else:
-                    if cmd_flag > 2:  # got 2 blank rows, cmd block maybe ended
-                        cmd_flag = 0
-                        cmd_indent = 0
-            if is_ignored(line):
+        # print(f'ddd {S.i}: blk_flag={blk_flag} blk_indent={blk_indent} line="{S.line}"')  # debug
+        if S.ignore_line():
+            continue
+        if is_ignore_blk(S.line):
+            blk_flag = 1
+            blk_indent = 0  # init new block
+        if is_blank_row(S.line):
+            if blk_flag >= 1:
+                blk_flag += 1
+            continue  # don't count blank line
+        if blk_flag >= 2:
+            if blk_indent == 0:  # first line in block content
+                blk_indent = get_indent(S.line)
                 continue
-            if code_flag >= 1:
-                if get_indent(line) >= 3:  # not blank row, but indented
-                    continue
-                elif code_flag >= 3:
-                    code_flag = 0
-            total += 1
-            # print(f'ttt trans_flag={trans_flag}', line)
-            if trans_flag == False and is_title(line):
-                trans_flag = True
-                cn += count_titles
-                total += -(count_titles + 1)  # remove counted title row
-                continue
-            # print('ddd', cmd_indent, get_indent(line), line)  # debug
-            if is_translated(line):
-                cn += 1
-                trans_flag = True
+            # blk_indent != 0, check if it changed
+            if get_indent(S.line) >= blk_indent:
+                # still indented as command, ignore it
                 continue
             else:
-                trans_flag = False
-    return (cn, total)
+                if blk_flag > 2:  # got 2 blank rows, cmd block maybe ended
+                    blk_flag = 0
+                    blk_indent = 0
+        S.total += 1
+        if is_translated(S.line):
+            # print('{:<3}:'.format(S.i + 1), S.line)  # debug
+            S.record()
+            continue
+    return S
 
 
 def count_files(files):
     global IDX, TP
     for f in files:
         subsys = str(f.splitall()[1])
-        trans, total = count_file_progress(f)
-        TP.loc[IDX] = [subsys, f, trans, total, to_pct(trans, total)]
+        try:
+            S = count_file_progress(f)
+        except Exception as e:
+            print(f'Got error with file: {f}')
+            raise e
+        TP.loc[IDX] = [subsys, f, S.done, S.total, to_pct(S.done, S.total)]
         IDX += 1
 
 
@@ -249,6 +290,32 @@ def get_indent(line):
     return len(line) - len(line.lstrip())
 
 
+def index_of_element(e, l):
+    "return index of specified element, None if not matched"
+    try:
+        return l.index(e)
+    except ValueError:
+        pass
+    return None
+
+
+def is_ignore_blk(line, indent=0):
+    '''
+    args:
+        line - line to check, if this is start of section that should ignore.
+        indent - the min indent of this section.
+    '''
+    if is_code_blk(line):
+        return True
+    # Command should be ignored
+    # if the following paragraph is command, 0=not, 1=enter, 2=end
+    # Decides if it's cmd by counting the leading spaces, reset blk_flag=0
+    # if indent changed.
+    if is_cmd(line):
+        return True
+    return False
+
+
 def is_blank_row(line):
     br = re.compile(r'\s+')
     if not line or br.fullmatch(line):
@@ -256,7 +323,16 @@ def is_blank_row(line):
     return False
 
 
-def is_code(line):
+def is_cmd(line):
+    if not line.startswith('.. ') and line.endswith('::'):
+        return True
+    # There's file specific cases.
+    if S.f.name == 'cephfs-shell.rst' and line.endswith('：'):
+        return True
+    return False
+
+
+def is_code_blk(line):
     '''If matched the rst role, it needs two more blank row to end this block.
     '''
     # TODO split needed, some roles should be ignored.
@@ -264,13 +340,9 @@ def is_code(line):
         # Never skip these roles.
         # 'topic', 'tip', 'note', 'caution', 'warning', 'important', 'DANGER',
         # 'sidebar',
-        # 'describe',  # Just ignore this row, in is_ignored()
-        # Just ignore THE row, following still counts, see is_ignored()
-        # 'confval', 'program', 'option',
         'code', 'code-block', 'prompt',
-        'ditaa', 'image',
-        'deprecated', 'versionadded', 'versionchanged',
-        'index', 'toctree',
+        'ditaa', 'image', 'raw',
+        'toctree',
     ]
     for role in roles:
         if line.count(f'.. {role}::') > 0:
@@ -278,37 +350,69 @@ def is_code(line):
     return False
 
 
-def is_title(line):
-    syms = ['=', '-', '`', '\'', '.', '~', '*', '+', '_', '^']
-    for sym in syms:
-        # print('is_title', RN, line, '{} vs {}'.format(line.count(sym), len(line)))  # debug
-        if line.count(sym) == len(line):
+def is_title(si, idx=None, main_title=False):
+    '''
+    check if current line is title, if the next line is all syms
+    si = Stat instance, idx is current index
+    main_title: there's the same syms in previous and next line.
+    '''
+    if idx is not None:
+        linep = si.lines[idx - 1]
+        linen = si.lines[idx + 1]
+    else:
+        linep = si.linep
+        linen = si.linen
+    if main_title:
+        if is_title_sym(linep) and is_title_sym(linen):
+            return True
+    else:
+        if linen is not None and is_title_sym(linen):
             return True
     return False
 
 
-def is_translated(line):
+def is_title_sym(line):
+    title_syms = ['=', '-', '`', '\'', '.', '~', '*', '+', '_', '^']
+    for sym in title_syms:
+        # they are 0 for blank lines, so exclude 0
+        if line.count(sym) == len(line) != 0:
+            return True
+    return False
+
+
+def is_translated(line=None):
     '''
     比较规则：
     按行比较，有汉字就视作翻译了；
     以 [a-zA-Z] 打头的才计算；
     空行、[.-`*#:\] 、\s\t 打头的不算；
     '''
+    def false_return(line):
+        # debug, to catch exceptions of re expr
+        if len(FILES) == 1:
+            print('{:<3}:'.format(S.i + 1), line)
+        return False
+
+    global S
+    line = line or S.line
     cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：、]')  # 匹配汉字
     if cn_char.search(line):
         return True
-    # do not ignore long row starts with spaces, but not command
-    if len(line) < (EN_COLS / 3) and not is_title(line):
+    if is_title(S):
+        if line.count(' ') <= 1:
+            # treat short title (less than 2 words) as translated, do not check
+            return True
+        else:
+            return false_return(line)  # count in long titles
+    if len(line) < (EN_COLS / 3):
         # ignore short rows, too many symbols in them.
-        # print('{:<3}:'.format(RN), line)  # debug, what translated row looks like
+        # print('{:<3}:'.format(S.i + 1), line)  # debug, what translated row looks like
         return True
-    if len(FILES) == 1: print('{:<3}:'.format(RN), line)  # debug, to catch exceptions of re expr
-    return False
+    return false_return(line)
 
 
-def is_ignored(line):
+def ignore_one_line(line):
     '''我们只统计需要翻译的，所以以下忽略掉：
-
     空行，包括只含有空格的行；
     注释行；
     标题下的那行符号 [=\-~_`'\.\*\+\^]+
@@ -320,6 +424,9 @@ def is_ignored(line):
         return True
     if line.count('`') == 2 and line.endswith('`_'):  # is hyperlink, could ignore
         return True
+    # ignore command, whole line is command
+    if line.startswith('``') and line.endswith('``'):
+        return True
     # ignore comment
     comment = re.compile(r'^\.\.\ [a-zA-Z]')
     if comment.match(line) and not (line.count(':: ') == 1 or line.endswith('::')):
@@ -327,25 +434,27 @@ def is_ignored(line):
         return True
     # ignore table
     if (line.startswith('+-') and line.endswith('-+')) or \
-            (line.startswith('|') and line.endswith('|')):
+            (line.startswith('|') and line.endswith('|')) or \
+            (line.startswith('+=') and line.endswith('=+')):
+        return True
+    # ignore title symbol line
+    if is_title_sym(line):
+        return True
+    # man specific
+    if line.startswith('|'):
+        return True
+    if line.startswith(':command:') or line.startswith(':orphan:'):
         return True
     # ignore some rst roles, just this row, following still counts
     roles = [
-        'confval', 'program', 'option',
-        'describe',
+        'confval', 'program', 'option', 'describe',
+        'deprecated', 'versionadded', 'versionchanged',
+        'index', 'contents',
         'highlight',
     ]
     for role in roles:
         if line.count(f'.. {role}::') > 0:
             return True
-    return False
-
-
-def man_ignore(line):
-    if line.startswith('|'):
-        return True
-    if line.startswith(':command:'):
-        return True
     return False
 
 
@@ -361,6 +470,17 @@ def path_to_files(paths):
         else:
             raise TypeError(f'Unknown file type: {p} type= {type(p)} cwd= {p.getcwd()}')
     return files
+
+
+def stat_debug(si):
+    attrs = [
+        'f', 'line',
+        # 'linen', 'linep',
+        'i', 'imax',
+        'done', 'total',
+        # 'lines', 'done_idxs',
+    ]
+    return dict((a, getattr(si, a)) for a in attrs)
 
 
 def to_pct(a, b):
