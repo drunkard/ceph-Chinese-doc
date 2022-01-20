@@ -357,14 +357,14 @@ def is_cmd(line):
 def is_code_blk(line):
     '''If matched the rst role, it needs two more blank row to end this block.
     '''
-    # TODO split needed, some roles should be ignored.
     roles = [
         # Never skip these roles.
         # 'topic', 'tip', 'note', 'caution', 'warning', 'important', 'DANGER',
         # 'sidebar',
         'code', 'code-block', 'prompt',
         'ditaa', 'image', 'raw',
-        'toctree',
+        'toctree', 'literalinclude',
+        'automodule',
     ]
     for role in roles:
         if line.count(f'.. {role}::') > 0:
