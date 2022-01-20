@@ -49,6 +49,8 @@ SUBSYS = [
     'security',
     'start',
 ]
+# flip original/translation when debug, mainly for seeing what translated looks like
+FLIP = False
 
 # 统计结果暂存
 TP = pd.DataFrame(columns=['subsys', 'file', 'translated', 'total', 'pct'])
@@ -236,7 +238,7 @@ def count_file_progress(f):  # noqa
                     blk_indent = 0
         S.total += 1
         if is_translated(S.line):
-            # print('{:<3}:'.format(S.i + 1), S.line)  # debug
+            if FLIP: print('{:<3}:'.format(S.i + 1), S.line)  # debug
             S.record()
             continue
     return S
@@ -389,7 +391,7 @@ def is_translated(line=None):
     '''
     def false_return(line):
         # debug, to catch exceptions of re expr
-        if len(FILES) == 1:
+        if len(FILES) == 1 and not FLIP:
             print('{:<3}:'.format(S.i + 1), line)
         return False
 
