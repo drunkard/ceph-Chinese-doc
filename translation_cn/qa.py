@@ -113,6 +113,13 @@ class Stat(object):
         return self.imax_default
 
     def ignore_line(self):
+        # File specific cases.
+        # ignore quoted line
+        fs = ['health-messages.rst', ]
+        if self.f.name in fs and \
+                self.line.lstrip().startswith('"') and \
+                self.line.lstrip().endswith('"'):
+            return True
         return ignore_one_line(self.line)
 
     @property
