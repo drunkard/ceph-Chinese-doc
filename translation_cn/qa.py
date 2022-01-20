@@ -426,7 +426,7 @@ def is_translated(line=None):
             return True
         else:
             return false_return(line)  # count in long titles
-    if len(line) < (EN_COLS / 3):
+    if len(line) < (EN_COLS / 3) or line.count(' ') <= 1:
         # ignore short rows, too many symbols in them.
         # print('{:<3}:'.format(S.i + 1), line)  # debug, what translated row looks like
         return True
