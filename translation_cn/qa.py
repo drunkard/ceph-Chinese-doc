@@ -225,28 +225,36 @@ def count_file_progress(f):  # noqa
         # if S.i >= 210: print(stat_debug(S))
         S.i += 1
 
-        # print(f'ddd {S.i}: blk_flag={blk_flag} blk_indent={blk_indent} line="{S.line}"')  # debug
+        # if S.i>80: print(f'ddd {S.i}: blk_flag={blk_flag} blk_indent={blk_indent} line="{S.line}"')  # debug
         if S.ignore_line():
             continue
         if is_ignore_blk(S.line):
             blk_flag = 1
-            blk_indent = 0  # init new block
+            # init new block
+            # Assume this block should be ignored, the next / next 2 row must
+            # be indented.
+            blk_indent = get_indent(S.linen) or get_indent(S.lines[S.i + 2])
         if is_blank_row(S.line):
             if blk_flag >= 1:
                 blk_flag += 1
             continue  # don't count blank line
-        if blk_flag >= 2:
-            if blk_indent == 0:  # first line in block content
-                blk_indent = get_indent(S.line)
-                continue
-            # blk_indent != 0, check if it changed
-            if get_indent(S.line) >= blk_indent:
-                # still indented as command, ignore it
-                continue
+        if blk_flag >= 1 and blk_indent == 0:  # first line in block content
+            # S.linen is next 2 row after '.. role::'
+            # If S.linen not exists, get_indent(S.linen) would be None, so fill
+            # 0 as last fix.
+            blk_indent = get_indent(S.line) or get_indent(S.linen) or 0
+            if blk_indent == 0:
+                blk_flag = 0  # ignore role ended.
             else:
-                if blk_flag > 2:  # got 2 blank rows, cmd block maybe ended
-                    blk_flag = 0
-                    blk_indent = 0
+                continue
+        # blk_indent != 0, check if it changed
+        if blk_flag >= 1 and get_indent(S.line) >= blk_indent:
+            # still indented as command, ignore it
+            continue
+        else:
+            if blk_flag > 2:  # got 2 blank rows, cmd block maybe ended
+                blk_flag = 0
+                blk_indent = 0
         S.total += 1
         if is_translated(S.line):
             if FLIP: print('{:<3}:'.format(S.i + 1), S.line)  # debug
@@ -300,7 +308,7 @@ def _get_file_list(directory, only_rst=False, relpath=False):
 
 def get_indent(line):
     '获取一行的缩进数量'
-    return len(line) - len(line.lstrip())
+    return None if line is None else len(line) - len(line.lstrip())
 
 
 def index_of_element(e, l):
@@ -319,6 +327,7 @@ def is_ignore_blk(line, indent=0):
         indent - the min indent of this section.
     '''
     if is_code_blk(line):
+        # print('is_ignore_blk:', line)
         return True
     # Command should be ignored
     # if the following paragraph is command, 0=not, 1=enter, 2=end
