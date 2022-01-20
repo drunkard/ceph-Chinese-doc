@@ -472,7 +472,7 @@ def ignore_one_line(line):
         'confval', 'program', 'option', 'describe',
         'deprecated', 'versionadded', 'versionchanged',
         'index', 'contents',
-        'highlight',
+        'highlight', 'autodoxygenfile',
     ]
     for role in roles:
         if line.count(f'.. {role}::') > 0:
