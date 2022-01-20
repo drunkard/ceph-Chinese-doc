@@ -53,7 +53,7 @@ SUBSYS = [
 FLIP = False
 
 # 统计结果暂存
-TP = pd.DataFrame(columns=['subsys', 'file', 'translated', 'total', 'pct'])
+TP = pd.DataFrame(columns=['subsys', 'file', 'original', 'translated', 'total', 'pct'])
 # TODO: left align 'file' when show_all
 # pd.style.set_properties(**{'text-align': 'left'})\
 #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
@@ -145,6 +145,10 @@ class Stat(object):
     def linep(self):
         # previous line
         return self.lines[self.i - 1]
+
+    @property
+    def original(self):
+        return self.total - self.done
 
     def record(self):
         'record current line as translated'
@@ -260,7 +264,7 @@ def count_files(files):
         except Exception as e:
             print(f'Got error with file: {f}')
             raise e
-        TP.loc[IDX] = [subsys, f, S.done, S.total, to_pct(S.done, S.total)]
+        TP.loc[IDX] = [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total)]
         IDX += 1
 
 
@@ -511,8 +515,9 @@ def translate_progress(files=None):
             print('{}%'.format(to_pct(r.translated, r.total)))
 
     # Progress overall
-    tp = TP.agg({'translated': sum, 'total': sum})
-    print('Overall progress:   {}%'.format(to_pct(tp.translated, tp.total)))
+    tp = TP.agg({'original': sum, 'translated': sum, 'total': sum})
+    print('Overall progress:   {}% ({} of {} to translate)'
+          .format(to_pct(tp.translated, tp.total), tp.original, tp.total))
 
     # Progress by file
     shown = 50
