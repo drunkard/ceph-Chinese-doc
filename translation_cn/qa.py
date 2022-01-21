@@ -112,6 +112,12 @@ class Stat(object):
         # This man page do not have 'See also' section, return the defaults
         return self.imax_default
 
+    def get_line(self, down=0):
+        "return requested line, down means index is self.i+down"
+        if (self.i + down) <= self.imax_default:
+            return self.lines[self.i + down]
+        return None
+
     def ignore_line(self):
         # File specific cases.
         # ignore quoted line
@@ -134,7 +140,7 @@ class Stat(object):
     @property
     def indentn2(self):
         # indent of next 2 line
-        return get_indent(self.lines[self.i + 2])
+        return get_indent(self.get_line(down=2))
 
     @property
     def is_man(self):
@@ -153,7 +159,7 @@ class Stat(object):
     @property
     def linen(self):
         # next line
-        return self.lines[self.i + 1] if self.i < self.imax else None
+        return self.get_line(down=1)
 
     @property
     def linep(self):
