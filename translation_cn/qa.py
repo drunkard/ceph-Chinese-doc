@@ -466,8 +466,7 @@ def ignore_one_line(line):
     if line.startswith('``') and line.endswith('``'):
         return True
     # ignore comment
-    comment = re.compile(r'^\.\.\ [a-zA-Z]')
-    if comment.match(line) and not (line.count(':: ') == 1 or line.endswith('::')):
+    if line.startswith('.. ') and line.count('::') == 0:
         # print('comment debug:', get_indent(line), line)
         return True
     # ignore table
