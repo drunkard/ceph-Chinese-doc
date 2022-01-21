@@ -322,7 +322,9 @@ def _get_file_list(directory, only_rst=False, relpath=False):
 
 def get_indent(line):
     '获取一行的缩进数量'
-    return None if line is None else len(line) - len(line.lstrip())
+    if line is None:
+        return None
+    return len(line) - len(line.lstrip())
 
 
 def index_of_element(e, l):
