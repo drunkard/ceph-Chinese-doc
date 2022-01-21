@@ -236,10 +236,9 @@ def count_file_progress(f):  # noqa
 
     while S.i < S.imax:
         # print(stat_debug(S))
-        # if S.i >= 210: print(stat_debug(S))
+        # if 680<S.i<690: print(stat_debug(S))
         S.i += 1
 
-        # if S.i>80: print(f'ddd {S.i}: blk_flag={blk_flag} blk_indent={blk_indent} line="{S.line}"')  # debug
         if S.ignore_line():
             continue
         if is_ignore_blk(S.line):
@@ -265,6 +264,7 @@ def count_file_progress(f):  # noqa
                 blk_flag += 1
             continue  # don't count blank line
         # blk_indent != 0, check if it changed
+        # if 690>S.i>680: print(f'DEBUG {S.i}: blk_flag={blk_flag} blk_indent={blk_indent} line="{S.line}"')  # debug
         if blk_flag >= 1 and S.indent >= blk_indent:
             # still indented as command, ignore it
             continue
@@ -559,6 +559,7 @@ def translate_progress(files=None):
             .sort_values('pct', ascending=False)\
             .dropna()\
             .head(shown))
+        # print(TP.where(TP.pct != 100).sort_values('original').dropna().head(shown))
 
 
 if __name__ == "__main__":
