@@ -247,20 +247,23 @@ def count_file_progress(f):  # noqa
             # init new block
             # Assume this block should be ignored, the next / next 2 row must
             # be indented.
-            blk_indent = get_indent(S.linen) or get_indent(S.lines[S.i + 2])
-        if is_blank_row(S.line):
-            if blk_flag >= 1:
-                blk_flag += 1
-            continue  # don't count blank line
-        if blk_flag >= 1 and blk_indent == 0:  # first line in block content
-            # S.linen is next 2 row after '.. role::'
             # If S.linen not exists, get_indent(S.linen) would be None, so fill
             # 0 as last fix.
             blk_indent = S.indentn1 or S.indentn2 or 0
             if blk_indent == 0:
-                blk_flag = 0  # ignore role ended.
-            else:
+                blk_flag = 0  # ignore role block ended, maybe on-line role.
+            elif blk_indent > 8:
+                # with ditaa, the first row maybe indented too much, and
+                # won't align with following rows, so cut it to the least: 3.
+                blk_indent = 3
+            if not is_cmd(S.line):
+                # For code block, no matter blk_indent ==/!= 0, this row should ignore.
+                # For cmd block, the row contains '::' counts.
                 continue
+        if is_blank_row(S.line):
+            if blk_flag >= 1:
+                blk_flag += 1
+            continue  # don't count blank line
         # blk_indent != 0, check if it changed
         if blk_flag >= 1 and S.indent >= blk_indent:
             # still indented as command, ignore it
