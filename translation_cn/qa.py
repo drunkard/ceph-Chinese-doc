@@ -466,7 +466,9 @@ def ignore_one_line(line):
     if line.count('`') == 2 and line.endswith('`_'):  # is hyperlink, could ignore
         return True
     # ignore command, whole line is command
-    if line.startswith('``') and line.endswith('``'):
+    # For numbered line, there's "#. " or " * " at lead of row.
+    if (line.startswith('``') or ('``' in line and line.index('``') <= 4)) \
+            and (line.endswith('``') or line.endswith('*')):
         return True
     # ignore comment
     if line.startswith('.. ') and line.count('::') == 0:
