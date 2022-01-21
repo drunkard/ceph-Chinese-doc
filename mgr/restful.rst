@@ -1,38 +1,31 @@
+RESTful 模块
+============
 .. Restful Module
 
-REST 风格的模块
-===============
-
-REST 风格的模块提供了通过 SSL 加密连接访问集群状态的 REST 风格\
-接口。
-
-
-.. Enabling
+REST 风格的模块提供了通过 SSL 加密连接访问集群状态的 REST 风格接口。
 
 启用此功能
 ----------
+
 *restful* 模块用此命令启用： ::
 
   ceph mgr module enable restful
 
-在 API　终结点上线前你还得按下面的文档配置一个 SSL 证书。默认\
-情况下，此模块会在 ``8003`` 端口上接受此主机上所有 IPv4 和 IPv6
-地址的 HTTPS 请求。
+在 API　终结点上线前你还得按下面的文档配置一个 SSL 证书。默认情况下，
+此模块会在 ``8003`` 端口上接受此主机上所有 IPv4 和 IPv6 地址的 HTTPS 请求。
 
-
-.. Securing
 
 安全加固
 --------
+.. Securing
 
 到 *restful* 的所有连接都是用 SSL 加密过的。用下列命令可以生成\
 一个自签名的证书： ::
 
   ceph restful create-self-signed-cert
 
-请注意，用自签名证书时，大多数客户端都需要多加个选项以允许这种\
-连接，并平息警告消息。例如，如果 ``ceph-mgr`` 守护进程在同一主\
-机上， ::
+请注意，用自签名证书时，大多数客户端都需要多加个选项以允许这种连接，
+并平息警告消息。例如，如果 ``ceph-mgr`` 守护进程在同一主机上， ::
 
   curl -k https://localhost:8003/
 
@@ -56,10 +49,9 @@ REST 风格的模块提供了通过 SSL 加密连接访问集群状态的 REST �
   ceph config-key set mgr/restful/key -i restful.key
 
 
-.. Configuring IP and port
-
 IP 和端口的配置
 ---------------
+.. Configuring IP and port
 
 和其它 REST 风格的 API 终结点一样， *restful* 也是绑定到一个 IP
 和端口的。默认情况下，当前活跃的 ``ceph-mgr`` 守护进程会绑定到
@@ -83,45 +75,44 @@ IP 和端口的配置
 IPv6 地址。
 
 
-.. Creating an API User
 .. _creating-an-api-user:
 
 创建一个 API 用户
 -----------------
+.. Creating an API User
 
-To create an API user, please run the following command::
+要新建一个 API 用户，执行下列命令： ::
 
   ceph restful create-key <username>
 
-Replace ``<username>`` with the desired name of the user. For example, to create a user named
-``api``::
+把 ``<username>`` 替换成想要的用户名。例如，
+要新建名为 ``api`` 的用户::
 
   $ ceph restful create-key api
   52dffd92-a103-4a10-bfce-5b60f48f764e
 
-The UUID generated from ``ceph restful create-key api`` acts as the key for the user.
+``ceph restful create-key api`` 命令生成的 UUID 作为此用户的密钥。
 
-To list all of your API keys, please run the following command::
+要罗列你的所有 API 密钥，运行下列命令::
 
   ceph restful list-keys
 
-The ``ceph restful list-keys`` command will output in JSON::
+``ceph restful list-keys`` 会以 JSON 格式输出::
 
   {
   	"api": "52dffd92-a103-4a10-bfce-5b60f48f764e"
   }
 
-You can use ``curl`` in order to test your user with the API. Here is an example::
+要用 API 测试你的用户，可以用 ``curl`` ，例如::
 
   curl -k https://api:52dffd92-a103-4a10-bfce-5b60f48f764e@<ceph-mgr>:<port>/server
 
-In the case above, we are using ``GET`` to fetch information from the ``server`` endpoint.
+在上面的例子中， 我们用 ``GET`` 从 ``server`` 终结点获取信息。
 
-
-.. Load balancer
 
 负载均衡器
 ----------
+.. Load balancer
 
 请注意，\ *只有*\ 当下管理器活跃着时， *restful* 才能启动。\
 查询 Ceph 集群状态以确定哪个管理器活跃着（例如
@@ -130,10 +121,9 @@ In the case above, we are using ``GET`` to fetch information from the ``server``
 以把流量引导到可用的管理器终结点上。
 
 
-.. Available methods
-
 可用方法
 --------
+.. Available methods
 
 你可以浏览 ``/doc`` 终结点来获取完整的可用终结点列表，以及各\
 终结点已实现的 HTTP 方法。
@@ -168,10 +158,9 @@ In the case above, we are using ``GET`` to fetch information from the ``server``
 * ``/server``: **GET**
 
 
-.. The ``/request`` endpoint
-
 ``/request`` 终结点
 -------------------
+.. The ``/request`` endpoint
 
 你用 **DELETE** 、 **POST** 或 **PATCH** 这些方法做过操作后，\
 可以用 ``/request`` 终结点来轮询这个请求的状态。这些方法默认情\
