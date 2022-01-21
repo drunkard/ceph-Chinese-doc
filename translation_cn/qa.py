@@ -123,6 +123,20 @@ class Stat(object):
         return ignore_one_line(self.line)
 
     @property
+    def indent(self):
+        return get_indent(self.line)
+
+    @property
+    def indentn1(self):
+        # indent of next line
+        return get_indent(self.linen)
+
+    @property
+    def indentn2(self):
+        # indent of next 2 line
+        return get_indent(self.lines[self.i + 2])
+
+    @property
     def is_man(self):
         "Check if this is man pages"
         if 'man/8/' in self.f:
@@ -242,13 +256,13 @@ def count_file_progress(f):  # noqa
             # S.linen is next 2 row after '.. role::'
             # If S.linen not exists, get_indent(S.linen) would be None, so fill
             # 0 as last fix.
-            blk_indent = get_indent(S.line) or get_indent(S.linen) or 0
+            blk_indent = S.indentn1 or S.indentn2 or 0
             if blk_indent == 0:
                 blk_flag = 0  # ignore role ended.
             else:
                 continue
         # blk_indent != 0, check if it changed
-        if blk_flag >= 1 and get_indent(S.line) >= blk_indent:
+        if blk_flag >= 1 and S.indent >= blk_indent:
             # still indented as command, ignore it
             continue
         else:
@@ -498,6 +512,7 @@ def stat_debug(si):
     attrs = [
         'f', 'line',
         # 'linen', 'linep',
+        'indent', 'indentn1', 'indentn2',
         'i', 'imax',
         'done', 'total',
         # 'lines', 'done_idxs',
