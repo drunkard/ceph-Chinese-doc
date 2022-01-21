@@ -440,8 +440,8 @@ def is_translated(line=None):
     if cn_char.search(line):
         return True
     if is_title(S):
-        if line.count(' ') <= 1:
-            # treat short title (less than 2 words) as translated, do not check
+        if line.count(' ') <= 2:
+            # treat short title (less than 3 words) as translated, do not check
             return True
         else:
             return false_return(line)  # count in long titles
