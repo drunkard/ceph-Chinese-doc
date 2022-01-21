@@ -53,7 +53,7 @@
         入栈但还没来得及处理的数据量、或最大空间。
 
     balancer
-        均衡器；
+        均衡器、均化器？；
         active balancer 动态均衡器；
 
     beacon message
@@ -219,6 +219,9 @@
     extent
         条带。 image extent => 映像条带
 
+        data extent => 数据区
+        理解：分配给了 RBD 映像但尚未使用，但仍然属于此映像，含义类似势力范围。
+
     failover
         故障恢复
 
@@ -371,6 +374,10 @@
 
     object-info
         <不翻译>，因为它是专有名词，来自代码、JSON 输出。
+
+    object map
+        对象表
+        RBD 术语，追踪对象数据是否真的存在；为支持稀疏数据；
 
     Object Retention
         对象保留时长
@@ -643,14 +650,15 @@
     tenant
         (OpenStack) 租户
 
-    thin provisioning / thick provisioning
-        简配、全配
+    thin provisioning / thin provisioned
+        简配
+        thick provisioning -> 全配
 
     threading model
         线程池模型
 
     throttling
-        抑制
+        抑制、节流
         throttler -> 减速器
 
     tier type

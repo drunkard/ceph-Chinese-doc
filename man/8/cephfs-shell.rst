@@ -170,8 +170,8 @@ cwd
     cwd
 
 
-quit/Ctrl + D
--------------
+quit/Ctrl-D
+-----------
 
 关闭当前 shell 。
 
