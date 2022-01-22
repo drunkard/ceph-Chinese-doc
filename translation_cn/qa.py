@@ -200,10 +200,10 @@ def compare_file_length(files=None):
         with open(os.path.join(*file_names)) as f:
             return len(f.readlines())
 
-    show_anyway = False  # show result, ignore LEN_DIFF_THRESHOLD
+    ignore_threshold = False  # show result, ignore LEN_DIFF_THRESHOLD
     if files:
         fl = files
-        show_anyway = True
+        ignore_threshold = True
     else:
         cnfl = _get_file_list(doc_cn, relpath=True)
         enfl = _get_file_list(doc_en, relpath=True)
@@ -217,7 +217,7 @@ def compare_file_length(files=None):
         d = cn - en
         if d == 0:
             eqs.append(f)
-        elif abs(d) > LEN_DIFF_THRESHOLD or show_anyway:
+        elif ignore_threshold or abs(d) > LEN_DIFF_THRESHOLD:
             ss = '{} - {}'.format(cn, en)
             # 文件名缩进4， 行数相减右对齐，然后 = ，然后结果左对齐。
             print('    {} {:>{diff_align}} === {:}'
