@@ -196,10 +196,6 @@ def compare_file_existency():
 
 def compare_file_length(files=None):
     "arg files: None or list."
-    def file_rows(*file_names):
-        with open(os.path.join(*file_names)) as f:
-            return len(f.readlines())
-
     ignore_threshold = False  # show result, ignore LEN_DIFF_THRESHOLD
     if files:
         fl = files
@@ -297,6 +293,12 @@ def count_files(files):
             raise e
         TP.loc[IDX] = [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total)]
         IDX += 1
+
+
+def file_rows(*paths):
+    "count file rows"
+    with open(os.path.join(*paths)) as f:
+        return len(f.readlines())
 
 
 def _get_file_list(directory, only_rst=False, relpath=False):
