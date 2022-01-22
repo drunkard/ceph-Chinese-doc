@@ -5,6 +5,7 @@ import pandas as pd
 import path
 import re
 import sys
+from termcolor import colored
 
 usage = '''Counts file existence, row amount diffs, translated percentage.
 Without files specified, counts all files.
@@ -177,9 +178,10 @@ class Stat(object):
 
     @property
     def row_diff(self):
-        cn = file_rows(doc_cn, self.f)
-        en = file_rows(doc_en, self.f)
-        return cn - en or ' '  # space to mute result
+        diff = file_rows(doc_cn, self.f) - file_rows(doc_en, self.f)
+        if abs(diff) >= LEN_DIFF_THRESHOLD:
+            return colored(str(diff), color='red')
+        return diff or ' '  # space to mute result
 
 
 def compare_file_existency():
