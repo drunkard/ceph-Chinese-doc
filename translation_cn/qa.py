@@ -53,7 +53,7 @@ SUBSYS = [
 FLIP = False
 
 # 统计结果暂存
-TP = pd.DataFrame(columns=['subsys', 'file', 'original', 'translated', 'total', 'pct'])
+TP = pd.DataFrame(columns=['subsys', 'file', 'original', 'translated', 'total', 'pct', 'row_diff(cn-en)'])
 # TODO: left align 'file' when show_all
 # pd.style.set_properties(**{'text-align': 'left'})\
 #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
@@ -175,6 +175,12 @@ class Stat(object):
         self.done += 1
         self.done_idxs.append(self.i)
 
+    @property
+    def row_diff(self):
+        cn = file_rows(doc_cn, self.f)
+        en = file_rows(doc_en, self.f)
+        return cn - en or ' '  # space to mute result
+
 
 def compare_file_existency():
     cnfl = _get_file_list(doc_cn, relpath=True)
@@ -291,7 +297,7 @@ def count_files(files):
         except Exception as e:
             print(f'Got error with file: {f}')
             raise e
-        TP.loc[IDX] = [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total)]
+        TP.loc[IDX] = [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total), S.row_diff]
         IDX += 1
 
 
@@ -580,7 +586,7 @@ if __name__ == "__main__":
         # Don't run this when processes specified files
         compare_file_existency()
 
-    compare_file_length(files=FILES)
+    # compare_file_length(files=FILES)
 
     # DataFrame 显示所有数据
     # pd.set_option('display.max_rows', 100)
