@@ -54,9 +54,12 @@ SUBSYS = [
 FLIP = False
 
 # 统计结果暂存
-TP = pd.DataFrame(columns=['subsys', 'file', 'original', 'translated', 'total', 'pct', 'row_diff(cn-en)'])
+TP = pd.DataFrame(
+    columns=['subsys', 'file', 'original', 'translated', 'total', 'pct', 'row_diff(cn-en)'],
+)
+# TP.style.format({'file': {'text-align': 'left'}})
 # TODO: left align 'file' when show_all
-# pd.style.set_properties(**{'text-align': 'left'})\
+# TP.style.set_properties(**{'text-align': 'left'})\
 #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
 
 
@@ -177,10 +180,7 @@ class Stat(object):
 
     @property
     def row_diff(self):
-        diff = file_rows(doc_cn, self.f) - file_rows(doc_en, self.f)
-        if abs(diff) >= LEN_DIFF_THRESHOLD:
-            return colored(str(diff), color='red')
-        return diff or ' '  # space to mute result
+        return file_rows(doc_cn, self.f) - file_rows(doc_en, self.f)
 
 
 def compare_file_existency():
@@ -342,6 +342,19 @@ def get_indent(line):
     if line is None:
         return None
     return len(line) - len(line.lstrip())
+
+
+def hl_pct(x):
+    c = 'green' if x > 90 else 'white'
+    return colored(x, color=c)
+
+
+def hl_row_diff(x):
+    if abs(x) > LEN_DIFF_THRESHOLD:
+        c = 'red'
+    else:
+        c = 'white'
+    return colored(int(x) if x != 0 else '', color=c)
 
 
 def index_of_element(e, l):
@@ -572,10 +585,15 @@ def translate_progress(files=None):
     if len(FILES) == 1:
         print(TP)
     else:
-        print(TP.where(TP.pct != 100)\
-            .sort_values('pct', ascending=False)\
-            .dropna()\
-            .head(shown))
+        TP = TP.where(TP.pct != 100).dropna()  # remove completed
+        TP['pct'] = TP['pct'].apply(hl_pct)  # highlight pct
+        TP['row_diff(cn-en)'] = TP['row_diff(cn-en)'].apply(hl_row_diff)  # highlight row_diff
+        TP = TP.astype({"original": "int32", "translated": "int32", "total": "int32"})
+        # style = TP.style.set_properties(subset=['pct', 'row_diff(cn-en)'], **{'text-align': 'right'})\
+        #     .set_table_styles([ dict(selector='th', props=[('text-align', 'right')] ) ])
+        # import ipdb; ipdb.set_trace()
+        with pd.option_context('display.colheader_justify','right'):
+            print(TP.head(shown).to_string())
         # print(TP.where(TP.pct != 100).sort_values('original').dropna().head(shown))
 
 
