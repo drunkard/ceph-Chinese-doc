@@ -58,7 +58,6 @@ TP = pd.DataFrame(columns=['subsys', 'file', 'original', 'translated', 'total', 
 # TODO: left align 'file' when show_all
 # pd.style.set_properties(**{'text-align': 'left'})\
 #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
-IDX = 0  # index for pandas.DataFrame
 
 
 class Stat(object):
@@ -291,7 +290,7 @@ def count_file_progress(f):  # noqa
 
 
 def count_files(files):
-    global IDX, TP
+    global TP
     for f in files:
         subsys = str(f.splitall()[1])
         try:
@@ -299,8 +298,7 @@ def count_files(files):
         except Exception as e:
             print(f'Got error with file: {f}')
             raise e
-        TP.loc[IDX] = [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total), S.row_diff]
-        IDX += 1
+        TP.loc[f] = [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total), S.row_diff]
 
 
 def file_rows(*paths):
@@ -566,6 +564,9 @@ def translate_progress(files=None):
           .format(to_pct(tp.translated, tp.total), tp.original, tp.total))
 
     # Progress by file
+    TP.set_index('file')
+    TP = TP.drop('file', axis=1)
+    TP = TP.sort_values('pct', ascending=False)
     shown = 50
     print(F'Progress by file (near finished {shown} files):')
     if len(FILES) == 1:
