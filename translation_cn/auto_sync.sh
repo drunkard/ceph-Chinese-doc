@@ -83,7 +83,7 @@ sync_doc_files() {
 
 
 sync_yaml_files() {
-	echo "$FUNCNAME: syncing yaml files ..."
+	echo -e "\n$FUNCNAME: syncing yaml files ($EN_YAML -> $ZH_YAML) ..."
 	cd $EN_YAML && \
 	rsync -avrR --del --exclude=__pycache__ *.py $yaml_updates $ZH_YAML/
 	retv=$?
