@@ -2,7 +2,8 @@
  归置组术语解释
 ================
 
-当你执行诸如 ``ceph -w`` 、 ``ceph osd dump`` 、及其他和归置组相关的命令时， \
+当你执行诸如 ``ceph -w`` 、 ``ceph osd dump`` 、
+及其他和归置组相关的命令时， \
 Ceph 会返回下列术语及其值：
 
 *Peering*
@@ -36,27 +37,21 @@ Ceph 会返回下列术语及其值：
 
 *Replica*
    （副本 OSD ）
-   一归置组的 *Acting Set* 内不是主 OSD 的其它 OSD ，它们被同等对待、并由主 OSD \
-   *激活*\ 。
+   一归置组的 *Acting Set* 内不是主 OSD 的其它 OSD ，
+   它们被同等对待、并由主 OSD *激活*\ 。
 
 *Stray*
    （彷徨 OSD ）
-   某一 OSD ，它不再是当前 *Acting Set* 的成员，但还没被告知它可以删除那个归置组副\
-   本。
+   某一 OSD ，它不再是当前 *Acting Set* 的成员，
+   但还没被告知它可以删除那个归置组副本。
 
 *Recovery*
    （恢复）
-   确保 *Acting Set* 内、一归置组中的所有对象的副本都存在于所有 OSD 上。一旦\ \
-   *互联*\ 完成，\ *主 OSD* 就以接受写操作，且\ *恢复*\ 进程可在后台进行。
+   确保 *Acting Set* 内、一归置组中的所有对象的副本都存在于所有 OSD 上。
+   一旦\ *互联*\ 完成，\ *主 OSD* 就以接受写操作，
+   且\ *恢复*\ 进程可在后台进行。
 
 *PG Info* 
-   Basic metadata about the placement group's creation epoch, the version
-   for the most recent write to the placement group, *last epoch started*, 
-   *last epoch clean*, and the beginning of the *current interval*.  Any
-   inter-OSD communication about placement groups includes the *PG Info*, 
-   such that any OSD that knows a placement group exists (or once existed) 
-   also has a lower bound on *last epoch clean* or *last epoch started*.
-
    （归置组信息）
    ［译者：此处原文没看透……瞎译如下］
    基本元数据，关于归置组创建元版本、向归置组的最新写版本、最近的开始元版本（ \

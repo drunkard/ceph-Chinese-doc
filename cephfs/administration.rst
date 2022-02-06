@@ -7,8 +7,8 @@ CephFS 管理命令
 ------------
 .. File Systems
 
-.. note:: The names of the file systems, metadata pools, and data pools can
-          only have characters in the set [a-zA-Z0-9\_-.].
+.. note:: 文件系统、元数据存储池、和数据存储池的名字\
+   只能由这些字符 [a-zA-Z0-9\_-.] 组成。
 
 这些命令适用于 Ceph 集群的 CephFS 文件系统。注意，默认情况下，\
 只允许一个文件系统；执行 ``ceph fs flag set enable_multiple true``
