@@ -594,7 +594,7 @@ def translate_progress(files=None):
         #     .set_table_styles([ dict(selector='th', props=[('text-align', 'right')] ) ])
         # import ipdb; ipdb.set_trace()
         with pd.option_context('display.colheader_justify','right'):
-            print(TP.head(shown).to_string())
+            print(TP.head(shown))
         # print(TP.where(TP.pct != 100).sort_values('original').dropna().head(shown))
 
 
