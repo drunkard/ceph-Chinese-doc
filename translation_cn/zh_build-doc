@@ -55,7 +55,7 @@ set -e
 [ -z "$vdir" ] && vdir="$TOPDIR/build-doc/virtualenv"
 
 md5=$vdir/md5
-if test -f $md5 && md5sum --check $md5 > /dev/null; then
+if test -f $md5 && md5sum --check $md5; then
     # reusing existing venv
     :
 else
