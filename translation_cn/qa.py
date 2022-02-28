@@ -520,6 +520,7 @@ def ignore_one_line(line):
         'deprecated', 'versionadded', 'versionchanged',
         'index', 'contents',
         'highlight', 'autodoxygenfile',
+        'ceph_releases', 'ceph_timeline',
     ]
     for role in roles:
         if line.count(f'.. {role}::') > 0:
