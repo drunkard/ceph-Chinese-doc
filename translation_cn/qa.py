@@ -7,9 +7,10 @@ import re
 import sys
 from termcolor import colored
 
-usage = '''Counts file existence, row amount diffs, translated percentage.
+usage = f'''Counts file existence, row amount diffs, translated percentage.
 Without files specified, counts all files.
-Usage: {} [file_to_count ...]\n'''.format(sys.argv[0])
+Usage: {sys.argv[0]} [subsystem|subdir file_to_count ...]
+'''
 
 doc_cn = '/git/DRUNKARD/ceph-Chinese-doc'
 doc_en = '/git/ceph/doc'
@@ -616,3 +617,4 @@ if __name__ == "__main__":
     # pd.set_option('display.width', None)
     # pd.set_option('display.max_colwidth', None)
     translate_progress(files=FILES)
+    # TODO exit_code = 0 if pct == 1 else original, or total of original ?
