@@ -1,6 +1,9 @@
-/overview.png
-/object_store.png
+cephfs/mds-state-diagram.svg
+
 /api/mon_command_api.rst
+
+/object_store.png
+/overview.png
 
 translation_cn/build-warnings
 
