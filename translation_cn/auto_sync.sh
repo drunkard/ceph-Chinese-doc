@@ -14,7 +14,6 @@ cephfs/subtree-partitioning.svg
 dev/cephadm/design/mockups/OSD_Creation_device_mode.svg
 dev/cephadm/design/mockups/OSD_Creation_host_mode.svg
 dev/osd_internals/osdmap_versions.txt
-dev/osd_internals/osd_throttles.txt
 dev/peering_graph.generated.dot
 dev/PlanningImplementation.txt
 
@@ -67,7 +66,7 @@ compare_conf_py() {
 	should_be=`diff -u $EN_DOC/conf.py $ZH_DOC/conf.py | grep ^[+-] | wc -l`
 	if [ $should_be -ne 4 ]; then
 		echo -e "\n上游配置文件变了，请更新 conf.py"
-		diff -u $EN_DOC/conf.py $ZH_DOC/conf.py
+		diff --color=auto -u $EN_DOC/conf.py $ZH_DOC/conf.py
 	fi
 }
 
