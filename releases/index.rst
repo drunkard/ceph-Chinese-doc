@@ -7,6 +7,8 @@
 .. toctree::
    :maxdepth: 1
 
+.. ceph_releases_gantt:: releases.yml
+
 .. _active-releases:
 
 活跃版本
@@ -18,8 +20,9 @@
    :maxdepth: 1
    :hidden:
 
+   Reef (v18.2.*) <reef>
+   Quincy (v17.2.*) <quincy>
    Pacific (v16.2.*) <pacific>
-   Octopus (v15.2.*) <octopus>
 
 .. ceph_releases:: releases.yml current
 
@@ -36,6 +39,7 @@
    :maxdepth: 1
    :hidden:
 
+   Octopus (v15.2.*) <octopus>
    Nautilus (v14.2.*) <nautilus>
    Mimic (v13.2.*) <mimic>
    Luminous (v12.2.*) <luminous>
@@ -55,10 +59,33 @@
 ----------
 .. Release timeline
 
-.. ceph_timeline:: releases.yml pacific octopus nautilus
+.. ceph_timeline_gantt:: releases.yml reef quincy
+.. ceph_timeline:: releases.yml reef quincy
 
+.. _Reef: reef
+.. _18.2.0: reef#v18-2-0-reef
+.. _18.2.1: reef#v18-2-1-reef
+.. _18.2.2: reef#v18-2-2-reef
+
+.. _Quincy: quincy
+.. _17.2.0: quincy#v17-2-0-quincy
+.. _17.2.1: quincy#v17-2-1-quincy
+.. _17.2.2: quincy#v17-2-2-quincy
+.. _17.2.3: quincy#v17-2-3-quincy
+.. _17.2.4: quincy#v17-2-4-quincy
+.. _17.2.5: quincy#v17-2-5-quincy
+.. _17.2.6: quincy#v17-2-6-quincy
+.. _17.2.7: quincy#v17-2-7-quincy
 
 .. _Pacific: pacific
+.. _16.2.15: pacific#v16-2-15-pacific
+.. _16.2.14: pacific#v16-2-14-pacific
+.. _16.2.13: pacific#v16-2-13-pacific
+.. _16.2.12: pacific#v16-2-12-pacific
+.. _16.2.11: pacific#v16-2-11-pacific
+.. _16.2.10: pacific#v16-2-10-pacific
+.. _16.2.9: pacific#v16-2-9-pacific
+.. _16.2.8: pacific#v16-2-8-pacific
 .. _16.2.7: pacific#v16-2-7-pacific
 .. _16.2.6: pacific#v16-2-6-pacific
 .. _16.2.5: pacific#v16-2-5-pacific
@@ -69,6 +96,7 @@
 .. _16.2.0: pacific#v16-2-0-pacific
 
 .. _Octopus: octopus
+.. _15.2.17: octopus#v15-2-17-octopus
 .. _15.2.16: octopus#v15-2-16-octopus
 .. _15.2.15: octopus#v15-2-15-octopus
 .. _15.2.14: octopus#v15-2-14-octopus

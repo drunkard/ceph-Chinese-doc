@@ -1,3 +1,5 @@
+.. _dev_deploying_a_development_cluster:
+
 ================
  开发集群的部署
 ================
