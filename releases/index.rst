@@ -20,9 +20,9 @@
    :maxdepth: 1
    :hidden:
 
+   Squid (v19.2.*) <squid>
    Reef (v18.2.*) <reef>
    Quincy (v17.2.*) <quincy>
-   Pacific (v16.2.*) <pacific>
 
 .. ceph_releases:: releases.yml current
 
@@ -39,6 +39,7 @@
    :maxdepth: 1
    :hidden:
 
+   Pacific (v16.2.*) <pacific>
    Octopus (v15.2.*) <octopus>
    Nautilus (v14.2.*) <nautilus>
    Mimic (v13.2.*) <mimic>
@@ -59,13 +60,17 @@
 ----------
 .. Release timeline
 
-.. ceph_timeline_gantt:: releases.yml reef quincy
-.. ceph_timeline:: releases.yml reef quincy
+.. ceph_timeline_gantt:: releases.yml squid reef quincy
+.. ceph_timeline:: releases.yml squid reef quincy
+
+.. _Squid: squid
+.. _19.2.0: squid#v19-2-0-squid
 
 .. _Reef: reef
 .. _18.2.0: reef#v18-2-0-reef
 .. _18.2.1: reef#v18-2-1-reef
 .. _18.2.2: reef#v18-2-2-reef
+.. _18.2.4: reef#v18-2-4-reef
 
 .. _Quincy: quincy
 .. _17.2.0: quincy#v17-2-0-quincy
