@@ -319,7 +319,7 @@ def _get_file_list(directory, only_rst=False, relpath=False):
     if not p.exists():
         print('Not exists, please check work directory: {}'.format(p))
         os.exit(127)
-    if not p.isdir():
+    if not p.is_dir():
         print('Not directory, please fix in code: {}'.format(p))
         os.exit(2)
     fl = p.walkfiles('*.rst') if only_rst else p.walkfiles()
@@ -358,10 +358,10 @@ def hl_row_diff(x):
     return colored(int(x) if x != 0 else '', color=c)
 
 
-def index_of_element(e, l):
+def index_of_element(e, list_):
     "return index of specified element, None if not matched"
     try:
-        return l.index(e)
+        return list_.index(e)
     except ValueError:
         pass
     return None
@@ -454,7 +454,7 @@ def is_translated(line=None):
     比较规则：
     按行比较，有汉字就视作翻译了；
     以 [a-zA-Z] 打头的才计算；
-    空行、[.-`*#:\] 、\s\t 打头的不算；
+    空行、[.-`*#:\\] 、\\s\\t 打头的不算；
     '''
     def false_return(line):
         # debug, to catch exceptions of re expr
@@ -480,11 +480,11 @@ def is_translated(line=None):
     return false_return(line)
 
 
-def ignore_one_line(line):
+def ignore_one_line(line):  # noqa
     '''我们只统计需要翻译的，所以以下忽略掉：
     空行，包括只含有空格的行；
     注释行；
-    标题下的那行符号 [=\-~_`'\.\*\+\^]+
+    标题下的那行符号 [=\\-~_`'\\.\\*\\+\\^]+
     命令行、终端内容（暂时未实现）；
     ditaa 图；
     '''
@@ -534,9 +534,9 @@ def path_to_files(paths):
     files = []
     for p in paths:
         p = path.Path(p)
-        if p.isdir():
+        if p.is_dir():
             files += _get_file_list(p, only_rst=True)
-        elif p.isfile():
+        elif p.is_file():
             files.append(p)
         else:
             raise TypeError(f'Unknown file type: {p} type= {type(p)} cwd= {p.getcwd()}')
