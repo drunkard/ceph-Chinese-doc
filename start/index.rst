@@ -7,9 +7,16 @@
 还是部署一个 :term:`Ceph 文件系统`\ 、或者用 Ceph 干别的事，
 所有 :term:`Ceph 存储集群`\ 的部署都始于各 :term:`Ceph 节点`\ 、
 网络和 Ceph 存储集群的配置。
+
 最简的 Ceph 存储集群至少要一个 Ceph 监视器、 Ceph 管理器、
-和 Ceph OSD （对象存储守护进程）。要跑 Ceph 文件系统客户端的话，
-还必须有 Ceph 元数据服务器。
+和 Ceph OSD （对象存储守护进程）。
+
+要跑 Ceph 文件系统客户端的话，还必须有 Ceph 元数据服务器。
+
+.. note::
+
+   It is a best practice to have a Ceph Manager for each Monitor, but it is not
+   necessary. 
 
 .. ditaa::
 
@@ -31,7 +38,7 @@
   当前的性能指标、和系统负载。
   Ceph 管理器守护进程还托管着基于 python 的插件，
   用于管理和展示 Ceph 集群信息，
-  包括一个基于网页的 :ref:`mgr-dashboard` 和 `REST API`_ 。
+  包括一个基于网页的 :ref:`mgr-dashboard` 。
   为保障高可用性，一般要求至少有两个管理器。
 
 - **Ceph OSDs**: :term:`Ceph OSD` （对象存储守护进程，
@@ -54,8 +61,6 @@ Ceph 可计算出哪个归置组应该持有指定对象，
 正因为有了 CRUSH 算法，
 Ceph 存储集群才具备动态伸缩、重均衡和动态恢复功能。
 
-.. _REST API: ../../mgr/restful
-
 .. container:: columns-2
 
    .. container:: column
@@ -70,6 +75,7 @@ Ceph 存储集群才具备动态伸缩、重均衡和动态恢复功能。
       .. toctree::
          :maxdepth: 2
 
+         Beginner's Guide <beginners-guide>
          硬件推荐 <hardware-recommendations>
          操作系统推荐 <os-recommendations>
 

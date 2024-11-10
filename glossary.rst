@@ -94,8 +94,8 @@
                 **USE**\rspace") client for CephFS. ceph-fuse mounts a Ceph FS
                 ata  specified mount point.
 
-    Ceph Interim Release
-    Ceph 临时发布
+	Ceph Interim Release
+    Ceph 临时版
         见 :term:`Releases`.
 
     Ceph Kernel Modules
@@ -188,11 +188,11 @@
         关于 Ceph 的团队、软件、任务和基础架构的统称。
 
     Ceph Release
-    Ceph 发布
+    Ceph 版本
         任何用不同数字编号的 Ceph 版本。
 
     Ceph Release Candidate
-    Ceph 预发布
+    Ceph 发布候选版
         见 :term:`Releases` 。
 
     Ceph Stable Release
@@ -487,38 +487,36 @@
         unique namespace that consists of one or more zonegroups.
 
     Releases
-    版本
 
         Ceph Interim Release
-        Ceph 临时发布
+            Ceph 临时版。
             尚未通过质检测试、但包含新功能的 Ceph 版本。
-            A version of Ceph that has not yet been put through
-            quality assurance testing. May contain new features.
 
         Ceph Point Release
-            Any ad hoc release that includes only bug fixes and
-            security fixes.
-            所有只包含缺陷或安全修正的特殊版本。
+            Ceph 修正版。
+            所有只包含缺陷修正或安全修正的特殊版本。
 
         Ceph Release
-            Any distinct numbered version of Ceph.
+            Ceph 版本。
+            任何版本号不同的 Ceph 。
 
         Ceph Release Candidate
-            A major version of Ceph that has undergone initial
-            quality assurance testing and is ready for beta
-            testers.
+            Ceph 发布候选版。
+            Ceph 的主要版本，已经通过了初步质检测试，
+            并且准备好给测试员试用了。
 
         Ceph Stable Release
-            A major version of Ceph where all features from the
-            preceding interim releases have been put through
-            quality assurance testing successfully.
+            Ceph 稳定版。
+            Ceph 的主要版本，之前临时版本里所有的功能
+            都成功通过了质检测试。
 
     Reliable Autonomic Distributed Object Store
+    可靠自主的分布式对象存储库
         The core set of storage software which stores the user's data
         (MON+OSD). See also :term:`RADOS`.
 
     :ref:`RGW<object-gateway>`
-        **R**\ADOS **G**\ate\ **w**\ay.
+        **R**\ADOS **G**\ate\ **w**\ay. RADOS 网关。
 
         Also called "Ceph Object Gateway". The component of Ceph that
         provides a gateway to both the Amazon S3 RESTful API and the
