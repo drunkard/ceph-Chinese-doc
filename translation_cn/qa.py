@@ -12,7 +12,7 @@ Without files specified, counts all files.
 Usage: {sys.argv[0]} [subsystem|subdir file_to_count ...]
 '''
 
-doc_cn = '/git/DRUNKARD/ceph-Chinese-doc'
+doc_cn = '/git/ceph-Chinese-doc'
 doc_en = '/git/ceph/doc'
 
 LEN_DIFF_THRESHOLD = 5  # 译文和原文行数差别大于此值才显示

@@ -18,8 +18,8 @@
 
 CEPH_REPO="/git/ceph"
 CEPH_REPO_OUTDATE_DAYS=2	# 超过此天数没有更新时，可能被强制更新
-ZH_REPO="/git/DRUNKARD/ceph-Chinese-doc"
-ZH_READABLE_REPO="/git/DRUNKARD/ceph-readable-doc"
+ZH_REPO="/git/ceph-Chinese-doc"
+ZH_READABLE_REPO="/git/ceph-readable-doc"
 
 BUILT_OUTPUT="$CEPH_REPO/build-doc/output-zh/"
 
@@ -47,6 +47,8 @@ ZH_YAML="$ZH_REPO/zh_options"
 # for us to sync by branch/commit ID.
 # sync by $STEP days once, 0 to disable
 SYNC_TO="2022-01-05"
+
+# 一次更新多少天的
 STEP=7
 SYNC_UNTIL=`date -d "$SYNC_TO +$STEP days" +%Y-%m-%d`
 
