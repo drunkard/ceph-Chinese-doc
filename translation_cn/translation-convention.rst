@@ -37,9 +37,11 @@
 
     assume role
         <暂未翻译>，AWS 术语。
+        实操角色？它是执行实际任务时的角色。
 
     attach
         捆绑、绑
+        s3: attach policy to role
         rbd -> qemu
 
     auxiliary device
@@ -250,7 +252,7 @@
             ``down`` 状态时又只有极少的IO，很“冷”；
 
         总之，状态在 up/down 之间变化，由此导致后端存储器的访问热度也是“热/冷”
-        交替，像极了“疟疾”（俗称打摆子）的症状，故此翻译如是。
+        交替，像极了“疟疾”（俗称打摆子）的症状，故翻译如是。
 
         我将视情况交替使用这两种翻译，以读起来押韵、顺口为目标。
 
@@ -550,6 +552,9 @@
 
     response entities
         响应内容解析。 HTTP 响应。
+
+    RESTful
+        符合 REST 规范的
 
     role
         角色。 AWS 术语？

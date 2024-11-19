@@ -97,9 +97,9 @@
         (用户空间文件系统， "**F**\ilesystem in **USE**\rspace") 客户端。
         ceph-fuse 可以把 Ceph FS 挂载到指定的挂载点。
 
-	Ceph Interim Release
+    Ceph Interim Release
     Ceph 临时版
-        见 :term:`Releases`.
+        见 :term:`Releases` 。
 
     Ceph Kernel Modules
     Ceph 内核模块
