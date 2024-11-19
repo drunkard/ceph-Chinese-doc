@@ -3194,7 +3194,7 @@ options:
   type: bool
   level: basic
   desc: Enable dynamic resharding
-  long_desc: If true, RGW will dynamicall increase the number of shards in buckets
+  long_desc: If true, RGW will dynamically increase the number of shards in buckets
     that have a high number of objects per shard.
   default: true
   services:
