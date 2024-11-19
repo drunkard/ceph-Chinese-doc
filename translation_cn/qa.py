@@ -408,6 +408,7 @@ def is_code_blk(line):
         # Never skip these roles.
         # 'topic', 'tip', 'note', 'caution', 'warning', 'important', 'DANGER',
         # 'sidebar',
+        # TODO ignore the term row in 'glossary', explaination below it counts.
         'code', 'code-block', 'prompt',
         'ditaa', 'image', 'raw',
         'toctree', 'literalinclude',
