@@ -5,7 +5,7 @@ import pandas as pd
 import path
 import re
 import sys
-from termcolor import colored
+from termcolor import colored, cprint
 
 usage = f'''Counts file existence, row amount diffs, translated percentage.
 Without files specified, counts all files.
@@ -538,8 +538,11 @@ def path_to_files(paths):
             files += _get_file_list(p, only_rst=True)
         elif p.is_file():
             files.append(p)
+        elif not p.exists():
+            cprint(f'Error: file not exists: {p}', color='red')
+            sys.exit(127)
         else:
-            raise TypeError(f'Unknown file type: {p} type= {type(p)} cwd= {p.getcwd()}')
+            raise TypeError(f'Unknown file type: {p} type= {type(p)} cwd= {p.cwd()}')
     return files
 
 
