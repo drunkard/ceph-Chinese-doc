@@ -762,6 +762,29 @@ options:
   desc: Enable Intel QAT acceleration support for compression if available
   default: false
   with_legacy: true
+- name: qat_compressor_session_max_number
+  type: uint
+  level: advanced
+  desc: Set the maximum number of session within Qatzip when using QAT compressor
+  default: 256
+- name: qat_compressor_busy_polling
+  type: bool
+  level: advanced
+  desc: Set QAT busy bolling to reduce latency at the cost of potentially increasing CPU usage
+  default: false
+- name: uadk_compressor_enabled
+  type: bool
+  level: advanced
+  desc: Enable UADK acceleration support for compression if available
+  default: false
+  with_legacy: true
+- name: uadk_wd_sync_ctx_num
+  type: int
+  level: advanced
+  desc: Set the number of instances in the queue
+  default: 2
+  min: 2
+  max: 1024
 - name: plugin_crypto_accelerator
   type: str
   level: advanced
@@ -1262,6 +1285,29 @@ options:
   level: dev
   desc: Inject various internal delays to induce races (seconds)
   default: 0
+  with_legacy: true
+- name: ms_inject_network_congestion
+  type: uint
+  level: dev
+  desc: Inject a network congestions that stuck with N times operations
+  default: 0
+  with_legacy: true
+- name: ms_time_events_min_wait_interval
+  type: uint
+  level: dev
+  desc: In microseconds, msgr-worker's time_events min wait time for epoll_wait timeout
+  default: 1000
+  min: 0
+  max: 60000000
+  with_legacy: true
+- name: ms_client_throttle_retry_time_interval
+  type: uint
+  level: dev
+  desc: In microseconds, user client, the time interval between the next retry
+        when the throttle get_or_fail.
+  default: 5000
+  min: 1000
+  max: 60000000
   with_legacy: true
 - name: ms_blackhole_osd
   type: bool
@@ -4100,6 +4146,28 @@ options:
   flags:
   - runtime
   with_legacy: true
+- name: bluefs_check_volume_selector_on_umount
+  type: bool
+  level: dev
+  desc: Check validity of volume selector on umount
+  long_desc: Checks if volume selector did not diverge from the state it should be in.
+    Reference is constructed from bluefs inode table. Asserts on inconsistency.
+  default: false
+  flags:
+  - runtime
+  with_legacy: true
+- name: bluefs_check_volume_selector_often
+  type: bool
+  level: dev
+  desc: Periodically check validity of volume selector
+  long_desc: Periodically checks if current volume selector does not diverge from the valid state.
+    Reference is constructed from bluefs inode table. Asserts on inconsistency. This is debug feature.
+  default: false
+  see_also:
+  - bluefs_check_volume_selector_on_umount
+  flags:
+  - startup
+  with_legacy: true
 - name: bluestore_bluefs
   type: bool
   level: dev
@@ -4681,10 +4749,10 @@ options:
   level: dev
   desc: The number of seconds to wait between rebalances when cache autotune is enabled.
   fmt_desc: |
-    The number of seconds to wait between rebalances when cache autotune
-    is enabled.  This setting changes how quickly the allocation ratios of
-    various caches are recomputed.  Note:  Setting this interval too small
-    can result in high CPU usage and lower performance.
+    The number of seconds to wait between rebalances when cache autotune is
+    enabled.  `bluestore_cache_autotune_interval` sets the speed at which Ceph
+    recomputes the allocation ratios of various caches. Note: Setting this
+    interval too small can result in high CPU usage and lower performance.
   default: 5
   see_also:
   - bluestore_cache_autotune

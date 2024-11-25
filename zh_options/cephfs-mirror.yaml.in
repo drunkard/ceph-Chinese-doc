@@ -92,3 +92,14 @@ options:
   services:
   - cephfs-mirror
   min: 0
+- name: cephfs_mirror_perf_stats_prio
+  type: int
+  level: advanced
+  desc: Priority level for mirror daemon replication perf counters
+  long_desc: 如果优先级不是低于 mgr_stats_threshold ，这个守护进程就会\
+    把性能计数器数据发给管理器守护进程。
+  default: 5
+  services:
+  - cephfs-mirror
+  min: 0
+  max: 11

@@ -137,8 +137,11 @@ To switch back to the default behaviour, simply set the config key to ``default`
    ceph config set mgr mgr/prometheus/standby_behaviour default
 
 
-Ceph Health Checks
-------------------
+.. _prometheus-rbd-io-statistics:
+
+Ceph 健康检查
+-------------
+.. Ceph Health Checks
 
 The mgr/prometheus module also tracks and maintains a history of Ceph health checks,
 exposing them to the Prometheus server as discrete metrics. This allows Prometheus
@@ -173,8 +176,6 @@ encountered, or since the last ``clear`` command was issued. The example below;
     PG_DEGRADED               2021/09/17 00:11:59   2021/09/17 00:11:59       1   Yes
     3 health check(s) listed
 
-
-.. _prometheus-rbd-io-statistics:
 
 RBD IO 统计
 -----------
@@ -301,7 +302,8 @@ The goal is to run a query like
 
 ::
 
-    rate(node_disk_bytes_written[30s]) and on (device,instance) ceph_disk_occupation{ceph_daemon="osd.0"}
+    rate(node_disk_written_bytes_total[30s]) and
+    on (device,instance) ceph_disk_occupation_human{ceph_daemon="osd.0"}
 
 Out of the box the above query will not return any metrics since the ``instance`` labels of
 both metrics don't match. The ``instance`` label of ``ceph_disk_occupation``
