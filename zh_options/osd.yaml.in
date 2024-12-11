@@ -30,7 +30,7 @@ options:
 - name: osd_smart_report_timeout
   type: uint
   level: advanced
-  desc: Timeout (in seconds) for smarctl to run, default is set to 5
+  desc: Timeout (in seconds) for smartctl to run, default is set to 5
   default: 5
 # verify backend can support configured max object name length
 - name: osd_check_max_object_name_len_on_startup
@@ -80,7 +80,8 @@ options:
 - name: osd_recovery_sleep
   type: float
   level: advanced
-  desc: Time in seconds to sleep before next recovery or backfill op
+  desc: Time in seconds to sleep before next recovery or backfill op. This setting
+    overrides _ssd, _hdd, and _hybrid if non-zero.
   fmt_desc: 下一轮恢复或回填操作前睡眠的时间，单位为秒。
     增大此值会减慢恢复操作，\
     与此同时客户端操作受到的影响也小些了。
@@ -117,6 +118,7 @@ options:
     on HDD and journal is on SSD
   fmt_desc: OSD 数据在机械硬盘上而 OSD 日志、WAL+DB 在固态硬盘上时，
     下一轮恢复或回填操作前睡眠的时间，单位为秒。
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0.025
   see_also:
   - osd_recovery_sleep
@@ -125,10 +127,12 @@ options:
 - name: osd_snap_trim_sleep
   type: float
   level: advanced
-  desc: Time in seconds to sleep before next snap trim (overrides values below)
+  desc: Time in seconds to sleep before next snap trim. This setting overrides _ssd,
+    _hdd, and _hybrid if non-zero.
   fmt_desc: Time in seconds to sleep before next snap trim op.
     Increasing this value will slow down snap trimming.
     This option overrides backend specific variants.
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0
   flags:
   - runtime
@@ -137,6 +141,7 @@ options:
   type: float
   level: advanced
   desc: Time in seconds to sleep before next snap trim for HDDs
+  note: This setting is ignored when the mClock scheduler is used.
   default: 5
   flags:
   - runtime
@@ -146,6 +151,7 @@ options:
   desc: Time in seconds to sleep before next snap trim for SSDs
   fmt_desc: Time in seconds to sleep before next snap trim op
     for SSD OSDs (including NVMe).
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0
   flags:
   - runtime
@@ -156,6 +162,7 @@ options:
     is on SSD
   fmt_desc: Time in seconds to sleep before next snap trim op
     when OSD data is on an HDD and the OSD journal or WAL+DB is on an SSD.
+  note: This setting is ignored when the mClock scheduler is used.
   default: 2
   flags:
   - runtime
@@ -170,6 +177,7 @@ options:
   desc: Maximum concurrent scrubs on a single OSD
   fmt_desc: 一个 OSD 守护进程同时进行的\
     最大洗刷操作数。
+  note: This setting is ignored when the mClock scheduler is used.
   default: 1
   with_legacy: true
 - name: osd_scrub_during_recovery
@@ -182,6 +190,11 @@ options:
     对繁忙的集群来说，这样做可降低负载。
   default: false
   with_legacy: true
+- name: osd_debug_trim_objects
+  type: bool
+  level: advanced
+  desc: Asserts that no clone-objects were added to a snap after we start trimming it
+  default: false
 - name: osd_repair_during_recovery
   type: bool
   level: advanced
@@ -195,11 +208,8 @@ options:
   long_desc: Use osd_scrub_begin_hour=0 and osd_scrub_end_hour=0 for the entire day.
   fmt_desc: This restricts scrubbing to this hour of the day or later.
     Use ``osd_scrub_begin_hour = 0`` and ``osd_scrub_end_hour = 0``
-    to allow scrubbing the entire day.  Along with ``osd_scrub_end_hour``, they define a time
-    window, in which the scrubs can happen.
-    But a scrub will be performed
-    no matter whether the time window allows or not, as long as the placement
-    group's scrub interval exceeds ``osd_scrub_max_interval``.
+    to allow scrubbing the entire day.  Along with ``osd_scrub_end_hour`` they define a time
+    window, only in which will periodic scrubs be initiated.
   default: 0
   see_also:
   - osd_scrub_end_hour
@@ -214,9 +224,7 @@ options:
   fmt_desc: 本选项把洗刷操作限制在这个小时之前。
     设置 ``osd_scrub_begin_hour = 0`` 和 ``osd_scrub_end_hour = 0`` 时，
     整天都允许洗刷操作进行。本选项与 ``osd_scrub_begin_hour`` 一起
-    定义了一个时间窗口，在此期间可以进行洗刷操作。
-    但是，在某个归置组的洗刷间隔超过 ``osd_scrub_max_interval`` 时，
-    不管这个时间窗口是否合适都会执行。
+    定义了一个时间窗口，在此期间可以自动开始洗刷操作。
   default: 0
   see_also:
   - osd_scrub_begin_hour
@@ -233,9 +241,7 @@ options:
     0  = Sunday, 1 = Monday, etc. Use ``osd_scrub_begin_week_day = 0``
     and ``osd_scrub_end_week_day = 0`` to allow scrubbing for the entire week.
     Along with ``osd_scrub_end_week_day``, they define a time window in which
-    scrubs can happen. But a scrub will be performed
-    no matter whether the time window allows or not, when the PG's
-    scrub interval exceeds ``osd_scrub_max_interval``.
+    periodic scrubs can be automatically initiated.
   default: 0
   see_also:
   - osd_scrub_end_week_day
@@ -252,9 +258,7 @@ options:
     0 = Sunday, 1 = Monday, etc.  Use ``osd_scrub_begin_week_day = 0``
     and ``osd_scrub_end_week_day = 0`` to allow scrubbing for the entire week.
     Along with ``osd_scrub_begin_week_day``, they define a time
-    window, in which the scrubs can happen. But a scrub will be performed
-    no matter whether the time window allows or not, as long as the placement
-    group's scrub interval exceeds ``osd_scrub_max_interval``.
+    window, in which periodic scrubs can be automatically initiated.
   default: 0
   see_also:
   - osd_scrub_begin_week_day
@@ -265,18 +269,18 @@ options:
   type: float
   level: advanced
   desc: Allow scrubbing when system load divided by number of CPUs is below this value
-  fmt_desc: 平常遇到的最大负载，当前系统负载（
-    ``getloadavg() / 在线 CPU 数量`` 所定义的）高于此值时 Ceph 不会洗刷。
-    默认 ``0.5`` 。
+  fmt_desc: 平常遇到的最大负载，当前系统负载
+    （ ``getloadavg() / 在线 CPU 数量`` 所定义的）
+    高于此值时 Ceph 不会启动周期性的（常规的）洗刷。
+    默认是 ``0.5`` 。
   default: 0.5
   with_legacy: true
 # if load is low
 - name: osd_scrub_min_interval
   type: float
   level: advanced
-  desc: Scrub each PG no more often than this interval
-  fmt_desc: Ceph 存储集群负载低的时候，
-    洗刷 OSD 守护进程的最小间隔时间，秒数。
+  desc: The desired interval between scrubs of a specific PG.
+  fmt_desc: 洗刷指定 PG 的理想间隔时间，秒数。
   default: 1_day
   see_also:
   - osd_scrub_max_interval
@@ -286,8 +290,7 @@ options:
   type: float
   level: advanced
   desc: Scrub each PG no less often than this interval
-  fmt_desc: 不论集群负载如何，
-    都要进行洗刷的最大时间间隔，秒数。
+  fmt_desc: 洗刷各个 PG 的最大时间间隔，秒数。
   default: 7_day
   see_also:
   - osd_scrub_min_interval
@@ -941,83 +944,33 @@ options:
   desc: mclock anticipation timeout in seconds
   long_desc: the amount of time that mclock waits until the unused resource is forfeited
   default: 0
-- name: osd_mclock_cost_per_io_usec
-  type: float
-  level: dev
-  desc: Cost per IO in microseconds to consider per OSD (overrides _ssd and _hdd if
-    non-zero)
-  long_desc: This option specifies the cost factor to consider in usec per OSD. This
-    is considered by the mclock scheduler to set an additional cost factor in QoS
-    calculations. Only considered for osd_op_queue = mclock_scheduler
-  fmt_desc: Cost per IO in microseconds to consider per OSD (overrides _ssd
-    and _hdd if non-zero)
-  default: 0
+- name: osd_mclock_max_sequential_bandwidth_hdd
+  type: size
+  level: basic
+  desc: The maximum sequential bandwidth in bytes/second of the OSD (for
+    rotational media)
+  long_desc: This option specifies the maximum sequential bandwidth to consider
+    for an OSD whose underlying device type is rotational media. This is
+    considered by the mclock scheduler to derive the cost factor to be used in
+    QoS calculations. Only considered for osd_op_queue = mclock_scheduler
+  fmt_desc: The maximum sequential bandwidth in bytes/second to consider for the
+    OSD (for rotational media)
+  default: 150_M
   flags:
   - runtime
-- name: osd_mclock_cost_per_io_usec_hdd
-  type: float
-  level: dev
-  desc: Cost per IO in microseconds to consider per OSD (for rotational media)
-  long_desc: This option specifies the cost factor to consider in usec per OSD for
-    rotational device type. This is considered by the mclock_scheduler to set an additional
-    cost factor in QoS calculations. Only considered for osd_op_queue = mclock_scheduler
-  fmt_desc: Cost per IO in microseconds to consider per OSD (for rotational
-    media)
-  default: 25000
+- name: osd_mclock_max_sequential_bandwidth_ssd
+  type: size
+  level: basic
+  desc: The maximum sequential bandwidth in bytes/second of the OSD (for
+    solid state media)
+  long_desc: This option specifies the maximum sequential bandwidth to consider
+    for an OSD whose underlying device type is solid state media. This is
+    considered by the mclock scheduler to derive the cost factor to be used in
+    QoS calculations. Only considered for osd_op_queue = mclock_scheduler
+  fmt_desc: The maximum sequential bandwidth in bytes/second to consider for the
+    OSD (for solid state media)
+  default: 1200_M
   flags:
-  - runtime
-- name: osd_mclock_cost_per_io_usec_ssd
-  type: float
-  level: dev
-  desc: Cost per IO in microseconds to consider per OSD (for solid state media)
-  long_desc: This option specifies the cost factor to consider in usec per OSD for
-    solid state device type. This is considered by the mclock_scheduler to set an
-    additional cost factor in QoS calculations. Only considered for osd_op_queue =
-    mclock_scheduler
-  fmt_desc: Cost per IO in microseconds to consider per OSD (for solid state
-    media)
-  default: 50
-  flags:
-  - runtime
-- name: osd_mclock_cost_per_byte_usec
-  type: float
-  level: dev
-  desc: Cost per byte in microseconds to consider per OSD (overrides _ssd and _hdd
-    if non-zero)
-  long_desc: This option specifies the cost per byte to consider in microseconds per
-    OSD. This is considered by the mclock scheduler to set an additional cost factor
-    in QoS calculations. Only considered for osd_op_queue = mclock_scheduler
-  fmt_desc: Cost per byte in microseconds to consider per OSD (overrides _ssd
-    and _hdd if non-zero)
-  default: 0
-  flags:
-  - runtime
-- name: osd_mclock_cost_per_byte_usec_hdd
-  type: float
-  level: dev
-  desc: Cost per byte in microseconds to consider per OSD (for rotational media)
-  long_desc: This option specifies the cost per byte to consider in microseconds per
-    OSD for rotational device type. This is considered by the mclock_scheduler to
-    set an additional cost factor in QoS calculations. Only considered for osd_op_queue
-    = mclock_scheduler
-  fmt_desc: Cost per byte in microseconds to consider per OSD (for rotational
-    media)
-  default: 5.2
-  flags:
-  - runtime
-- name: osd_mclock_cost_per_byte_usec_ssd
-  type: float
-  level: dev
-  desc: Cost per byte in microseconds to consider per OSD (for solid state media)
-  long_desc: This option specifies the cost per byte to consider in microseconds per
-    OSD for solid state device type. This is considered by the mclock_scheduler to
-    set an additional cost factor in QoS calculations. Only considered for osd_op_queue
-    = mclock_scheduler
-  fmt_desc: Cost per byte in microseconds to consider per OSD (for solid state
-    media)
-  default: 0.011
-  flags:
-  - runtime
 - name: osd_mclock_max_capacity_iops_hdd
   type: float
   level: basic
@@ -1097,6 +1050,95 @@ options:
   - custom
   flags:
   - runtime
+- name: osd_mclock_override_recovery_settings
+  type: bool
+  level: advanced
+  desc: Setting this option enables the override of recovery/backfill limits
+    for the mClock scheduler.
+  long_desc: This option when set enables the override of the max recovery
+    active and the max backfills limits with mClock scheduler active. These
+    options are not modifiable when mClock scheduler is active. Any attempt
+    to modify these values without setting this option will reset the
+    recovery or backfill option back to its default value.
+  fmt_desc: Setting this option will enable the override of the
+    recovery/backfill limits for the mClock scheduler as defined by the
+    ``osd_recovery_max_active_hdd``, ``osd_recovery_max_active_ssd`` and
+    ``osd_max_backfills`` options.
+  default: false
+  see_also:
+  - osd_recovery_max_active_hdd
+  - osd_recovery_max_active_ssd
+  - osd_max_backfills
+  flags:
+  - runtime
+- name: osd_mclock_iops_capacity_threshold_hdd
+  type: float
+  level: basic
+  desc: The threshold IOPs capacity (at 4KiB block size) beyond which to ignore
+    the OSD bench results for an OSD (for rotational media)
+  long_desc: This option specifies the high threshold IOPS capacity for an OSD
+    below which the OSD bench results can be considered for QoS calculations.
+    Only considered when osd_op_queue = mclock_scheduler
+  fmt_desc: The threshold IOPS capacity (at 4KiB block size) beyond which to
+    ignore OSD bench results for an OSD (for rotational media) and fall back to
+    the last valid or default IOPS capacity defined by
+    ``osd_mclock_max_capacity_iops_hdd``.
+  default: 500
+  see_also:
+  - osd_mclock_max_capacity_iops_hdd
+  flags:
+  - runtime
+- name: osd_mclock_iops_capacity_low_threshold_hdd
+  type: float
+  level: basic
+  desc: The threshold IOPs capacity (at 4KiB block size) below which to ignore
+    the OSD bench results for an OSD (for rotational media)
+  long_desc: This option specifies the low threshold IOPS capacity of an OSD
+    above which the OSD bench results can be considered for QoS calculations.
+    Only considered when osd_op_queue = mclock_scheduler
+  fmt_desc: The threshold IOPS capacity (at 4KiB block size) below which to
+    ignore OSD bench results for an OSD (for rotational media) and fall back to
+    the last valid or default IOPS capacity defined by
+    ``osd_mclock_max_capacity_iops_hdd``.
+  default: 50
+  see_also:
+  - osd_mclock_max_capacity_iops_hdd
+  flags:
+  - runtime
+- name: osd_mclock_iops_capacity_threshold_ssd
+  type: float
+  level: basic
+  desc: The threshold IOPs capacity (at 4KiB block size) beyond which to ignore
+    the OSD bench results for an OSD (for solid state media)
+  long_desc: This option specifies the high threshold IOPS capacity for an OSD
+    below which the OSD bench results can be considered for QoS calculations.
+    Only considered when osd_op_queue = mclock_scheduler
+  fmt_desc: The threshold IOPS capacity (at 4KiB block size) beyond which to
+    ignore OSD bench results for an OSD (for solid state media) and fall back to
+    the last valid or default IOPS capacity defined by
+    ``osd_mclock_max_capacity_iops_ssd``.
+  default: 80000
+  see_also:
+  - osd_mclock_max_capacity_iops_ssd
+  flags:
+  - runtime
+- name: osd_mclock_iops_capacity_low_threshold_ssd
+  type: float
+  level: basic
+  desc: The threshold IOPs capacity (at 4KiB block size) below which to ignore
+    the OSD bench results for an OSD (for solid state media)
+  long_desc: This option specifies the low threshold IOPS capacity for an OSD
+    above which the OSD bench results can be considered for QoS calculations.
+    Only considered when osd_op_queue = mclock_scheduler
+  fmt_desc: The threshold IOPS capacity (at 4KiB block size) below which to
+    ignore OSD bench results for an OSD (for solid state media) and fall back to
+    the last valid or default IOPS capacity defined by
+    ``osd_mclock_max_capacity_iops_ssd``.
+  default: 1000
+  see_also:
+  - osd_mclock_max_capacity_iops_ssd
+  flags:
+  - runtime
 # Set to true for testing.  Users should NOT set this.
 # If set to true even after reading enough shards to
 # decode the object, any error will be reported.
@@ -1104,6 +1146,11 @@ options:
   type: bool
   level: advanced
   default: false
+  with_legacy: true
+- name: osd_ec_partial_reads
+  type: bool
+  level: advanced
+  default: true
   with_legacy: true
 - name: osd_recovery_delay_start
   type: float
@@ -1124,10 +1171,12 @@ options:
     通常它都是 ``0`` ，意思是
     会采用 ``hdd`` 或 ``ssd`` 的值（在下文），
     取决于 OSD 后端主设备的类型。
+    使用 mClock 调度器时，此选项会被自动重置。
   default: 0
   see_also:
   - osd_recovery_max_active_hdd
   - osd_recovery_max_active_ssd
+  - osd_mclock_override_recovery_settings
   flags:
   - runtime
   with_legacy: true
@@ -1239,10 +1288,11 @@ options:
 - name: osd_delete_sleep
   type: float
   level: advanced
-  desc: Time in seconds to sleep before next removal transaction (overrides values
-    below)
+  desc: Time in seconds to sleep before next removal transaction. This setting
+    overrides _ssd, _hdd, and _hybrid if non-zero.
   fmt_desc: Time in seconds to sleep before the next removal transaction. This
     throttles the PG deletion process.
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0
   flags:
   - runtime
@@ -1250,6 +1300,7 @@ options:
   type: float
   level: advanced
   desc: Time in seconds to sleep before next removal transaction for HDDs
+  note: This setting is ignored when the mClock scheduler is used.
   default: 5
   flags:
   - runtime
@@ -1257,6 +1308,7 @@ options:
   type: float
   level: advanced
   desc: Time in seconds to sleep before next removal transaction for SSDs
+  note: This setting is ignored when the mClock scheduler is used.
   default: 1
   flags:
   - runtime
@@ -1265,6 +1317,13 @@ options:
   level: advanced
   desc: Time in seconds to sleep before next removal transaction when OSD data is on HDD
     and OSD journal or WAL+DB is on SSD
+  note: This setting is ignored when the mClock scheduler is used.
   default: 1
   flags:
   - runtime
+- name: osd_rocksdb_iterator_bounds_enabled
+  desc: Whether omap iterator bounds are applied to rocksdb iterator ReadOptions
+  type: bool
+  level: dev
+  default: true
+  with_legacy: true

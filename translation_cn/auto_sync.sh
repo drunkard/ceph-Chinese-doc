@@ -44,6 +44,9 @@ releases/mimic.rst
 releases/nautilus.rst
 releases/octopus.rst
 releases/pacific.rst
+releases/quincy.rst
+releases/reef.rst
+releases/squid.rst
 
 releases/releases.yml
 

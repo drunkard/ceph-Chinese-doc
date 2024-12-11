@@ -182,7 +182,7 @@ Ceph 监视器、 OSD 和 MDS 可以报告 ``TCMalloc`` 堆栈剖析信息。
 Massif 堆栈剖析工具可与 Valgrind 一起使用，
 以测量堆内存的使用量。这种方法非常适合 RadosGW 的故障诊断。
 
-更多信息请参阅 `Massif 文档<https://valgrind.org/docs/manual/ms-manual.html>`_\ 。
+更多信息请参阅 `Massif 文档 <https://valgrind.org/docs/manual/ms-manual.html>`_\ 。
 
 用发行版的软件包管理器安装 Valgrind ，然后启动要诊断的 Ceph 守护进程：
 

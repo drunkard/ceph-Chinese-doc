@@ -2421,6 +2421,14 @@ options:
   default: true
   flags:
   - runtime
+- name: osd_calc_pg_upmaps_aggressively_fast
+  type: bool
+  level: advanced
+  desc: Prevent very long (>10 minutes) calculations in some extreme cases (applicable
+    only to aggressive mode)
+  default: true
+  flags:
+  - runtime
 - name: osd_calc_pg_upmaps_local_fallback_retries
   type: uint
   level: advanced
@@ -2856,6 +2864,7 @@ options:
   type: uint
   level: advanced
   default: 2
+  min: 1
   with_legacy: true
 # max number of trimming pgs
 - name: osd_max_trimming_pgs
@@ -3297,13 +3306,20 @@ options:
     slow shutdown is primarilyy useful for doing memory leak checking with valgrind.
   default: true
   with_legacy: true
+- name: osd_fast_shutdown_timeout
+  type: int
+  level: advanced
+  desc: timeout in seconds for osd fast-shutdown (0 is unlimited)
+  default: 15
+  with_legacy: true
+  min: 0
 - name: osd_fast_shutdown_notify_mon
   type: bool
   level: advanced
   desc: Tell mon about OSD shutdown on immediate shutdown
   long_desc: Tell the monitor the OSD is shutting down on immediate shutdown. This
     helps with cluster log messages from other OSDs reporting it immediately failed.
-  default: false
+  default: true
   see_also:
   - osd_fast_shutdown
   - osd_mon_shutdown_timeout
@@ -3786,17 +3802,17 @@ options:
     mapped in memory.
   long_desc: The minimum value must be at least equal to osd_memory_base + osd_memory_cache_min.
   fmt_desc: |
-    When TCMalloc is available and cache autotuning is enabled, try to
-    keep this many bytes mapped in memory. Note: This may not exactly
-    match the RSS memory usage of the process.  While the total amount
-    of heap memory mapped by the process should usually be close
-    to this target, there is no guarantee that the kernel will actually
-    reclaim  memory that has been unmapped.  During initial development,
-    it was found that some kernels result in the OSD's RSS memory
-    exceeding the mapped memory by up to 20%.  It is hypothesised
-    however, that the kernel generally may be more aggressive about
-    reclaiming unmapped memory when there is a high amount of memory
-    pressure.  Your mileage may vary.
+    当 TCMalloc 可用且启用了缓存自动调整功能时，
+    尽量在内存中保持这么多字节的映射。注意：
+    这可能与进程的 RSS 内存使用量不完全一致。
+    虽然正常情况下，进程映射的堆内存总量应该接近此目标值，
+    但无法保证内核真的会回收已取消映射的内存。
+    在最初的开发过程中，
+    我们发现有些版本的内核会导致 OSD 的
+    RSS 内存超出映射内存多达 20% 。不过，
+    据推测，通常，当内存压力较大时，
+    内核会更积极地回收未映射内存。
+    现实情况可能差别较大。
   default: 4_G
   see_also:
   - bluestore_cache_autotune
@@ -3829,10 +3845,10 @@ options:
   level: dev
   desc: When tcmalloc and cache autotuning is enabled, estimate the minimum amount
     of memory in bytes the OSD will need.
-  fmt_desc: When TCMalloc and cache autotuning are enabled, estimate the minimum
-    amount of memory in bytes the OSD will need.  This is used to help
-    the autotuner estimate the expected aggregate memory consumption of
-    the caches.
+  fmt_desc: 启用 TCMalloc 和缓存自动调整功能后，
+    以字节为单位估算 OSD 将需要的最小内存量。
+    这将有助于自动调整器估算缓存的\
+    预期总内存消耗量。
   default: 768_M
   see_also:
   - bluestore_cache_autotune
@@ -3843,10 +3859,10 @@ options:
   level: dev
   desc: When tcmalloc and cache autotuning is enabled, estimate the percent of memory
     fragmentation.
-  fmt_desc: When TCMalloc and cache autotuning is enabled, estimate the
-    percentage of memory fragmentation.  This is used to help the
-    autotuner estimate the expected aggregate memory consumption
-    of the caches.
+  fmt_desc: 启用 TCMalloc 和高速缓存自动调整时，
+    估算内存碎片的百分比。
+    这有助于自动调整器估算缓存的\
+    预期总内存消耗。
   default: 0.15
   see_also:
   - bluestore_cache_autotune
@@ -3860,9 +3876,9 @@ options:
   desc: When tcmalloc and cache autotuning is enabled, set the minimum amount of memory
     used for caches.
   fmt_desc: |
-    When TCMalloc and cache autotuning are enabled, set the minimum
-    amount of memory used for caches. Note: Setting this value too
-    low can result in significant cache thrashing.
+    启用 TCMalloc 和缓存自动调整后，
+    设置缓存使用的最小内存量。注意：
+    此值设置得过低会导致严重的缓存颠簸（ cache thrashing ）。
   default: 128_M
   see_also:
   - bluestore_cache_autotune
@@ -3874,11 +3890,11 @@ options:
   level: dev
   desc: When tcmalloc and cache autotuning is enabled, wait this many seconds between
     resizing caches.
-  fmt_desc: When TCMalloc and cache autotuning are enabled, wait this many
-    seconds between resizing caches.  This setting changes the total
-    amount of memory available for BlueStore to use for caching.  Note
-    that setting this interval too small can result in memory allocator
-    thrashing and lower performance.
+  fmt_desc: 启用 TCMalloc 和缓存自动调整功能后，
+    调整缓存大小时要间隔这么多秒数。
+    此设置可更改 BlueStore 用于缓存的可用内存总量。
+    注意，如果设置的时间间隔太短，
+    会导致内存分配器颠簸、性能低下。
   default: 1
   see_also:
   - bluestore_cache_autotune
@@ -4333,7 +4349,7 @@ options:
   desc: Default checksum algorithm to use
   long_desc: crc32c, xxhash32, and xxhash64 are available.  The _16 and _8 variants
     use only a subset of the bits for more compact (but less reliable) checksumming.
-  fmt_desc: The default checksum algorithm to use.
+  fmt_desc: 要使用的默认校验和算法。
   default: crc32c
   enum_values:
   - none
@@ -4361,12 +4377,12 @@ options:
   type: uint
   level: advanced
   desc: Minimum allocation size to allocate for an object
-  long_desc: A smaller allocation size generally means less data is read and then
-    rewritten when a copy-on-write operation is triggered (e.g., when writing to something
-    that was recently snapshotted).  Similarly, less data is journaled before performing
-    an overwrite (writes smaller than min_alloc_size must first pass through the BlueStore
-    journal).  Larger values of min_alloc_size reduce the amount of metadata required
-    to describe the on-disk layout and reduce overall fragmentation.
+  long_desc: 分配尺寸越小，通常意味着触发了写时复制操作时
+    （如向最近拍过快照的内容写入时），读出和重写的数据量越少。
+    同样，在执行覆盖写操作时，记入日志的数据也比较少
+    （小于 min_alloc_size 的写入必须首先通过 BlueStore 日志）。
+    min_alloc_size 的值越大，描述磁盘布局所需的元数据量就越少，
+    整体碎片也会减少。
   default: 0
   flags:
   - create
@@ -4374,7 +4390,7 @@ options:
 - name: bluestore_min_alloc_size_hdd
   type: size
   level: advanced
-  desc: Default min_alloc_size value for rotational media
+  desc: 机械硬盘的默认 min_alloc_size 值
   default: 4_K
   see_also:
   - bluestore_min_alloc_size
@@ -4384,8 +4400,33 @@ options:
 - name: bluestore_min_alloc_size_ssd
   type: size
   level: advanced
-  desc: Default min_alloc_size value for non-rotational (solid state)  media
+  desc: 非旋转（固态）介质的默认 min_alloc_size 值
   default: 4_K
+  see_also:
+  - bluestore_min_alloc_size
+  flags:
+  - create
+  with_legacy: true
+- name: bluestore_debug_enforce_min_alloc_size
+  type: uint
+  level: dev
+  desc: Enforces specific min_alloc size usages
+  long_desc: This overrides actual min_alloc_size value persisted on mkfs
+    (and originally obtained from bluestore_min_alloc_size) and permits to
+    use arbitrary value for this value. Intended primarily for dev/debug
+    purposes and should be used with care and deep understanding of potential
+    consequences, e.g. data corruption.
+  default: 0
+  see_also:
+  - bluestore_min_alloc_size
+  flags:
+  - startup
+  with_legacy: true
+- name: bluestore_use_optimal_io_size_for_min_alloc_size 
+  type: bool
+  level: advanced
+  desc: 发现底层介质的最佳 IO 尺寸，并用于 min_alloc_size
+  default: false
   see_also:
   - bluestore_min_alloc_size
   flags:
@@ -4438,14 +4479,14 @@ options:
     when clients hint that data is compressible.  ''aggressive'' means use compression
     unless clients hint that data is not compressible.  This option is used when the
     per-pool property for the compression mode is not present.'
-  fmt_desc: The default policy for using compression if the per-pool property
-    ``compression_mode`` is not set. ``none`` means never use
-    compression. ``passive`` means use compression when
-    :c:func:`clients hint <rados_set_alloc_hint>` that data is
-    compressible.  ``aggressive`` means use compression unless
-    clients hint that data is not compressible.  ``force`` means use
-    compression under all circumstances even if the clients hint that
-    the data is not compressible.
+  fmt_desc: 没有设置单个存储池属性 ``compression_mode`` 时，
+    默认使用的压缩策略。
+    ``none`` 表示从不使用压缩。
+    ``passive`` 表示 :c:func:`客户端提示 <rados_set_alloc_hint>`
+    数据可压缩时使用压缩。
+    ``aggressive`` 表示除非客户提示数据不可压缩，否则一律压缩。
+    ``force`` 表示不管任何情况一律压缩，
+    即使客户提示数据不可压缩也不行。
   default: none
   enum_values:
   - none
@@ -4462,10 +4503,10 @@ options:
   long_desc: This controls the default compressor to use (if any) if the per-pool
     property is not set.  Note that zstd is *not* recommended for bluestore due to
     high CPU overhead when compressing small amounts of data.
-  fmt_desc: The default compressor to use (if any) if the per-pool property
-    ``compression_algorithm`` is not set. Note that ``zstd`` is *not*
-    recommended for BlueStore due to high CPU overhead when
-    compressing small amounts of data.
+  fmt_desc: 没有设置单个存储池属性 ``compression_algorithm`` 时，
+    默认使用的压缩器（如果有）。注意，
+    由于压缩少量数据时 CPU 开销较高，
+    因此、 *不建议*\ 在 BlueStore 中使用 ``zstd`` 。
   default: snappy
   enum_values:
   - ''
@@ -4482,9 +4523,9 @@ options:
   desc: Maximum chunk size to apply compression to when random access is expected
     for an object.
   long_desc: Chunks larger than this are broken into smaller chunks before being compressed
-  fmt_desc: Chunks smaller than this are never compressed.
-    The per-pool property ``compression_min_blob_size`` overrides
-    this setting.
+  fmt_desc: 小于这个尺寸的数据块不会被压缩。
+    单个存储池属性 ``compression_min_blob_size``
+    可以覆盖此设置。
   default: 0
   flags:
   - runtime
@@ -4493,8 +4534,8 @@ options:
   type: size
   level: advanced
   desc: Default value of bluestore_compression_min_blob_size for rotational media
-  fmt_desc: Default value of ``bluestore compression min blob size``
-    for rotational media.
+  fmt_desc: 配置项 ``bluestore compression min blob size`` 的默认值，
+    适用于机械硬盘。
   default: 8_K
   see_also:
   - bluestore_compression_min_blob_size
@@ -4506,8 +4547,8 @@ options:
   level: advanced
   desc: Default value of bluestore_compression_min_blob_size for non-rotational (solid
     state) media
-  fmt_desc: Default value of ``bluestore compression min blob size``
-    for non-rotational (solid state) media.
+  fmt_desc: 配置项 ``bluestore compression min blob size`` 的默认值，
+    适用于非机械硬盘，即固态硬盘。
   default: 8_K
   see_also:
   - bluestore_compression_min_blob_size
@@ -4520,10 +4561,10 @@ options:
   desc: Maximum chunk size to apply compression to when non-random access is expected
     for an object.
   long_desc: Chunks larger than this are broken into smaller chunks before being compressed
-  fmt_desc: Chunks larger than this value are broken into smaller blobs of at most
-    ``bluestore_compression_max_blob_size`` bytes before being compressed.
-    The per-pool property ``compression_max_blob_size`` overrides
-    this setting.
+  fmt_desc: 大于此值的数据块，在压缩前会被分割成最大为
+    ``bluestore_compression_max_blob_size`` 字节的较小数据块。
+    单个存储池属性 ``compression_max_blob_size``
+    会覆盖此设置。
   default: 0
   flags:
   - runtime
@@ -4532,8 +4573,8 @@ options:
   type: size
   level: advanced
   desc: Default value of bluestore_compression_max_blob_size for rotational media
-  fmt_desc: Default value of ``bluestore compression max blob size``
-    for rotational media.
+  fmt_desc: 配置项 ``bluestore compression max blob size`` 的默认值，
+    适用于机械硬盘。
   default: 64_K
   see_also:
   - bluestore_compression_max_blob_size
@@ -4686,17 +4727,17 @@ options:
   desc: Cache size (in bytes) for BlueStore
   long_desc: This includes data and metadata cached by BlueStore as well as memory
     devoted to rocksdb's cache(s).
-  fmt_desc: The amount of memory BlueStore will use for its cache.  If zero,
-    ``bluestore_cache_size_hdd`` or ``bluestore_cache_size_ssd`` will
-    be used instead.
+  fmt_desc: BlueStore 用于缓存的内存大小。
+    如果为零，将使用 ``bluestore_cache_size_hdd``
+    或 ``bluestore_cache_size_ssd`` 代替。
   default: 0
   with_legacy: true
 - name: bluestore_cache_size_hdd
   type: size
   level: dev
   desc: Default bluestore_cache_size for rotational media
-  fmt_desc: The default amount of memory BlueStore will use for its cache when
-    backed by an HDD.
+  fmt_desc: 底层是 HDD 时，
+    BlueStore 用于缓存的默认内存量。
   default: 1_G
   see_also:
   - bluestore_cache_size
@@ -4705,8 +4746,8 @@ options:
   type: size
   level: dev
   desc: Default bluestore_cache_size for non-rotational (solid state) media
-  fmt_desc: The default amount of memory BlueStore will use for its cache when
-    backed by an SSD.
+  fmt_desc: 底层是 SSD 时，
+    BlueStore 用于缓存的默认内存量。
   default: 3_G
   see_also:
   - bluestore_cache_size
@@ -4714,7 +4755,7 @@ options:
 - name: bluestore_cache_meta_ratio
   type: float
   level: dev
-  desc: Ratio of bluestore cache to devote to metadata
+  desc: 用于元数据的 bluestore 缓存比例
   default: 0.45
   see_also:
   - bluestore_cache_size
@@ -4722,7 +4763,7 @@ options:
 - name: bluestore_cache_kv_ratio
   type: float
   level: dev
-  desc: Ratio of bluestore cache to devote to key/value database (RocksDB)
+  desc: 用于键/值数据库（RocksDB）的 bluestore 缓存比例
   default: 0.45
   see_also:
   - bluestore_cache_size
@@ -4738,8 +4779,8 @@ options:
   type: bool
   level: dev
   desc: Automatically tune the ratio of caches while respecting min values.
-  fmt_desc: Automatically tune the space ratios assigned to various BlueStore
-    caches while respecting minimum values.
+  fmt_desc: 在保证最小值的情况下，
+    自动调整分配给各种 BlueStore 缓存的空间比例。
   default: true
   see_also:
   - bluestore_cache_size
@@ -4749,10 +4790,10 @@ options:
   level: dev
   desc: The number of seconds to wait between rebalances when cache autotune is enabled.
   fmt_desc: |
-    The number of seconds to wait between rebalances when cache autotune is
-    enabled.  `bluestore_cache_autotune_interval` sets the speed at which Ceph
-    recomputes the allocation ratios of various caches. Note: Setting this
-    interval too small can result in high CPU usage and lower performance.
+    启用缓存自动调整时，两次重新平衡之间的等待秒数。
+    ``bluestore_cache_autotune_interval`` 设置
+    Ceph 重新计算各种缓存分配比例的速度。注意：
+    这个时间间隔设置得过小可能会导致 CPU 占用率过高和性能降低。
   default: 5
   see_also:
   - bluestore_cache_autotune
@@ -4927,9 +4968,9 @@ options:
   type: bool
   level: advanced
   desc: Enable use of rocksdb column families for bluestore metadata
-  fmt_desc: Enables sharding of BlueStore's RocksDB.
-    When ``true``, ``bluestore_rocksdb_cfs`` is used.
-    Only applied when OSD is doing ``--mkfs``.
+  fmt_desc: 启用 BlueStore 的 RocksDB 分片功能。
+    设置为 ``true`` 时，使用 ``bluestore_rocksdb_cfs`` 。
+    仅在 OSD 执行 ``--mkfs`` 时用一下。
   default: true
   verbatim: |
     #ifdef WITH_SEASTAR
@@ -4957,11 +4998,24 @@ options:
     ] ] '')'' ]. Example: ''I=write_buffer_size=1048576 O(6) m(7,10-)''. Interval
     [hash_begin..hash_end) defines characters to use for hash calculation. Recommended
     hash ranges: O(0-13) P(0-8) m(0-16). Sharding of S,T,C,M,B prefixes is inadvised'
-  fmt_desc: Definition of BlueStore's RocksDB sharding.
-    The optimal value depends on multiple factors, and modification is invadvisable.
-    This setting is used only when OSD is doing ``--mkfs``.
-    Next runs of OSD retrieve sharding from disk.
-  default: m(3) p(3,0-12) O(3,0-13)=block_cache={type=binned_lru} L P
+  fmt_desc: BlueStore 的 RocksDB 分片功能定义。
+    最佳值取决于多种因素，最好别修改。
+    该配置仅在 OSD 执行 ``--mkfs`` 时使用。
+    下一次 OSD 跑起来时，将从磁盘检索分片信息。
+  default: m(3) p(3,0-12) O(3,0-13)=block_cache={type=binned_lru} L=min_write_buffer_number_to_merge=32 P=min_write_buffer_number_to_merge=32
+- name: bluestore_async_db_compaction
+  type: bool
+  level: dev
+  desc: Perform DB compaction requests asynchronously
+  long_desc: 'How to perform DB compactions triggered either through async socket or
+    by OSD initialization procedure on start.'
+  default: true
+- name: bluestore_qfsck_on_mount
+  type: bool
+  level: dev
+  desc: Run quick-fsck at mount comparing allocation-file to RocksDB allocation state
+  default: true
+  with_legacy: true
 - name: bluestore_fsck_on_mount
   type: bool
   level: dev
@@ -5042,7 +5096,7 @@ options:
 - name: bluestore_throttle_bytes
   type: size
   level: advanced
-  desc: Maximum bytes in flight before we throttle IO submission
+  desc: 待处理数据最多达到这个字节数，就对 IO 提交进行节流。
   default: 64_M
   flags:
   - runtime
@@ -5050,7 +5104,7 @@ options:
 - name: bluestore_throttle_deferred_bytes
   type: size
   level: advanced
-  desc: Maximum bytes for deferred writes before we throttle IO submission
+  desc: 延迟写入的数据最多达到这个字节数，就对 IO 提交进行节流。
   default: 128_M
   flags:
   - runtime
@@ -5058,7 +5112,7 @@ options:
 - name: bluestore_throttle_cost_per_io
   type: size
   level: advanced
-  desc: Overhead added to transaction cost (in bytes) for each IO
+  desc: 给每个 IO 事务成本（以字节为单位）增加的额外开销
   default: 0
   flags:
   - runtime
@@ -5066,7 +5120,7 @@ options:
 - name: bluestore_throttle_cost_per_io_hdd
   type: uint
   level: advanced
-  desc: Default bluestore_throttle_cost_per_io for rotational media
+  desc: 机械硬盘的 bluestore_throttle_cost_per_io 默认值。
   default: 670000
   see_also:
   - bluestore_throttle_cost_per_io
@@ -5076,7 +5130,7 @@ options:
 - name: bluestore_throttle_cost_per_io_ssd
   type: uint
   level: advanced
-  desc: Default bluestore_throttle_cost_per_io for non-rotation (solid state) media
+  desc: 非机械硬盘（固态硬盘）的 bluestore_throttle_cost_per_io 默认值。
   default: 4000
   see_also:
   - bluestore_throttle_cost_per_io
