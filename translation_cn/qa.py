@@ -109,7 +109,7 @@ class Stat(object):
         r = []
         for line in ctx:
             line = line.rstrip('\n')    # remove \n
-            line = line.rstrip(' ')     # remove spaces
+            line = line.rstrip(' ')     # remove spaces, end of row
             r.append(line)
         return r
 
@@ -294,6 +294,7 @@ def count_file_progress(f):  # noqa
                 # For code block, no matter blk_indent ==/!= 0, this row should ignore.
                 # For cmd block, the row contains '::' counts.
                 continue
+
         if is_blank_row(S.line):
             if blk_flag >= 1:
                 blk_flag += 1
@@ -309,7 +310,9 @@ def count_file_progress(f):  # noqa
             if blk_flag > 2:  # got 2 blank rows, cmd block maybe ended
                 blk_flag = 0
                 blk_indent = 0
+
         S.total += 1
+
         if is_translated(S.line):
             # Show un-translated lines
             if FLIP: print('{:<3}:'.format(S.i + 1), S.line)
@@ -504,11 +507,13 @@ def is_translated(line=None):
             return True
         else:
             return false_return(line)  # count in long titles
+
+    # ignore short rows, too many symbols in them.
     if len(line) < (EN_COLS / 3) or line.strip(' ').count(' ') <= 1:
-        # ignore short rows, too many symbols in them.
         # print('{:<3}:'.format(S.i + 1), line)  # debug, what translated row looks like
         # if 36<=S.i<=37: debug(line, 1)
         return True
+
     return false_return(line)
 
 
@@ -520,32 +525,39 @@ def ignore_one_line(line):  # noqa
     命令行、终端内容（暂时未实现）；
     ditaa 图；
     '''
+
     # ignore links
     if line.startswith('.. _') and (line.endswith(':') or line.count(': ') == 1):
         return True
     if line.count('`') == 2 and line.endswith('`_'):  # is hyperlink, could ignore
         return True
+
     # ignore command, whole line is command
     # For numbered line, there's "#. " or " * " at lead of row.
     if (line.startswith('``') or ('``' in line and line.index('``') <= 4)) \
             and (line.endswith('``') or line.endswith('*')):
         return True
+
     # ignore comment
     if line.startswith('.. ') and line.count('::') == 0:
         return True
+
     # ignore table
     if (line.startswith('+-') and line.endswith('-+')) or \
             (line.startswith('|') and line.endswith('|')) or \
             (line.startswith('+=') and line.endswith('=+')):
         return True
+
     # ignore title symbol line
     if is_title_sym(line):
         return True
-    # man specific
+
+    # man page specific
     if line.startswith('|'):
         return True
     if line.startswith(':command:') or line.startswith(':orphan:'):
         return True
+
     # ignore some rst roles, just this row, following still counts
     roles = [
         'confval', 'program', 'option', 'describe',
