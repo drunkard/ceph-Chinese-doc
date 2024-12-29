@@ -141,11 +141,9 @@ EOF
 
 err=0
 if [ $# -eq 1 -a -f $1 ]; then
-	commit_file $1 || let err++
-	commit_zh_readable $1 || let err++
+	( commit_file $1 && commit_zh_readable $1 ) || let err++
 else
-	commit_zh_code || let err++
-	commit_zh_readable || let err++
+	( commit_zh_code && commit_zh_readable ) || let err++
 fi
 if [ $err -eq 0 ]; then
 	push_remotes $ZH_REPO $ZH_READABLE_REPO
