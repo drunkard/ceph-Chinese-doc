@@ -128,14 +128,11 @@ synced_with_upstream() {
 	fi
 }
 
+# help info, show every runs
 cat <<-EOF
-Commit changed translation automatically, commit by date, or commit only ONE file.
-
-Commit by "commit date" in ceph git repo:
-    $0
-
-Commit only one file (translated doc):
-    $0 <changed file name to commit>
+Commit changed translation automatically:
+  commit by date of ceph git repo, eg: $0
+  or commit only ONE file (translated doc), eg: $0 <changed file path to commit>
 
 EOF
 
