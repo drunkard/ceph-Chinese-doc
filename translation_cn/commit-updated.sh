@@ -40,6 +40,13 @@ commit_zh_code() {
 	}
 	synced_with_upstream || return 2
 
+	# exclude tools change under translation_cn/
+	trans_tools_dir="translation_cn"
+	[[ `git status -s $trans_tools_dir/ | grep -v $trans_tools_dir/env.sh` ]] && {
+		echo "$FUNCNAME: There is other changes under $trans_tools_dir/ , please commit them manually first !"
+		return 2
+	}
+
 	git -C $ZH_REPO add .
 	git -C $ZH_REPO commit -a --signoff -m "doc: sync with mainline, updated to: $SYNC_TO"
 	if [ $? -eq 0 ]; then
