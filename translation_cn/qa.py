@@ -591,6 +591,8 @@ def path_to_files(paths):
 
 
 def to_pct(a, b):
+    if a == b == 0:  # All zero, nothing to process, treat as done.
+        return 100.00
     return round(a / b * 100, 2)
 
 
