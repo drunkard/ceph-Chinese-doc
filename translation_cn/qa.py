@@ -617,7 +617,7 @@ def translate_progress(files=None):
     else:
         print('Progress by subsys:')
         for subsys in SUBSYS:
-            print('{:<20}'.format(f'    {subsys}/'), end='')
+            print('{:<26}'.format(f'    {subsys}/'), end='')
             files = _get_file_list(subsys, only_rst=True)
             count_files(files)
             subsys_prog = TP[TP.subsys == subsys]
