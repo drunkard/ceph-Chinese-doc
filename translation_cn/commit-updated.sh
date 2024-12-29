@@ -7,13 +7,20 @@ readable_commit_title="ceph doc: updated to $SYNC_TO"
 
 
 commit_file() {
-	echo -e "$FUNCNAME: commit started with $1"
+	echo -e "$FUNCNAME: commit started with file $1"
 	msg="finished $1"
 	GIT="git -C $ZH_REPO"
 	cd $ZH_REPO || {
 		echo "$FUNCNAME: cd $ZH_REPO failed"
 		return 1
 	}
+
+	# check if this file modified
+	[[ `$GIT status -s "$1"` ]] || {
+		echo "$FUNCNAME: the file not modified, exit now"
+		return 1
+	}
+
 	$GIT add $1
 	$GIT commit --signoff -m "$msg" $1
 	if [ $? -eq 0 ]; then
