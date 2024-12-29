@@ -136,6 +136,12 @@ Commit changed translation automatically:
 
 EOF
 
+# If doc is building, exit, or we could sync a incomplete ZH_READABLE_REPO
+if [[ `pgrep -f sphinx-build` ]]; then
+	echo "building of doc is running, wait for completion, exit now."
+	exit 2
+fi
+
 err=0
 if [ $# -eq 1 -a -f $1 ]; then
 	( commit_file $1 && commit_zh_readable $1 ) || let err++
