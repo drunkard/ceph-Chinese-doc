@@ -52,13 +52,14 @@ commit_zh_code() {
 }
 
 commit_zh_readable() {
-	echo -e "$FUNCNAME: commit started"
+	echo -e "$FUNCNAME: commit started at $ZH_READABLE_REPO"
 	# start commit
 	GIT="git -C $ZH_READABLE_REPO"
-	cd $ZH_REPO || {
+	cd $ZH_READABLE_REPO || {
 		echo "$FUNCNAME: cd $ZH_REPO failed"
 		return 1
 	}
+
 	if [ $# -eq 1 ] && [ -f $1 ]; then
 		msg="finished $1"
 	else
