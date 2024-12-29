@@ -451,9 +451,11 @@ def is_code_blk(line):
         # 'sidebar',
         # TODO ignore the term row in 'glossary', explaination below it counts.
         'code', 'code-block', 'prompt',
-        'ditaa', 'image', 'raw',
+        'py:class', 'py:currentmodule',
+        'ditaa', 'graphviz', 'image', 'raw',
+        'list-table',  # will be rendered as table
         'toctree', 'literalinclude',
-        'automodule',
+        'autoclass', 'automethod', 'automodule',
     ]
     for role in roles:
         if line.count(f'.. {role}::') > 0:
