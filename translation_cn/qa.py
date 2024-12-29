@@ -53,9 +53,10 @@ SUBSYS = [
     'rbd',
     'security',
     'start',
+    # 'options',  # TODO 提取文档中的配置选项，然后解析这些选项描述信息的翻译情况
 ]
 # flip original/translation when debug, mainly for seeing what translated looks like
-FLIP = False
+FLIP = False  # TODO rename to ONE_FILE__VERBOSE
 
 # 统计结果暂存
 TP = pd.DataFrame(
@@ -154,6 +155,11 @@ class Stat(object):
                 self.line.lstrip().endswith('"'):
             return True
         return ignore_one_line(self.line)
+
+    @property
+    def in_ignored_block(self):
+        "Wether current line in is_ignore_blk()"
+        pass  # TODO
 
     @property
     def indent(self):
@@ -549,6 +555,7 @@ def ignore_one_line(line):  # noqa
         return True
 
     # ignore comment
+    # TODO ignore comment block, starts with '.. ', ends with non-space started row
     if line.startswith('.. ') and line.count('::') == 0:
         return True
 
@@ -611,7 +618,7 @@ def to_pct(a, b):
 
 
 def translate_progress(files=None):
-    global TP
+    global TP  # pandas DataFrame, translation progress
     if files:
         count_files(files)
     else:
@@ -653,6 +660,9 @@ def translate_progress(files=None):
 if __name__ == "__main__":
     # Single file(s)/subsys to debug, will be ignored if it's empty
     FILES = path_to_files(sys.argv[1:]) if len(sys.argv) >= 2 else []
+
+    # TODO move to argparse
+    # Show all file's progress, include done files
 
     if not FILES:
         print(usage)
