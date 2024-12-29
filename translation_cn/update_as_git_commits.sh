@@ -26,14 +26,24 @@ auto_sync() {
 	fi
 }
 
+ceph_pull_rebase() {
+	git -C $CEPH_REPO pull --rebase
+	git -C $CEPH_REPO submodule update
+	git -C $CEPH_REPO gc --quiet
+}
+
 update_ceph_repo() {
 	# If ceph repo has outdated more than $CEPH_REPO_OUTDATE_DAYS, do 'git pull' first.
 	differ=$(( `date -d 'now' +%s` - `git -C $CEPH_REPO log -20 --date=short --format=%at | sort -nr | head -1` ))
 	if [ $differ -ge $(( 86400 * $CEPH_REPO_OUTDATE_DAYS )) ]; then
 		echo "Ceph git repo outdated more than $CEPH_REPO_OUTDATE_DAYS days, updating ..."
-		git -C $CEPH_REPO pull
-		git -C $CEPH_REPO submodule update
-		git -C $CEPH_REPO gc --quiet
+		if [[ `git -C $CEPH_REPO status -s` ]]; then
+			git -C $CEPH_REPO stash
+			ceph_pull_rebase
+			git -C $CEPH_REPO stash pop --quiet
+		else
+			ceph_pull_rebase
+		fi
 		echo	# new line for following command tig
 	fi
 }
