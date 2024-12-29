@@ -68,6 +68,13 @@ commit_zh_readable() {
 	fi
 
 	sync_zh_readable || return 2
+
+	# check if this repo modified, must after sync
+	[[ `$GIT status -s` ]] || {
+		echo "$FUNCNAME: repo not modified, exit now"
+		return 1
+	}
+
 	$GIT add html/ man/ && \
 	$GIT commit --signoff -m "$msg" html/ man/
 	if [ $? -eq 0 ]; then
