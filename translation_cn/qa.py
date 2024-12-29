@@ -157,7 +157,7 @@ class Stat(object):
 
     @property
     def indent(self):
-        return get_indent(self.line)
+        return get_indent(self.line, lineno=(self.i + 1))
 
     @property
     def indentn1(self):
@@ -371,10 +371,18 @@ def _get_file_list(directory, only_rst=False, relpath=False):
     return sorted(efl)
 
 
-def get_indent(line):
-    '获取一行的缩进数量'
+def get_indent(line, lineno=None):
+    '''
+    获取一行的缩进数量
+    lineno: 本行的行号
+    '''
     if line is None:
         return None
+
+    # Only show this warn when doing one file.
+    if '\t' in line and lineno and FLIP:
+        msg_warn(f'Has TAB in line {lineno}: {line}')
+
     return len(line) - len(line.lstrip())
 
 
@@ -571,6 +579,10 @@ def ignore_one_line(line):  # noqa
             return True
     # if idx==91: debug(line, 1)
     return False
+
+
+def msg_warn(words):
+    cprint(words, color='yellow')
 
 
 def path_to_files(paths):
