@@ -66,6 +66,26 @@ TP = pd.DataFrame(
 # TP.style.set_properties(**{'text-align': 'left'})\
 #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
 
+DEBUG = False
+
+def debug(words, temp_enable=False):
+    '''temp_enable: useful if debug just one place'''
+    if DEBUG or temp_enable:
+        cprint(f'DEBUG: {words}', color='red')
+
+
+def debug_stat(si):
+    'si: Stat instance'
+    attrs = [
+        'f', 'line',
+        # 'linen', 'linep',
+        'indent', 'indentn1', 'indentn2',
+        'i', 'imax',
+        'done', 'total',
+        # 'lines', 'done_idxs',
+    ]
+    print(dict((a, getattr(si, a)) for a in attrs))
+
 
 class Stat(object):
     """
@@ -241,19 +261,21 @@ def count_file_progress(f):  # noqa
     ''' 单个文件的翻译进度 '''
     global S
     S = Stat(f)
-    # print(stat_debug(S))
+    # debug_stat(S)
 
     # section to ignore, one transaction once, so reuse this flag
     blk_flag = 0
     blk_indent = 0
 
     while S.i < S.imax:
-        # print(stat_debug(S))
-        # if 680<S.i<690: print(stat_debug(S))
+        # debug_stat(S)
+        # if 331 < S.i < 341: debug_stat(S)
         S.i += 1
 
+        # if 88<S.i<93: debug(f'{S.i}: blk_flag={blk_flag} S.indent={S.indent} blk_indent={blk_indent} line="{S.line}"', 1)
         if S.ignore_line():
             continue
+
         if is_ignore_blk(S.line):
             blk_flag = 1
             # init new block
@@ -277,7 +299,9 @@ def count_file_progress(f):  # noqa
                 blk_flag += 1
             continue  # don't count blank line
         # blk_indent != 0, check if it changed
-        # if 690>S.i>680: print(f'DEBUG {S.i}: blk_flag={blk_flag} blk_indent={blk_indent} line="{S.line}"')  # debug
+        # if 88<S.i<92: debug(f'{S.i}: blk_flag={blk_flag} S.indent={S.indent} blk_indent={blk_indent} line="{S.line}"', 1)
+        # if S.i==91: debug(S.line, 1)
+
         if blk_flag >= 1 and S.indent >= blk_indent:
             # still indented as command, ignore it
             continue
@@ -287,7 +311,9 @@ def count_file_progress(f):  # noqa
                 blk_indent = 0
         S.total += 1
         if is_translated(S.line):
-            if FLIP: print('{:<3}:'.format(S.i + 1), S.line)  # debug
+            # Show un-translated lines
+            if FLIP: print('{:<3}:'.format(S.i + 1), S.line)
+
             S.record()
             continue
     return S
@@ -297,6 +323,7 @@ def count_files(files):
     global TP
     for f in files:
         subsys = str(f.splitall()[1])
+        debug(f'processing file: {f}')
         try:
             S = count_file_progress(f)
         except Exception as e:
@@ -480,6 +507,7 @@ def is_translated(line=None):
     if len(line) < (EN_COLS / 3) or line.strip(' ').count(' ') <= 1:
         # ignore short rows, too many symbols in them.
         # print('{:<3}:'.format(S.i + 1), line)  # debug, what translated row looks like
+        # if 36<=S.i<=37: debug(line, 1)
         return True
     return false_return(line)
 
@@ -504,7 +532,6 @@ def ignore_one_line(line):  # noqa
         return True
     # ignore comment
     if line.startswith('.. ') and line.count('::') == 0:
-        # print('comment debug:', get_indent(line), line)
         return True
     # ignore table
     if (line.startswith('+-') and line.endswith('-+')) or \
@@ -530,6 +557,7 @@ def ignore_one_line(line):  # noqa
     for role in roles:
         if line.count(f'.. {role}::') > 0:
             return True
+    # if idx==91: debug(line, 1)
     return False
 
 
@@ -548,18 +576,6 @@ def path_to_files(paths):
         else:
             raise TypeError(f'Unknown file type: {p} type= {type(p)} cwd= {p.cwd()}')
     return files
-
-
-def stat_debug(si):
-    attrs = [
-        'f', 'line',
-        # 'linen', 'linep',
-        'indent', 'indentn1', 'indentn2',
-        'i', 'imax',
-        'done', 'total',
-        # 'lines', 'done_idxs',
-    ]
-    return dict((a, getattr(si, a)) for a in attrs)
 
 
 def to_pct(a, b):
