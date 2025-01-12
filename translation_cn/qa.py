@@ -666,6 +666,17 @@ if __name__ == "__main__":
 
     # TODO move to argparse
     # Show all file's progress, include done files
+    # Sort 'Progress by file' by specified column
+    # Sort reverse
+    # When show one file's progress, also show translated row, in green.
+
+    # TODO translate using deepl.com, replace in-proper words using term table.
+    # Translate by blank-row splited section, ignore some sections.
+
+    # TODO check feature:
+    # Check if link works, it's just a hook of ""
+    # Filter out wrong tags in rst file, like ".. note:", which is actually
+    # comment but intended to be a NOTE block.
 
     if not FILES:
         print(usage)
