@@ -2,6 +2,11 @@
  词语翻译惯例
 ==============
 
+AMARK BMARK CMARK DMARK EMARK FMARK GMARK
+HMARK IMARK JMARK KMARK LMARK MMARK NMARK
+OMARK PMARK QMARK RMARK SMARK TMARK
+UMARK VMARK WMARK XMARK YMARK ZMARK
+
 标记符号含义：
 
 - ``=>`` 表示正在更换翻译口径，如果您遇到请反馈给我。
@@ -44,6 +49,10 @@
         s3: attach policy to role
         rbd -> qemu
 
+    auth pinned
+        加锁、锁定。
+        资料： pinauth 口令认证。
+
     autoscaling
     autoscale
         自动伸缩，
@@ -51,6 +60,8 @@
     auxiliary device
         辅助设备。 BlueStore 术语，相对于 main device 。
 
+
+    BMARK
     backfill
         回填
 
@@ -72,6 +83,9 @@
     bitrot
         位翻转
 
+    blocklist
+        阻塞名单
+
     bootstrap
         自举引导
 
@@ -91,8 +105,19 @@
     bulk pool
         巨型池，一开始就拥有大量 PG 的存储池。
 
+
+    CMARK
+    cache reservation
+        缓存预留量
+
     cache thrashing
         缓存颠簸。
+
+    capability
+        能力， cephfs 、 MDS 相关术语。本意是潜在能力。
+        另一个常一起出现的 `release state (释放状态)` 。
+        这里的 capability 和 state 都含有空间、容量的意思，只不过这个“内存空间”
+        即使释放出来操作系统也不知道，还是 MDS 管理着。
 
     channel
         信道
@@ -151,6 +176,8 @@
     CRUSH map
         CRUSH 图
 
+
+    DMARK
     deep copy
         深复制
 
@@ -188,6 +215,11 @@
 
     dump
         转储、倒出
+
+
+    EMARK
+    earmark
+        <不翻译>。意思是标签，类似羊、兔子耳朵上打的标记。
 
     endpoint
         终结点
@@ -255,6 +287,8 @@
         data extent => 数据区
         理解：分配给了 RBD 映像但尚未使用，但仍然属于此映像，含义类似势力范围。
 
+
+    FMARK
     failover
         故障恢复
 
@@ -297,6 +331,8 @@
     full ratio
         占满率
 
+
+    GMARK
     get ... (eg: get user quota)
         查看... (如：查看用户配额)
 
@@ -311,9 +347,13 @@
     guest operating system
         客座操作系统
 
+
+    HMARK
     hypervisor
         虚拟化管理程序
 
+
+    IMARK
     immutable object
         不可变对象
 
@@ -347,6 +387,8 @@
 
         相当于服务器、硬盘的代理，处理 iSCSI initiator 的连接。
 
+
+    KMARK
     keystone
         <不翻译>
 
@@ -356,6 +398,8 @@
     kvstore
         <键值存储，不翻译>
 
+
+    LMARK
     laggy (osd)
     laggy estimation
         滞后的；滞后量；
@@ -381,6 +425,8 @@
 
         RBD 术语。
 
+
+    MMARK
     main device
         主设备。 BlueStore 术语，相对的是 auxiliary device 。
 
@@ -411,6 +457,8 @@
     multisite
         多站、多站点
 
+
+    NMARK
     nearfull ratio
         将满比率
 
@@ -418,6 +466,8 @@
     non-master zone group
         副域、副域组
 
+
+    OMARK
     object-info
         <不翻译>，因为它是专有名词，来自代码、JSON 输出。
 
@@ -460,6 +510,8 @@
     overlay pool
         马甲存储池
 
+
+    PMARK
     partial filter
         局部过滤器，LDAP 术语
 
@@ -545,12 +597,19 @@
         擦净。
         如用命令 ``ceph osd purge <id>`` 擦净 OSD 。
 
+
+    QMARK
+    quiesce, quiesce set
+        静默，静默集
+
     quorum
         法定人数
 
     quota scope
         配额作用域
 
+
+    RMARK
     rank
         (CephFS) <不翻译> => 座席、销槽?
 
@@ -597,6 +656,9 @@
     role
         角色。 AWS 术语？
 
+    root squash
+        根目录保护， CephFS 功能。
+
     round off
         对齐数据块。本义为四舍五入。
 
@@ -604,6 +666,8 @@
         ?
         crush 相关的。
 
+
+    SMARK
     sanity check
         健全性检查
 
@@ -649,6 +713,10 @@
     snapset
         *未翻译*
 
+    spawn
+        分身，派生。
+        完成类似工作的多个守护进程，需要时派生/分身出来，不需要时关闭。
+
     spread metadata load
         散布元数据负荷
 
@@ -665,7 +733,7 @@
 
     standby-replay
     standby-replay daemon
-        灾备重放、灾备重放守护进程； => 热备
+        灾备重放、灾备重放守护进程； => 热备， MDS 术语。
 
     stopped set
         停止集。 MDS 术语。
@@ -688,6 +756,13 @@
         an OSD who is not a member of the current acting set, but has not yet
         been told that it can delete its copies of a particular placement group.
 
+    stray directory
+        流浪目录。 CephFS 术语。
+
+        译者理解：
+        脱离了目录树，不知道原来的上一级是谁的目录。
+        和孤儿目录/文件（ orphan ）应该是同一个东西。
+
     string interpolation
         字符串插值， https://en.wikipedia.org/wiki/String_interpolation
 
@@ -699,6 +774,8 @@
     subuser
         (Swift API) 子用户
 
+
+    TMARK
     tenant
         (OpenStack) 租户
 
@@ -710,8 +787,14 @@
         线程池模型
 
     throttling
-        抑制、节流
+    throttle
+        抑制、节流、节制，意思是要控制速度，不让它太快。
         throttler -> 减速器
+
+    tiebreaker mon
+        终裁监视器。
+
+        tiebreaker 本意是当两队在比赛结束时打成平局而增加的决胜局、加时赛。
 
     tier type
         <不翻译> RGW 术语。
@@ -730,9 +813,13 @@
         裁剪、清理；
         裁截 => 清理?
 
+
+    UMARK
     unlink bucket
         断开、切断桶链接、解绑桶、解除连接，视具体语境采用。
 
+
+    WMARK
     write-ahead log, WAL
         预写日志。
         是关系数据库系统中用于提供原子性和持久性（ACID 属性中的两个）的一系列技术。
@@ -755,6 +842,8 @@
         不译。通常译作回写模式，但由于配置时也要写 writeback ，干脆不译，在\
         首次出现时的旁边标注一下。
 
+
+    ZMARK
     zap
         擦净、删除；（快速摧毁）
         <不译，需重新斟酌>

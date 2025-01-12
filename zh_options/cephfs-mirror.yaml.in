@@ -6,8 +6,8 @@ options:
   type: uint
   level: advanced
   desc: maximum number of concurrent snapshot synchronization threads
-  long_desc: maximum number of directory snapshots that can be synchronized concurrently
-    by cephfs-mirror daemon. Controls the number of synchronization threads.
+  long_desc: cephfs-mirror 守护进程最多可以同时同步多少目录快照。
+    控制的是同步线程的数量。
   default: 3
   services:
   - cephfs-mirror
@@ -25,8 +25,8 @@ options:
   type: secs
   level: advanced
   desc: interval to restart blocklisted instances
-  long_desc: Interval in seconds to restart blocklisted mirror instances. Setting
-    to zero (0) disables restarting blocklisted instances.
+  long_desc: 被阻塞的（ blocklisted ）镜像例程的重启时间间隔，秒数。
+    设置为零（ 0 ）意思是禁止重启被阻塞的例程。
   default: 30
   services:
   - cephfs-mirror
@@ -35,8 +35,8 @@ options:
   type: uint
   level: advanced
   desc: number of snapshots to mirror in one cycle
-  long_desc: maximum number of snapshots to mirror when a directory is picked up for
-    mirroring by worker threads.
+  long_desc: 镜像工作线程选中目录开始镜像时，
+    一个周期可以选中的最大快照数。
   default: 3
   services:
   - cephfs-mirror
@@ -45,7 +45,7 @@ options:
   type: uint
   level: advanced
   desc: interval to scan directories to mirror snapshots
-  long_desc: interval in seconds to scan configured directories for snapshot mirroring.
+  long_desc: 快照镜像程序对配置的目录间隔多少秒扫描一次。
   default: 10
   services:
   - cephfs-mirror
@@ -55,8 +55,8 @@ options:
   level: advanced
   desc: consecutive failed directory synchronization attempts before marking a directory
     as "failed"
-  long_desc: number of consecutive snapshot synchronization failures to mark a directory
-    as "failed". failed directories are retried for synchronization less frequently.
+  long_desc: 连续的快照同步失败多少次，就把这个目录标记为 "failed" 。
+    失败的目录在同步时的重试频率低一些。
   default: 10
   services:
   - cephfs-mirror
@@ -65,7 +65,7 @@ options:
   type: uint
   level: advanced
   desc: failed directory retry interval for synchronization
-  long_desc: interval in seconds to retry synchronization for failed directories.
+  long_desc: 对于失败的目录，同步时的重试时间间隔。
   default: 60
   services:
   - cephfs-mirror
@@ -74,8 +74,8 @@ options:
   type: secs
   level: advanced
   desc: interval to restart failed mirror instances
-  long_desc: Interval in seconds to restart failed mirror instances. Setting to zero
-    (0) disables restarting failed mirror instances.
+  long_desc: 间隔多少秒重启一次失败的镜像例程。
+    设置为零（ 0 ）意思是禁止重启失败的镜像例程。
   default: 20
   services:
   - cephfs-mirror
@@ -84,10 +84,10 @@ options:
   type: secs
   level: advanced
   desc: timeout for mounting primary/secondary ceph file system
-  long_desc: Timeout in seconds for mounting primary or secondary (remote) ceph file system
-    by the cephfs-mirror daemon. Setting this to a higher value could result in the mirror
-    daemon getting stalled when mounting a file system if the cluster is not reachable. This
-    option is used to override the usual client_mount_timeout.
+  long_desc: cephfs-mirror 守护进程挂载主的或次要的（远程的）
+    ceph 文件系统的超时时间，秒数。如果集群不可达，
+    把此值设置得过高可能导致镜像守护进程在挂载文件系统时卡死。
+    此选项用于覆盖常见的 client_mount_timeout 。
   default: 10
   services:
   - cephfs-mirror

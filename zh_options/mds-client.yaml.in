@@ -31,7 +31,7 @@ options:
   - mds_client
   with_legacy: true
 - name: client_mount_timeout
-  type: float
+  type: secs
   level: advanced
   desc: timeout for mounting CephFS (seconds)
   fmt_desc: 设置挂载 CephFS 时的超时时间，单位为秒。
@@ -546,5 +546,28 @@ options:
   services:
   - mds_client
   min: 0
+  flags:
+  - runtime
+- name: client_collect_and_send_global_metrics
+  type: bool
+  level: advanced
+  desc: to enable and force collecting and sending the global metrics to MDS
+  long_desc: To be careful for this, when connecting to some old ceph clusters
+    it may crash the MDS daemons while upgrading.
+  default: false
+  tags:
+  - client
+  services:
+  - mds_client
+  flags:
+  - runtime
+- name: client_quota
+  type: bool
+  level: advanced
+  desc: Enable quota enforcement
+  long_desc: Enable quota_bytes and quota_files enforcement for the client.
+  default: true
+  services:
+  - mds_client
   flags:
   - runtime

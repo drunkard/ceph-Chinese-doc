@@ -2381,7 +2381,7 @@ options:
 - name: filer_max_purge_ops
   type: uint
   level: advanced
-  desc: Max in-flight operations for purging a striped range (e.g., MDS journal)
+  desc: 清理条带化存储空间（如 MDS 日志）的最大进行时（ in-flight ）操作数量。
   default: 10
   with_legacy: true
 - name: filer_max_truncate_ops
@@ -2408,7 +2408,7 @@ options:
 - name: journaler_prezero_periods
   type: uint
   level: advanced
-  desc: Number of striping periods to zero head of MDS journal write position
+  desc: 在 MDS 日志写入位置的头部，要清零的 striping period 数量。
   default: 5
   # we need to zero at least two periods, minimum, to ensure that we
   # have a full empty object/period in front of us.
@@ -5421,11 +5421,16 @@ options:
   level: dev
   desc: Maximum RAM hybrid allocator should use before enabling bitmap supplement
   default: 64_M
+- name: bluestore_btree2_alloc_weight_factor
+  type: float
+  level: dev
+  desc: Large continuous extents weight factor
+  default: 2
 - name: bluestore_volume_selection_policy
   type: str
   level: dev
   desc: Determines bluefs volume selection policy
-  long_desc: Determines bluefs volume selection policy. 'use_some_extra' policy allows
+  long_desc: Determines bluefs volume selection policy. 'use_some_extra*' policy allows
     to override RocksDB level granularity and put high level's data to faster device
     even when the level doesn't completely fit there. 'fit_to_fast' policy enables
     using 100% of faster disk capacity and allows the user to turn on 'level_compaction_dynamic_level_bytes'
@@ -5434,6 +5439,7 @@ options:
   enum_values:
   - rocksdb_original
   - use_some_extra
+  - use_some_extra_enforced
   - fit_to_fast
   with_legacy: true
 - name: bluestore_volume_selection_reserved_factor
@@ -5486,6 +5492,17 @@ options:
   level: dev
   desc: fail/crash on EIO
   long_desc: whether bluestore osd fails on eio
+  default: false
+  flags:
+  - runtime
+  with_legacy: true
+- name: bluestore_zero_block_detection
+  type: bool
+  level: dev
+  desc: punch holes instead of writing zeros
+  long_desc: Intended for large-scale synthetic testing. Currently this is implemented
+    with punch hole semantics, affecting the logical extent map of the object. This does
+    not interact well with some RBD and CephFS features.
   default: false
   flags:
   - runtime
