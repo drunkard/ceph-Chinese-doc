@@ -42,7 +42,7 @@ commit_zh_code() {
 
 	# exclude tools change under translation_cn/
 	trans_tools_dir="translation_cn"
-	[[ `git status -s $trans_tools_dir/ | grep -v $trans_tools_dir/env.sh` ]] && {
+	[[ `git status -s $trans_tools_dir/ | grep -v -e $trans_tools_dir/env.sh -e $trans_tools_dir/translation-convention.rst` ]] && {
 		echo "$FUNCNAME: There is other changes under $trans_tools_dir/ , please commit them manually first !"
 		return 2
 	}
