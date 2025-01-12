@@ -67,6 +67,10 @@ TP = pd.DataFrame(
 # TP.style.set_properties(**{'text-align': 'left'})\
 #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
 
+# Display related
+OVERALL_SHOW_AMOUNT = 30
+
+
 DEBUG = False
 
 def debug(words, temp_enable=False):
@@ -640,8 +644,7 @@ def translate_progress(files=None):
     TP.set_index('file')
     TP = TP.drop('file', axis=1)
     TP = TP.sort_values('pct', ascending=False)
-    shown = 50
-    print(F'Progress by file (near finished {shown} files):')
+    print(F'Progress by file (near finished {OVERALL_SHOW_AMOUNT} files):')
     if len(FILES) == 1:
         print(TP)
     else:
@@ -653,8 +656,8 @@ def translate_progress(files=None):
         #     .set_table_styles([ dict(selector='th', props=[('text-align', 'right')] ) ])
         # import ipdb; ipdb.set_trace()
         with pd.option_context('display.colheader_justify','right'):
-            print(TP.head(shown))
-        # print(TP.where(TP.pct != 100).sort_values('original').dropna().head(shown))
+            print(TP.head(OVERALL_SHOW_AMOUNT))
+        # print(TP.where(TP.pct != 100).sort_values('original').dropna().head(OVERALL_SHOW_AMOUNT))
 
 
 if __name__ == "__main__":
