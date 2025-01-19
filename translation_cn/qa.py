@@ -637,7 +637,7 @@ def translate_progress(files=None):
 
     # Progress overall
     tp = TP.agg({'original': sum, 'translated': sum, 'total': sum})
-    print('Overall progress:   {}% ({} of {} to translate)'
+    print('Overall progress:   {}% ({} of {} rows to translate)'
           .format(to_pct(tp.translated, tp.total), tp.original, tp.total))
 
     # Progress by file
