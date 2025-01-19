@@ -473,6 +473,7 @@ options:
     例如， debug_osd=1/5 表示所有级别 <= 1 的会无条件写入日志文件，
     但是 2-5 级别的日志保留在内存里；
     如果出现了段错误、或断言失败，所有条目就会写入日志文件。
+  min: 1
   default: 500
   daemon_default: 10000
   # default changed by common_preinit()
