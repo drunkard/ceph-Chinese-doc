@@ -10,6 +10,27 @@ the translation tooling suits for any language, maybe :-D, you are allowed to
 reuse them for your translation, just let me known,
 email me <gongfan193@gmail.com>
 
+.. code:: bash
+
+    22:29:30 ~/ceph-Chinese-doc $ ./qa
+
+    Progress by subsys:
+        start/                91.17%
+        install/              76.39%
+        rados/                70.14%
+        radosgw/              55.82%
+        rbd/                  63.35%
+        cephfs/               100.0%
+        man/                  100.0%
+        cephadm/              21.84%
+        ceph-volume/          27.52%
+        mgr/                  27.05%
+        monitoring/           100.0%
+        hardware-monitoring/  100.0%
+        jaegertracing/        34.38%
+        security/             23.5%
+    Overall progress:   65.5% (11935 of 34594 rows to translate)
+
 ----
 
 这里是 Ceph 文档中文版的源码，编译好的位于：
