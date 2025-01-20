@@ -35,7 +35,7 @@ open_files() {
 	if [ ! -f $cn_doc ]; then
 		# Check if they are exist
 		if [ -f $en_doc ]; then
-			echo "中文版不存在，复制一个过来 ..."
+			echo -n "中文版不存在，复制一个过来 ... "
 			mkdir -p `dirname $cn_doc`
 			cp -v $en_doc $cn_doc
 			sleep 1s;	# 让译者看一眼
