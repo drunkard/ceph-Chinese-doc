@@ -516,7 +516,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='提取 rst 文件里需要翻译的内容，并用 deepl.com 翻译')
 
-    parser.add_argument('file_path', metavar='str', nargs='*', type=str,
+    parser.add_argument('file_path', nargs='*', type=str,
         help='要翻译的文件')
     parser.add_argument('-l', action=argparse.BooleanOptionalAction, default=False,
         help='仅罗列提取出的段落，不去翻译')
