@@ -113,6 +113,11 @@ https://github.com/drunkard/ceph-readable-doc ，可以克隆到本地，启动H
    同步到本项目的对应文件；
 #. 根据本项目脚本 ./qa 的输出结果，选择自己喜欢的子系统、文件进行翻译。
 
+我写了个翻译辅助脚本，通过 deepl.com 翻译每一个段落，用法： ::
+
+    ./translation_cn/online_translate.py -h
+
+
 下面会分别介绍各自的流程。
 
 按 git commit 更新
