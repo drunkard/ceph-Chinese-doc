@@ -35,25 +35,35 @@ IGNORE_FILES = [
 
 # 翻译进度，需要统计的子系统列表
 SUBSYS = [
-    # 'api',
-    'cephadm',
-    'cephfs',
-    'ceph-volume',
-    # 'dev',
-    'hardware-monitoring',
+    # for newbie
+    'start',
     'install',
-    'jaegertracing',
-    'man',
-    'mgr',
-    # 'mon',
-    'monitoring',
-    # 'nvmeof',
+
+    # core features
     'rados',
     'radosgw',
     'rbd',
-    'security',
-    'start',
+    'cephfs',
+    'man',
     # 'options',  # TODO 提取文档中的配置选项，然后解析这些选项描述信息的翻译情况
+
+    # admin tools
+    'cephadm',
+    'ceph-volume',
+    'mgr',
+    # 'mon',
+    # 'nvmeof',
+
+    'monitoring',
+    'hardware-monitoring',
+    'jaegertracing',
+
+    # for advanced users
+    # 'api',
+    # 'changelog',
+    # 'dev',
+    # 'releases',
+    'security',
 ]
 # flip original/translation when debug, mainly for seeing what translated looks like
 FLIP = False  # TODO rename to ONE_FILE__VERBOSE
