@@ -534,6 +534,7 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             pass
         finally:
-            BROWSER.close()
+            if BROWSER is not None:
+                BROWSER.close()
     else:
         parser.print_help()
