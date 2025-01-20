@@ -27,6 +27,15 @@ options:
   default: 4_K
   services:
   - mon
+- name: osd_pool_default_crimson
+  type: bool
+  level: advanced
+  desc: Create pools by default with FLAG_CRIMSON
+  default: false
+  services :
+  - mon
+  flags:
+  - runtime
 - name: mon_max_pool_pg_num
   type: uint
   level: advanced
@@ -46,12 +55,47 @@ options:
   default: 1_min
   services:
   - mon
+- name: mon_down_uptime_grace
+  type: secs
+  level: advanced
+  desc: Period in seconds that the cluster may have a mon down after this (leader) monitor comes up.
+  default: 1_min
+  services:
+  - mon
+  flags:
+  - runtime
 - name: mon_mgr_beacon_grace
   type: secs
   level: advanced
   desc: 上一个信标收到后过多久没反应就把它标记为\
     已失效。
   default: 30
+  services:
+  - mon
+- name: mon_nvmeofgw_beacon_grace
+  type: secs
+  level: advanced
+  desc: Period in seconds from last beacon to monitor marking a  NVMeoF gateway as
+    failed
+  default: 10
+  services:
+  - mon
+- name: mon_nvmeofgw_set_group_id_retry
+  type: uint
+  level: advanced
+  desc: Retry wait time in microsecond for set group id between the monitor client
+    and gateway
+  long_desc: The monitor server determines the gateway's group ID. If the monitor client
+    receives a monitor group ID assignment before the gateway is fully up during
+    initialization, a retry is required.
+  default: 1000
+  services:
+  - mon
+- name: mon_nvmeofgw_delete_grace
+  type: secs
+  level: advanced
+  desc: Issue NVMEOF_GATEWAY_DELETING health warning after this amount of time has elapsed 
+  default: 15_min
   services:
   - mon
 - name: mon_mgr_inactive_grace
@@ -103,18 +147,6 @@ options:
   flags:
   - runtime
   with_legacy: true
-- name: mon_cluster_log_to_syslog_level
-  type: str
-  level: advanced
-  desc: Syslog level for cluster log messages
-  default: info
-  services:
-  - mon
-  see_also:
-  - mon_cluster_log_to_syslog
-  flags:
-  - runtime
-  with_legacy: true
 - name: mon_cluster_log_to_syslog_facility
   type: str
   level: advanced
@@ -163,10 +195,12 @@ options:
   flags:
   - runtime
   with_legacy: true
-- name: mon_cluster_log_file_level
+- name: mon_cluster_log_level
   type: str
   level: advanced
-  desc: Lowest level to include is cluster log file
+  desc: Lowest level to include in cluster log file and/or in external log server
+  long_desc: Log level to control the cluster log message verbosity for the cluster
+    log file as well as for all external entities.
   default: debug
   services:
   - mon
@@ -857,7 +891,8 @@ options:
   level: advanced
   desc: cap value for period for OSD to be marked for laggy_interval calculation
   fmt_desc: 滞后量中 ``laggy_interval`` 的最大值，单位为秒。\
-    监视器用一种自适应方法来评估某个 OSD 的 ``laggy_interval`` ，\
+    监视器用一种自适应方法来评估\
+    某个 OSD 的 ``laggy_interval`` ，\
     计算这个 OSD 的宽限时间要用到这个值。
   default: 5_min
   services:
@@ -898,7 +933,8 @@ options:
   type: bool
   level: advanced
   desc: mark any OSD that comes up 'in'
-  fmt_desc: Ceph 将把所有启动中的 OSD 标记为在集群中（ ``in`` ）。
+  fmt_desc: Ceph 将把所有启动中的 OSD 守护进程标记为\
+    在 Ceph 存储集群中（ ``in`` ）。
   default: false
   services:
   - mon
@@ -1250,14 +1286,6 @@ options:
   services:
   - mon
   with_legacy: true
-- name: mon_osd_max_creating_pgs
-  type: int
-  level: advanced
-  desc: maximum number of PGs the mon will create at once
-  default: 1024
-  services:
-  - mon
-  with_legacy: true
 - name: mon_osd_max_initial_pgs
   type: int
   level: advanced
@@ -1331,3 +1359,26 @@ options:
   services:
   - mon
   with_legacy: true
+- name: mon_use_min_delay_socket
+  type: bool
+  level: advanced
+  default: false
+  desc: priority packets between mons
+  with_legacy: true
+  see_also:
+  - osd_heartbeat_use_min_delay_socket
+- name: nvmeof_mon_client_disconnect_panic
+  type: secs
+  level: advanced
+  desc: The duration, expressed in seconds, after which the nvmeof gateway
+    should trigger a panic if it loses connection to the monitor
+  default: 100
+  services:
+  - mon
+- name: nvmeof_mon_client_tick_period
+  type: secs
+  level: advanced
+  desc: Period in seconds of nvmeof gateway beacon messages to monitor
+  default: 2
+  services:
+  - mon
