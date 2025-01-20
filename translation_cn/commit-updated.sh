@@ -70,7 +70,6 @@ commit_zh_readable() {
 	if [ $# -eq 1 ] && [ -f $1 ]; then
 		msg="finished $1"
 	else
-		synced_with_upstream || return 2
 		msg="ceph doc: updated to $SYNC_TO"
 	fi
 
