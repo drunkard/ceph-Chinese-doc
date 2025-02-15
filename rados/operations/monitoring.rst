@@ -16,19 +16,27 @@
 .. Interactive mode
 
 要在交互模式下运行 ``ceph`` ，不要带参数运行 ``ceph`` ，
-例如： ::
+例如：
 
-	ceph
-	ceph> health
-	ceph> status
-	ceph> quorum_status
-	ceph> mon stat
+.. prompt:: bash $
+
+    ceph
+
+.. prompt:: ceph>
+    :prompts: ceph>
+
+    health
+    status
+    quorum_status
+    mon stat
 
 非默认的路径
 ------------
 .. Non-default paths
 
-如果你的配置文件或密钥环不在默认位置内，可以手动指定其位置： ::
+如果你的配置文件或密钥环不在默认位置内，可以手动指定其位置：
+
+.. prompt:: bash $
 
    ceph -c /path/to/conf -k /path/to/keyring health
 
@@ -39,20 +47,27 @@
 
 启动集群后、读写数据前，先检查下集群的健康状态。
 
-可以用下面的命令检查集群状态： ::
+可以用下面的命令检查集群状态：
 
-	ceph status
+.. prompt:: bash $
 
-或者::
+   ceph status
 
-        ceph -s
+另外，可以执行命令：
 
-在交互模式下，输入 ``status`` 再按回车 **Enter** 。 ::
+.. prompt:: bash $
 
-	ceph> status
+   ceph -s
 
-Ceph 就会打印出集群状态。例如，一个小型的演示集群，各种服务\
-都有一个，可能会打印如下的：
+在交互模式下，输入 ``status`` 再按回车 **Enter** 。
+
+.. prompt:: ceph>
+    :prompts: ceph>
+
+    status
+
+Ceph 就会打印出集群状态。例如，一个小型的演示集群，
+各种服务都有一个例程（监视器、管理器、 OSD ），可能会打印如下的：
 
 ::
 
@@ -73,14 +88,16 @@ Ceph 就会打印出集群状态。例如，一个小型的演示集群，各种
     pgs:     16 active+clean
 
 
-.. topic:: Ceph 如何计算数据量
+Ceph 如何计算数据量
+-------------------
+.. How Ceph Calculates Data Usage
 
-   ``usage`` 值反映了\ *事实上*\ 已占用的原始存储空间。
-   ``xxx GB / xxx GB`` 值则是剩余空间（较小的数）与集群总容量\
-   的比较。理论数值反映了所存储数据的原始尺寸，未计算其副本、\
-   克隆、或快照空间，所以数据存储实际占用的空间通常会超过\
-   理论数值，因为 Ceph 会自动创建数据副本，另外存储空间也可能\
-   用于克隆和快照。
+``usage`` 值反映了\ *事实上*\ 已占用的原始存储空间。
+``xxx GB / xxx GB`` 值则是剩余空间（较小的数）与集群总容量\
+的比较。理论数值反映了所存储数据的原始尺寸，未计算其副本、\
+克隆、或快照空间，所以数据存储实际占用的空间通常会超过\
+理论数值，因为 Ceph 会自动创建数据副本，另外存储空间也可能\
+用于克隆和快照。
 
 
 观察集群
@@ -92,9 +109,11 @@ Ceph 就会打印出集群状态。例如，一个小型的演示集群，各种
 监视器服务器的磁盘上（默认为 ``/var/log/ceph/ceph.log`` ），\
 也可以通过命令行监控。
 
-要持续关注集群日志，用下列命令： ::
+要持续关注集群日志，用下列命令：
 
-	ceph -w
+.. prompt:: bash $
+
+   ceph -w
 
 Ceph 会打印系统的状态，然后是正发生着的各日子消息。例如：
 
@@ -130,12 +149,11 @@ Ceph 会打印系统的状态，然后是正发生着的各日子消息。例如
 ================
 .. Monitoring Health Checks
 
-Ceph 不间断地对自身状态做\ *健康检查*\ 。查到问题时，会在
-``ceph status`` （或 ``ceph health`` ）的输出中反映出来。\
+Ceph 不间断地对自身状态做\ *健康检查*\ 。查到问题时，
+会在 ``ceph status`` （或 ``ceph health`` ）的输出中反映出来。\
 另外，检查失败时、或集群恢复时，相关消息也会发往集群日志。
 
-例如，一个 OSD 挂掉时，状态输出的 ``health`` 那段可能会更新为\
-如下：
+例如，一个 OSD 挂掉时，状态输出的 ``health`` 那段可能会更新为如下：
 
 ::
 
@@ -163,19 +181,23 @@ Ceph 不间断地对自身状态做\ *健康检查*\ 。查到问题时，会在
 ------------
 .. Network Performance Checks
 
-Ceph OSDs send heartbeat ping messages amongst themselves to monitor daemon availability.  We
-also use the response times to monitor network performance.
-While it is possible that a busy OSD could delay a ping response, we can assume
-that if a network switch fails multiple delays will be detected between distinct pairs of OSDs.
+Ceph OSD 会相互发送心跳 ping 消息，
+以监视守护进程的可用性和网络性能。
+如果只是探测到了单次延迟的响应，这表明可能仅仅是 OSD 很忙碌。
+但是如果在不同 OSD 对之间都探测到了多次延迟，
+这表明可能是网络交换机故障、 NIC 故障、或者一个底层故障。
 
-By default we will warn about ping times which exceed 1 second (1000 milliseconds).
+默认情况下，超过 1 秒（ 1000 毫秒）的心跳时间会产生一个健康检查，
+一个 ``HEALTH_WARN`` 。例如：
 
 ::
 
     HEALTH_WARN Slow OSD heartbeats on back (longest 1118.001ms)
 
-The health detail will add the combination of OSDs are seeing the delays and by how much.  There is a limit of 10
-detail line items.
+在 ``ceph health detail`` 命令的输出中，您可以看到\
+哪些 OSD 出现了延迟以及延迟时间有多长。
+``ceph health detail`` 的输出限制为 10 行。
+下面是 ``ceph health detail`` 命令的输出示例：
 
 ::
 
@@ -185,15 +207,21 @@ detail line items.
         Slow OSD heartbeats on back from osd.2 [dc1,rack2] to osd.1 [dc1,rack1] 1015.321 msec
         Slow OSD heartbeats on back from osd.1 [dc1,rack1] to osd.0 [dc1,rack1] 1010.456 msec
 
-To see even more detail and a complete dump of network performance information the ``dump_osd_network`` command can be used.  Typically, this would be
-sent to a mgr, but it can be limited to a particular OSD's interactions by issuing it to any OSD.  The current threshold which defaults to 1 second
-(1000 milliseconds) can be overridden as an argument in milliseconds.
+要查看更多细节并收集完整的网络性能信息转储，
+用 ``dump_osd_network`` 命令。
+该命令通常发送到 Ceph 管理器守护进程，
+但也可用于收集特定 OSD 的交互信息，方法是将其发送到这个 OSD 。
+慢心跳的默认阈值是 1 秒（ 1000 毫秒），
+但可以用毫秒数作为参数来覆盖该阈值。
 
-The following command will show all gathered network performance data by specifying a threshold of 0 and sending to the mgr.
+要显示指定阈值为 0 的所有网络性能数据，向 mgr 发送以下命令：
+
+.. prompt:: bash $
+
+   ceph daemon /var/run/ceph/ceph-mgr.x.asok dump_osd_network 0
 
 ::
 
-    $ ceph daemon /var/run/ceph/ceph-mgr.x.asok dump_osd_network 0
     {
         "threshold": 0,
         "entries": [
@@ -269,85 +297,96 @@ The following command will show all gathered network performance data by specify
         ...
 
 
-
 屏蔽健康检查
 ------------
 .. Muting health checks
 
-Health checks can be muted so that they do not affect the overall
-reported status of the cluster.  Alerts are specified using the health
-check code (see :ref:`health-checks`)::
+健康检查可以屏蔽掉（ mute ），这样就不会影响集群的整体报告状态。
+例如，如果集群产生了单个健康检查，然后您将该健康检查屏蔽掉，
+那么集群将报告 ``HEALTH_OK`` 状态。要屏蔽特定的健康检查，
+用与这个健康检查相对应的健康检查代码（请参阅 :ref:`health-checks` ），
+并执行以下命令：
 
-  ceph health mute <code>
+.. prompt:: bash $
 
-For example, if there is a health warning, muting it will make the
-cluster report an overall status of ``HEALTH_OK``.  For example, to
-mute an ``OSD_DOWN`` alert,::
+   ceph health mute <code>
 
-  ceph health mute OSD_DOWN
+例如，要屏蔽 ``OSD_DOWN`` 健康检查，执行下列命令：
 
-Mutes are reported as part of the short and long form of the ``ceph health`` command.
-For example, in the above scenario, the cluster would report::
+.. prompt:: bash $
 
-  $ ceph health
-  HEALTH_OK (muted: OSD_DOWN)
-  $ ceph health detail
-  HEALTH_OK (muted: OSD_DOWN)
-  (MUTED) OSD_DOWN 1 osds down
-      osd.1 is down
+   ceph health mute OSD_DOWN
 
-A mute can be explicitly removed with::
+屏蔽掉的也会展示在 ceph 健康检查命令的简报、和详情输出里。
+例如，在上述场景下，集群将报告：
 
-  ceph health unmute <code>
+.. prompt:: bash $
 
-For example,::
+   ceph health
 
-  ceph health unmute OSD_DOWN
+::
 
-A health check mute may optionally have a TTL (time to live)
-associated with it, such that the mute will automatically expire
-after the specified period of time has elapsed.  The TTL is specified as an optional
-duration argument, e.g.::
+   HEALTH_OK (muted: OSD_DOWN)
 
-  ceph health mute OSD_DOWN 4h    # mute for 4 hours
-  ceph health mute MON_DOWN 15m   # mute for 15  minutes
+.. prompt:: bash $
 
-Normally, if a muted health alert is resolved (e.g., in the example
-above, the OSD comes back up), the mute goes away.  If the alert comes
-back later, it will be reported in the usual way.
+   ceph health detail
 
-It is possible to make a mute "sticky" such that the mute will remain even if the
-alert clears.  For example,::
+::
 
-  ceph health mute OSD_DOWN 1h --sticky   # ignore any/all down OSDs for next hour
+   HEALTH_OK (muted: OSD_DOWN)
+   (MUTED) OSD_DOWN 1 osds down
+       osd.1 is down
 
-Most health mutes also disappear if the extent of an alert gets worse.  For example,
-if there is one OSD down, and the alert is muted, the mute will disappear if one
-or more additional OSDs go down.  This is true for any health alert that involves
-a count indicating how much or how many of something is triggering the warning or
-error.
+取消屏蔽，执行下列命令：
 
+.. prompt:: bash $
 
-检测配置问题
-============
-.. Detecting configuration issues
+   ceph health unmute <code>
 
-除了 Ceph 持续运行时进行的自我健康检查，
-还有一些配置问题只能用外部工具探测。
+例如：
 
-可以用 `ceph-medic`_ 工具另行检查你的
-Ceph 集群配置。
+.. prompt:: bash $
+
+   ceph health unmute OSD_DOWN
+
+"health mute" （健康消息屏蔽）可以设置一个 TTL
+（生存时间， **T**\ime **T**\o **L**\ive ）：
+这意味着屏蔽将在指定时间后自动失效。
+TTL 是可选的时间段参数，如下所示：
+
+.. prompt:: bash $
+
+   ceph health mute OSD_DOWN 4h    # mute for 4 hours
+   ceph health mute MON_DOWN 15m   # mute for 15 minutes
+
+通常情况下，如果之前屏蔽掉的健康检查已解决（例如，
+在上述示例中引发 ``OSD_DOWN`` 健康检查的 OSD 已恢复正常），屏蔽就会失效。
+如果同样的健康检查之后再次出现，还会以常规方式报告。
+
+可以将健康静音设置为 sticky （有粘性）：意思是即使健康检查已经清除，屏蔽依然保持。
+例如，要让健康静音成为“粘性”屏蔽，执行下列命令：
+
+.. prompt:: bash $
+
+   ceph health mute OSD_DOWN 1h --sticky   # ignore any/all down OSDs for next hour
+
+如果触发健康检查的不健康状况恶化，大多数健康检查屏蔽会失效。
+例如，假设有一个 OSD 出现故障，而它的健康检查屏蔽掉了。在这种情况下，
+如果又有一个或多个 OSD 出现故障，那么这个健康屏蔽就会失效。
+所有带有阈值的健康检查都会出现这种行为。
 
 
 检查集群的使用情况
 ==================
 .. Checking a Cluster's Usage Stats
 
-要检查集群的数据用量及其在存储池内的分布情况，
-可以用 ``df`` 选项，它和 Linux 上的 ``df`` 相似。
-如下： ::
+要检查集群的数据用量及其在存储池内的分布情况，可以用 ``df`` 选项，
+它和 Linux 上的 ``df`` 命令相似。执行下列命令：
 
-	ceph df
+.. prompt:: bash $
+
+   ceph df
 
 ``ceph df`` 的输出像这样： ::
 
@@ -362,96 +401,98 @@ Ceph 集群配置。
    cephfs.a.data           3   32      0 B      0 B      0 B         0      0 B     0 B      0 B       0     99 GiB            N/A          N/A      0         0 B          0 B
    test                    4   32   22 MiB   22 MiB   50 KiB       248   19 MiB  19 MiB   50 KiB       0    297 GiB            N/A          N/A    248         0 B          0 B
 
-输出中的 **RAW STORAGE** 段概述了你的集群管理着的存储空间。
-
-- **CLASS:** The class of OSD device (or the total for the cluster)
+- **CLASS:** 例如， ssd 或 hdd 。
 - **SIZE:** 集群管理着的存储容量；
 - **AVAIL:** 集群的空闲空间总量；
-- **USED:** 用户数据消耗的原始存储空间；
-- **RAW USED:** 已使用的原始存储空间总量，包括用户数据、内部开销、\
-  或保留容量；
-- **% RAW USED:** 已用原始存储空间比率。
-  用此值参照 ``full ratio`` 和 ``near full ratio``
-  来确保不会用尽集群空间。
+- **USED:** 用户数据消耗的原始存储空间，包括 BlueStore 的数据库。
+- **RAW USED:** 用户数据、内部开销、和保留容量占用的原始存储空间。
+- **% RAW USED:** 已用原始存储空间比率。盯着这个数值，
+  加上 ``full ratio`` 和 ``near full ratio`` 来防范集群达到用满阈值。
   详情见\ `存储容量`_\ 。
 
 
 **POOLS:**  
 
-输出的 **POOLS** 段展示了存储池列表及各存储池的大致使用率。\
-本段\ **没有**\ 展示副本、克隆品和快照占用情况。例如，如果你把
-1MB 的数据存储为对象，理论使用率将是 1MB ，但考虑到副本数、克\
-隆数、和快照数，实际使用率可能是 2MB 或更多。
+输出的 **POOLS** 段展示了存储池列表及各存储池的\ *名义*\ 使用率。\
+本段\ **没有**\ 展示副本、克隆品和快照占用情况。
+例如，如果你把 1MB 的数据存储为对象，
+那么名义使用率将是 1MB ，但考虑到副本数、克隆数、和快照数，
+实际使用率可能是 2MB 或更多。
 
-- **ID:** The number of the node within the pool.
-- **STORED:** actual amount of data user/Ceph has stored in a pool. This is
-  similar to the USED column in earlier versions of Ceph but the calculations
-  (for BlueStore!) are more precise (gaps are properly handled).
+- **ID:** 存储池内指定节点的编号。
+- **STORED:** 用户存储在存储池中的实际数据量。
+  这与 Ceph 早期版本中的 USED 列类似，
+  但计算（对于 BlueStore ！）更精确
+  （因为间隙得到了正确处理）。
 
-  - **(DATA):** usage for RBD (RADOS Block Device), CephFS file data, and RGW
-    (RADOS Gateway) object data.
-  - **(OMAP):** key-value pairs. Used primarily by CephFS and RGW (RADOS
-    Gateway) for metadata storage.
+  - **(DATA):** RBD （RADOS 块设备）、 CephFS 文件数据、和
+    RGW （RADOS 网关）对象数据占用的空间。
+  - **(OMAP):** 键值对。主要是 CephFS 和 RGW （RADOS 网关）
+    用来存储元数据。
 
-- **OBJECTS:** The notional number of objects stored per pool. "Notional" is
-  defined above in the paragraph immediately under "POOLS".
-- **USED:** The space allocated for a pool over all OSDs. This includes
-  replication, allocation granularity, and erasure-coding overhead. Compression
-  savings and object content gaps are also taken into account. BlueStore's
-  database is not included in this amount.
+- **OBJECTS:** 每个存储池所存储对象的名义数量
+  （即除副本、克隆或快照外的对象数量）。
+- **USED:** 在所有 OSD 上为一个存储池分配的空间。
+  这包括复制空间、分配粒度空间以及与纠删码相关的开销空间。
+  压缩节省的空间和对象内容间隙也计算在内。
+  不过， BlueStore 的数据库不包括在
+  USED 项下的报告中。
 
-  - **(DATA):** object usage for RBD (RADOS Block Device), CephFS file data, and RGW
-    (RADOS Gateway) object data.
-  - **(OMAP):** object key-value pairs. Used primarily by CephFS and RGW (RADOS
-    Gateway) for metadata storage.
+  - **(DATA):** RBD （RADOS 块设备）、 CephFS 文件数据、
+    和 RGW （RADOS 网关）对象数据的对象使用情况。
+  - **(OMAP):** 对象的键值对。主要是 CephFS 和 RGW
+    （RADOS 网关）在用，用来做元数据存储。
 
-- **%USED:** The notional percentage of storage used per pool.
-- **MAX AVAIL:** An estimate of the notional amount of data that can be written
-  to this pool.
-- **QUOTA OBJECTS:** The number of quota objects.
-- **QUOTA BYTES:** The number of bytes in the quota objects.
-- **DIRTY:** The number of objects in the cache pool that have been written to
-  the cache pool but have not been flushed yet to the base pool. This field is
-  only available when cache tiering is in use.
-- **USED COMPR:** amount of space allocated for compressed data (i.e. this
-  includes comrpessed data plus all the allocation, replication and erasure
-  coding overhead).
-- **UNDER COMPR:** amount of data passed through compression (summed over all
-  replicas) and beneficial enough to be stored in a compressed form.
+- **%USED:** 每个存储池已用存储空间的名义百分比。
+- **MAX AVAIL:** 可写入此存储池的名义数据量\
+  的估计值。
+- **QUOTA OBJECTS:** 配额对象的数量。
+- **QUOTA BYTES:** 配额对象的字节数。
+- **DIRTY:** 缓存池中已写入缓存池但\
+  尚未刷回到后端存储池的对象数量。
+  此字段仅在使用分级缓存时可用。
+- **USED COMPR:** 为压缩数据分配的空间大小。
+  除了已压缩的数据，还包括复制、分配粒度和\
+  纠删码开销所需的所有空间。
+- **UNDER COMPR:** 压缩过的（所有副本的总和）、
+  以及值得以压缩形式存储的数据量。
 
 
-.. note:: **POOLS** 段内的数字是理论值，它们不包含副本、快照或\
-   克隆。因此，它与 **USED** 和 **%USED** 数量之和不会达到
-   **GLOBAL** 段中的 **RAW USED** 和 **%RAW USED** 数量。
+.. note:: POOLS 段内的数值是名义上的，
+   它们不包含副本、克隆、或快照。因此，
+   输出里 POOLS 段中的 USED 和 %USED 数量之和不会等于
+   RAW 段中的 USED 和 USED 数量之和。
 
-.. note:: **MAX AVAIL** 数值计算很复杂，涉及到存储池是副本的还\
-   是纠删码的、映射存储与设备的 CRUSH 规则、那些设备的利用率、\
-   还有配置的 mon_osd_full_ratio 。
+.. note:: MAX AVAIL 数值是个复杂的函数，
+   取决于所用的是多副本还是纠删码、
+   映射存储与设备的 CRUSH 规则、那些设备的利用率、\
+   还有配置的 ``mon_osd_full_ratio`` 选项。
 
 
 检查 OSD 状态
 =============
 .. Checking OSD Status
 
-你可以执行下列命令来确定 OSD 状态为 ``up`` 且 ``in`` ：
+要确定 OSD 状态是否为 ``up`` 且 ``in`` ，执行下列命令：
 
 .. prompt:: bash #
 
 	ceph osd stat
 
-或者：
+或者，执行下列命令：
 
 .. prompt:: bash #
 
 	ceph osd dump
 
-你也可以根据 OSD 在 CRUSH 图里的位置来查看：
+根据 OSD 在 CRUSH 图里的位置来查看，执行下列命令：
 
 .. prompt:: bash #
 
 	ceph osd tree
 
-Ceph 会打印 CRUSH 的树状态、它的 OSD 例程、状态、权重：
+打印出 CRUSH 树，显示主机、及其内的 OSD ， OSD 状态是否为 ``up`` 、
+还有 OSD 的权重，执行下列命令：
 
 .. code-block:: bash
 
@@ -470,25 +511,30 @@ Ceph 会打印 CRUSH 的树状态、它的 OSD 例程、状态、权重：
 ==============
 .. Checking Monitor Status
 
-如果你有多个监视器（很可能），你启动集群后、读写数据前应该检查\
-监视器法定人数状态。运行着多个监视器时必须形成法定人数，最好\
-周期性地检查监视器状态来确定它们在运行。
+如果你的集群有多个监视器，则需要执行某些“监视器状态”（ monitor status ）检查。
+在启动集群后、读写数据前，应该检查法定人数状态。
+运行着多个监视器时必须形成法定人数，才能保证集群是正常运行的。
+最好周期性地检查监视器状态来确定它们在运行。
 
 .. _display-mon-map:
 
-要查看监视器图，执行下面的命令：
+要查看监视器图，执行下列命令：
 
 .. prompt:: bash $
 
-	ceph mon stat
+   ceph mon stat
 
-或者： ::
+或者，执行下列命令：
 
-	ceph mon dump
+.. prompt:: bash $
 
-要检查监视器的法定人数状态，执行下面的命令： ::
+   ceph mon dump
 
-	ceph quorum_status
+要检查监视器集群的法定人数状态，执行下列命令：
+
+.. prompt:: bash $
+
+   ceph quorum_status
 
 Ceph 会返回法定人数状态，例如，包含 3 个监视器的 Ceph 集群可能\
 返回下面的：
@@ -537,23 +583,27 @@ Ceph 会返回法定人数状态，例如，包含 3 个监视器的 Ceph 集群
 =============
 .. Checking MDS Status
 
-元数据服务器为 Ceph 文件系统提供元数据服务，元数据服务器有两种\
-状态： ``up | down`` 和 ``active | inactive`` ，执行下面的命令\
-查看元数据服务器状态为 ``up`` 且 ``active`` ： ::
+元数据服务器为 CephFS 提供元数据服务。元数据服务器有两组\
+状态： ``up | down`` 和 ``active | inactive`` 。
+要查看元数据服务器状态为 ``up`` 且 ``active`` ，执行下列命令：
 
-	ceph mds stat
+.. prompt:: bash $
 
-要展示元数据集群的详细状态，执行下面的命令： ::
+   ceph mds stat
 
-	ceph fs dump
+要展示元数据服务器们的详细状态，执行下列命令：
+
+.. prompt:: bash $
+
+   ceph fs dump
 
 
 检查归置组状态
 ==============
 .. Checking Placement Group States
 
-归置组把对象映射到 OSD 。监控归置组时，我们希望它们的状态是
-``active`` 且 ``clean`` 。个中详情见\ `监控 OSD 和归置组`_\ 。
+归置组（ PG ）把对象映射到 OSD 。归置组处于监控下，以确保它们的状态是
+``active`` 且 ``clean`` 。参见\ `监控 OSD 和归置组`_\ 。
 
 .. _监控 OSD 和归置组: ../monitoring-osd-pg
 
@@ -564,29 +614,44 @@ Ceph 会返回法定人数状态，例如，包含 3 个监视器的 Ceph 集群
 ==============
 .. Using the Admin Socket
 
-Ceph 管理套接字允许你通过套接字接口查询守护进程，它们默认存在于
-``/var/run/ceph`` 下。要通过管理套接字访问某个守护进程，先登录\
-它所在的主机、再执行下列命令： ::
+Ceph 管理套接字允许你通过套接字接口查询守护进程，
+它们默认存在于 ``/var/run/ceph`` 下。
+要通过管理套接字访问某个守护进程，先登录它所在的主机、再执行下列命令：
 
-	ceph daemon {daemon-name}
-	ceph daemon {path-to-socket-file}
+.. prompt:: bash $
 
-比如，这是下面这两种用法是等价的： ::
+   ceph daemon {daemon-name}
+   ceph daemon {path-to-socket-file}
 
-	ceph daemon osd.0 foo
-	ceph daemon /var/run/ceph/ceph-osd.0.asok foo
+比如，这是下面这两种用法是等价的：
 
-用下列命令查看可用的管理套接字命令： ::
+.. prompt:: bash $
 
-	ceph daemon {daemon-name} help
+   ceph daemon osd.0 foo
+   ceph daemon /var/run/ceph/ceph-osd.0.asok foo
 
-管理套接字命令允许你在运行时查看和修改配置，见\
-`查看运行时配置`_\ 。
+运行管理员套接字命令有两种方法：(1) 如上所述，用 ``ceph daemon`` ，
+这种方法绕过了监视器，假定已经直接登录守护进程所在主机；
+(2) 用 ``ceph tell {daemon-type}.{id}`` 命令，这种方法由监视器转发，
+不需要访问那个守护进程所在的主机。
 
-另外，你可以在运行时直接修改配置选项（也就是说管理套接字会绕过\
-监视器，不要求你直接登录宿主主机，不像
-``ceph {daemon-type} tell {id} config set`` 依赖监视器。
+用 ``raise`` 命令向守护进程发送信号，效果和运行 ``kill -X {daemon.pid}`` 命令一样。
+通过 ``ceph tell`` 执行命令时，可以向守护进程发送信号，而无需访问其主机：
+
+.. prompt:: bash $
+
+   ceph daemon {daemon-name} raise HUP
+   ceph tell {daemon-type}.{id} raise -9
+
+查看可用的管理套接字命令，执行下列命令：
+
+.. prompt:: bash $
+
+   ceph daemon {daemon-name} help
+
+管理套接字命令允许你在运行时查看和修改配置。
+关于查看配置信息的更多内容，见\ `查看运行时配置`_\ 。
+
 
 .. _查看运行时配置: ../../configuration/ceph-conf#viewing-a-configuration-at-runtime
 .. _存储容量: ../../configuration/mon-config-ref#storage-capacity
-.. _ceph-medic: http://docs.ceph.com/ceph-medic/master/
