@@ -1,25 +1,34 @@
 =====================
  用 FUSE 挂载 CephFS
 =====================
+.. Mount CephFS using FUSE
 
-`ceph-fuse`_ 是挂载 CephFS 的另外一种方法，虽然是挂载到了用户空间。
-因此， FUSE 的性能会相对低一些，但 FUSE 客户端更容易管理，
-特别是在升级 CephFS 时。
+除了 :ref:`CephFS 内核驱动<cephfs-mount-using-kernel-driver>` ，
+`ceph-fuse`_ 是挂载 CephFS 的另外一种方法，
+`ceph-fuse`_ 挂载是在用户空间运行的。这意味着，
+`ceph-fuse`_ 挂载的性能相比内核驱动会低一些，
+但它更容易管理、也容易升级。
 
 前提条件
 ========
 
 先走通二者都需要的先决条件，内核、 FUSE 挂载的，位于 `挂载 CephFS ：先决条件`_ 。
 
-.. note:: 通过 FUSE 挂载 CephFS 需要超级用户权限，这样才能发出重挂载自身的命令，
-   以修剪 dentry 。
+.. note:: 通过 FUSE 挂载 CephFS 需要超级用户权限（ sudo/root ）。
+   libfuse 接口没有提供在内核中修剪缓存条目的机制，
+   因此需要用重新挂载（ ``mount(2)`` ）系统调用来强制内核丢弃缓存的元数据。
+   ``ceph-fuse`` 会周期性地发送重新挂载系统调用，
+   以回应 MDS 的缓存压力或元数据缓存撤销。
 
 提纲
 ====
+.. Synopsis
 
-一般来说，通过 FUSE 挂载 CephFS 的命令是这样的： ::
+一般来说，通过 FUSE 挂载 CephFS 的命令是这样的：
 
-    ceph-fuse {mountpoint} {options}
+.. prompt:: bash #
+
+   ceph-fuse {mountpoint} {options}
 
 挂载 CephFS
 ===========
@@ -42,17 +51,18 @@
 
     ceph-fuse --id foo -m 192.168.0.1:6789 /mnt/mycephfs
 
-你也可以只挂载 CephFS 里的某个特定目录，而不是挂载 CephFS 的根目录： ::
+你也可以只挂载 CephFS 里的某个特定目录，
+而不是挂载 CephFS 的根目录： ::
 
     ceph-fuse --id foo -r /path/to/dir /mnt/mycephfs
 
-如果你的 Ceph 集群有多个 FS ，可以用 ``--client_fs`` 选项挂载\
-非默认的文件系统： ::
+如果你的 Ceph 集群有多个 FS ，可以用 ``--client_fs`` 选项\
+挂载非默认的文件系统： ::
 
     ceph-fuse --id foo --client_fs mycephfs2 /mnt/mycephfs2
 
 你也可以在 ``ceph.conf`` 里加上 ``client_fs`` 配置。
-
+另外， ``--client_mds_namespace`` 选项可用于向后兼容。
 
 卸载 CephFS
 ===========
@@ -63,7 +73,6 @@
     umount /mnt/mycephfs
 
 .. tip:: 执行此命令时需要确保你不在这个文件系统的目录里。
-
 
 永久挂载
 ========
