@@ -922,6 +922,6 @@ if __name__ == "__main__":
         # Don't run this when processes specified files
         compare_file_existency()
 
-    # compare_file_length(files=FILES)
+    # compare_file_length(files=FILES)  # TODO as option
 
     translate_progress(files=FILES)
