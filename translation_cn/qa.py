@@ -671,10 +671,11 @@ def translate_progress(files=None):
 
 
 if __name__ == "__main__":
-    # Single file(s)/subsys to debug, will be ignored if it's empty
-    FILES = path_to_files(sys.argv[1:]) if len(sys.argv) >= 2 else []
+    parser = argparse.ArgumentParser(
+        description=usage)
+    parser.add_argument('--debug', action=argparse.BooleanOptionalAction, default=False,
+        help='调试模式；默认关闭')
 
-    # TODO move to argparse
     # Show all file's progress, include done files
     # Sort 'Progress by file' by specified column
     # Sort reverse
@@ -687,9 +688,17 @@ if __name__ == "__main__":
     # Check if link works, it's just a hook of ""
     # Filter out wrong tags in rst file, like ".. note:", which is actually
     # comment but intended to be a NOTE block.
+    parser.add_argument('paths', nargs='*', type=str,
+        help='要翻译的文件')
+
+    args = parser.parse_args()
+    debug(f'args = {args}')
+
+    FILES = parse_arg_files(args)
 
     if not FILES:
-        print(usage)
+        parser.print_help()
+        print()
 
         # Don't run this when processes specified files
         compare_file_existency()
