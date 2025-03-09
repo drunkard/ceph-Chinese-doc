@@ -58,7 +58,10 @@ options:
     in recovery and 1 shard of another recovering PG.
   fmt_desc: 单个 OSD 允许的最大回填操作数，写入和读出都算。
     注意，此选项对读取和写入操作的限制是分别应用的。
+    采用 mClock 调度器时，此选项会自动被重置。
   default: 1
+  see_also:
+  - osd_mclock_override_recovery_settings
   flags:
   - runtime
   with_legacy: true
@@ -95,6 +98,7 @@ options:
   fmt_desc: 下一轮恢复或回填操作前睡眠的时间，单位为秒。
     增大此值会减慢恢复操作，\
     与此同时客户端操作受到的影响也小些了。
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0
   flags:
   - runtime
@@ -105,6 +109,7 @@ options:
   desc: Time in seconds to sleep before next recovery or backfill op for HDDs
   fmt_desc: 对于机械硬盘，下一轮恢复或回填操作前睡眠的时间，
     单位为秒。
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0.1
   flags:
   - runtime
@@ -115,6 +120,7 @@ options:
   desc: Time in seconds to sleep before next recovery or backfill op for SSDs
   fmt_desc: 对于 SSD ，下一轮恢复或回填操作前睡眠的时间，
     单位为秒。
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0
   see_also:
   - osd_recovery_sleep
@@ -205,12 +211,6 @@ options:
   level: advanced
   desc: Asserts that no clone-objects were added to a snap after we start trimming it
   default: false
-- name: osd_repair_during_recovery
-  type: bool
-  level: advanced
-  desc: Allow requested repairing when PGs on the OSD are undergoing recovery
-  default: false
-  with_legacy: true
 - name: osd_scrub_begin_hour
   type: int
   level: advanced
@@ -283,9 +283,8 @@ options:
     （ ``getloadavg() / 在线 CPU 数量`` 所定义的）
     高于此值时 Ceph 不会启动周期性的（常规的）洗刷。
     默认是 ``0.5`` 。
-  default: 0.5
+  default: 10.0
   with_legacy: true
-# if load is low
 - name: osd_scrub_min_interval
   type: float
   level: advanced
@@ -295,7 +294,6 @@ options:
   see_also:
   - osd_scrub_max_interval
   with_legacy: true
-# regardless of load
 - name: osd_scrub_max_interval
   type: float
   level: advanced
@@ -334,29 +332,56 @@ options:
 - name: osd_scrub_chunk_min
   type: int
   level: advanced
-  desc: Minimum number of objects to scrub in a single chunk
+  desc: Minimum number of objects to deep-scrub in a single chunk
   fmt_desc: 单个操作可洗刷的最小对象块数。
     数据块在洗刷期间， Ceph 会阻塞别人向它写入。
   default: 5
   see_also:
   - osd_scrub_chunk_max
-  with_legacy: true
+  with_legacy: false
 - name: osd_scrub_chunk_max
   type: int
   level: advanced
-  desc: Maximum number of objects to scrub in a single chunk
-  fmt_desc: 单个操作可洗刷的最大对象块数。
-  default: 25
+  desc: Maximum number of objects to deep-scrub in a single chunk
+  fmt_desc: 单个内部操作可深度洗刷的最大对象数。
+    大数值可以提升洗刷性能，
+    但是会造成客户端操作的延时增大。
+  default: 15
   see_also:
   - osd_scrub_chunk_min
-  with_legacy: true
+  with_legacy: false
+- name: osd_shallow_scrub_chunk_min
+  type: int
+  level: advanced
+  desc: Minimum number of objects to scrub in a single chunk
+  fmt_desc: The minimum number of object store chunks to scrub during single operation.
+    Not applicable to deep scrubs.
+    Ceph blocks writes to single chunk during scrub.
+  default: 50
+  see_also:
+  - osd_shallow_scrub_chunk_max
+  - osd_scrub_chunk_min
+  with_legacy: false
+- name: osd_shallow_scrub_chunk_max
+  type: int
+  level: advanced
+  desc: Maximum number of objects to scrub in a single chunk
+  fmt_desc: The maximum number of object store chunks to scrub during single operation.
+    Not applicable to deep scrubs.
+  default: 100
+  see_also:
+  - osd_shallow_scrub_chunk_min
+  - osd_scrub_chunk_max
+  with_legacy: false
 # sleep between [deep]scrub ops
 - name: osd_scrub_sleep
   type: float
   level: advanced
-  desc: Duration to inject a delay during scrubbing
-  fmt_desc: 洗刷下一组数据块前等待的时间。
-    增加此值会拖慢整个洗刷进度，因而对客户端操作影响较小。
+  desc: Duration (in seconds) of delay injected between chunks when scrubbing
+  fmt_desc: 洗刷下一组数据块前等待的时间（下一个数据块）。
+    增加此值会拖慢整个洗刷进度，
+    并减小对客户端操作的影响。
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0
   flags:
   - runtime
@@ -365,7 +390,13 @@ options:
 - name: osd_scrub_extended_sleep
   type: float
   level: advanced
-  desc: Duration to inject a delay during scrubbing out of scrubbing hours
+  desc: Duration (in seconds) of delay injected between chunks when scrubbing out
+    of scrubbing hours
+  fmt_desc: Sleep time in seconds before scrubbing the next group of objects (the next chunk).
+    This configuration value is used for scrubbing out of scrubbing hours.
+    Increasing this value will slow down the overall rate of scrubbing, reducing scrub
+    impact on client operations.
+  note: This setting is ignored when the mClock scheduler is used.
   default: 0
   see_also:
   - osd_scrub_begin_hour
@@ -406,16 +437,31 @@ options:
   level: advanced
   desc: Deep scrub each PG (i.e., verify data checksums) at least this often
   fmt_desc: 深层洗刷（完整地读取所有数据）的间隔时间。
-    ``osd_scrub_load_threshold`` 不影响此设置。
   default: 7_day
   with_legacy: true
+- name: osd_deep_scrub_interval_cv
+  type: float
+  level: advanced
+  desc: determining the amount of variation in the deep scrub interval
+  long_desc: deep scrub intervals are varied by a random amount to prevent
+    stampedes. This parameter determines the amount of variation.
+    Technically - osd_deep_scrub_interval_cv is the coefficient of variation for
+    the deep scrub interval.
+  fmt_desc: The coefficient of variation for the deep scrub interval, specified as a
+    ratio. On average, the next deep scrub for a PG is scheduled osd_deep_scrub_interval
+    after the last deep scrub . The actual time is randomized to a normal distribution
+    with a standard deviation of osd_deep_scrub_interval * osd_deep_scrub_interval_cv
+    (clamped to within 2 standard deviations).
+    The default value guarantees that 95% of the deep scrubs will be scheduled in the range
+    [0.8 * osd_deep_scrub_interval, 1.2 * osd_deep_scrub_interval].
+  min: 0
+  max: 0.4
+  default: 0.2
+  with_legacy: false
 - name: osd_deep_scrub_randomize_ratio
   type: float
   level: advanced
-  desc: Scrubs will randomly become deep scrubs at this rate (0.15 -> 15% of scrubs
-    are deep)
-  long_desc: This prevents a deep scrub 'stampede' by spreading deep scrubs so they
-    are uniformly distributed over the week
+  desc: deprecated. Has no effect.
   default: 0.15
   with_legacy: true
 - name: osd_deep_scrub_stride
@@ -761,6 +807,7 @@ options:
   desc: if >= 0, initial CRUSH weight for newly created OSDs
   long_desc: If this value is negative, the size of the OSD in TiB is used.
   fmt_desc: 给新增 OSD 分配的初始 CRUSH 权重。\
+    此选项的默认值是“新增 OSD 的大小， TB 数”。\
     默认情况下，新增 OSD 的初始 CRUSH 权重是设备容量的 TB 数，\
     详情见\ `调整桶条目的权重`_\ 。
   default: -1
@@ -850,9 +897,21 @@ options:
   default: 32
   flags:
   - startup
+- name: osd_aggregated_slow_ops_logging
+  type: bool
+  level: advanced
+  desc: Allow OSD daemon to send an aggregated slow ops to the cluster log
+  fmt_desc: If set to ``true``, the OSD daemon will send slow ops information in 
+    an aggregated format to the cluster log else sends every slow op to the
+    cluster log.
+  default: true
+  with_legacy: true
 - name: osd_op_num_threads_per_shard
   type: int
   level: advanced
+  fmt_desc: The number of worker threads spawned per OSD shard for a given OSD.
+    Each worker thread when operational processes items in the shard queue.
+    This setting overrides _ssd and _hdd if non-zero.
   default: 0
   flags:
   - startup
@@ -860,7 +919,9 @@ options:
 - name: osd_op_num_threads_per_shard_hdd
   type: int
   level: advanced
-  default: 1
+  fmt_desc: The number of worker threads spawned per OSD shard for a given OSD
+    (for rotational media).
+  default: 5
   see_also:
   - osd_op_num_threads_per_shard
   flags:
@@ -869,6 +930,8 @@ options:
 - name: osd_op_num_threads_per_shard_ssd
   type: int
   level: advanced
+  fmt_desc: The number of worker threads spawned per OSD shard for a given OSD
+    (for solid state media).
   default: 2
   see_also:
   - osd_op_num_threads_per_shard
@@ -969,10 +1032,15 @@ options:
 - name: osd_mclock_scheduler_client_res
   type: uint
   level: advanced
-  desc: IO proportion reserved for each client (default)
+  desc: IO proportion reserved for each client (default). The default value
+    of 0 specifies the lowest possible reservation. Any value greater than
+    0 and up to 1.0 specifies the minimum IO proportion to reserve for each
+    client in terms of a fraction of the OSD's maximum IOPS capacity.
   long_desc: Only considered for osd_op_queue = mclock_scheduler
   fmt_desc: IO proportion reserved for each client (default).
-  default: 1
+  default: 0
+  min: 0
+  max: 1.0
   see_also:
   - osd_op_queue
 - name: osd_mclock_scheduler_client_wgt
@@ -987,19 +1055,32 @@ options:
 - name: osd_mclock_scheduler_client_lim
   type: uint
   level: advanced
-  desc: IO limit for each client (default) over reservation
+  desc: IO limit for each client (default) over reservation. The default
+    value of 0 specifies no limit enforcement, which means each client can
+    use the maximum possible IOPS capacity of the OSD. Any value greater
+    than 0 and up to 1.0 specifies the upper IO limit over reservation
+    that each client receives in terms of a fraction of the OSD's
+    maximum IOPS capacity.
   long_desc: Only considered for osd_op_queue = mclock_scheduler
   fmt_desc: IO limit for each client (default) over reservation.
-  default: 999999
+  default: 0
+  min: 0
+  max: 1.0
   see_also:
   - osd_op_queue
 - name: osd_mclock_scheduler_background_recovery_res
   type: uint
   level: advanced
-  desc: IO proportion reserved for background recovery (default)
+  desc: IO proportion reserved for background recovery (default). The
+    default value of 0 specifies the lowest possible reservation. Any value
+    greater than 0 and up to 1.0 specifies the minimum IO proportion to
+    reserve for background recovery operations in terms of a fraction of
+    the OSD's maximum IOPS capacity.
   long_desc: Only considered for osd_op_queue = mclock_scheduler
   fmt_desc: IO proportion reserved for background recovery (default).
-  default: 1
+  default: 0
+  min: 0
+  max: 1.0
   see_also:
   - osd_op_queue
 - name: osd_mclock_scheduler_background_recovery_wgt
@@ -1014,19 +1095,32 @@ options:
 - name: osd_mclock_scheduler_background_recovery_lim
   type: uint
   level: advanced
-  desc: IO limit for background recovery over reservation
+  desc: IO limit for background recovery over reservation. The default
+    value of 0 specifies no limit enforcement, which means background
+    recovery operation can use the maximum possible IOPS capacity of the
+    OSD. Any value greater than 0 and up to 1.0 specifies the upper IO
+    limit over reservation that background recovery operation receives in
+    terms of a fraction of the OSD's maximum IOPS capacity.
   long_desc: Only considered for osd_op_queue = mclock_scheduler
   fmt_desc: IO limit for background recovery over reservation.
-  default: 999999
+  default: 0
+  min: 0
+  max: 1.0
   see_also:
   - osd_op_queue
 - name: osd_mclock_scheduler_background_best_effort_res
   type: uint
   level: advanced
-  desc: IO proportion reserved for background best_effort (default)
+  desc: IO proportion reserved for background best_effort (default). The
+    default value of 0 specifies the lowest possible reservation. Any value
+    greater than 0 and up to 1.0 specifies the minimum IO proportion to
+    reserve for background best_effort operations in terms of a fraction
+    of the OSD's maximum IOPS capacity.
   long_desc: Only considered for osd_op_queue = mclock_scheduler
   fmt_desc: IO proportion reserved for background best_effort (default).
   default: 1
+  min: 0
+  max: 1.0
   see_also:
   - osd_op_queue
 - name: osd_mclock_scheduler_background_best_effort_wgt
@@ -1041,10 +1135,17 @@ options:
 - name: osd_mclock_scheduler_background_best_effort_lim
   type: uint
   level: advanced
-  desc: IO limit for background best_effort over reservation
+  desc: IO limit for background best_effort over reservation. The default
+    value of 0 specifies no limit enforcement, which means background
+    best_effort operation can use the maximum possible IOPS capacity of the
+    OSD. Any value greater than 0 and up to 1.0 specifies the upper IO
+    limit over reservation that background best_effort operation receives
+    in terms of a fraction of the OSD's maximum IOPS capacity.
   long_desc: Only considered for osd_op_queue = mclock_scheduler
   fmt_desc: IO limit for background best_effort over reservation.
-  default: 999999
+  default: 0
+  min: 0
+  max: 1.0
   see_also:
   - osd_op_queue
 - name: osd_mclock_scheduler_anticipation_timeout
@@ -1080,29 +1181,30 @@ options:
     OSD (for solid state media)
   default: 1200_M
   flags:
+  - runtime
 - name: osd_mclock_max_capacity_iops_hdd
   type: float
   level: basic
-  desc: Max IOPs capacity (at 4KiB block size) to consider per OSD (for rotational
-    media)
-  long_desc: This option specifies the max OSD capacity in iops per OSD. Helps in
-    QoS calculations when enabling a dmclock profile. Only considered for osd_op_queue
-    = mclock_scheduler
-  fmt_desc: Max IOPS capacity (at 4KiB block size) to consider per OSD (for
-    rotational media)
+  desc: Max random write IOPS capacity (at 4KiB block size) to consider per OSD
+    (for rotational media)
+  long_desc: This option specifies the max OSD random write IOPS capacity per
+    OSD. Contributes in QoS calculations when enabling a dmclock profile. Only
+    considered for osd_op_queue = mclock_scheduler
+  fmt_desc: Max random write IOPS capacity (at 4 KiB block size) to consider per
+    OSD (for rotational media)
   default: 315
   flags:
   - runtime
 - name: osd_mclock_max_capacity_iops_ssd
   type: float
   level: basic
-  desc: Max IOPs capacity (at 4KiB block size) to consider per OSD (for solid state
-    media)
-  long_desc: This option specifies the max OSD capacity in iops per OSD. Helps in
-    QoS calculations when enabling a dmclock profile. Only considered for osd_op_queue
-    = mclock_scheduler
-  fmt_desc: Max IOPS capacity (at 4KiB block size) to consider per OSD (for
-    solid state media)
+  desc: Max random write IOPS capacity (at 4 KiB block size) to consider per OSD
+    (for solid state media)
+  long_desc: This option specifies the max OSD random write IOPS capacity per
+    OSD. Contributes in QoS calculations when enabling a dmclock profile. Only
+    considered for osd_op_queue = mclock_scheduler
+  fmt_desc: Max random write IOPS capacity (at 4 KiB block size) to consider per
+    OSD (for solid state media)
   default: 21500
   flags:
   - runtime
@@ -1296,10 +1398,12 @@ options:
     devices)
   fmt_desc: The number of active recovery requests per OSD at one time, if the
     primary device is rotational.
+  note: This setting is automatically reset when the mClock scheduler is used.
   default: 3
   see_also:
   - osd_recovery_max_active
   - osd_recovery_max_active_ssd
+  - osd_mclock_override_recovery_settings
   flags:
   - runtime
   with_legacy: true
@@ -1310,10 +1414,12 @@ options:
     solid state devices)
   fmt_desc: The number of active recovery requests per OSD at one time, if the
     primary device is non-rotational (i.e., an SSD).
+  note: This setting is automatically reset when the mClock scheduler is used.
   default: 10
   see_also:
   - osd_recovery_max_active
   - osd_recovery_max_active_hdd
+  - osd_mclock_override_recovery_settings
   flags:
   - runtime
   with_legacy: true
