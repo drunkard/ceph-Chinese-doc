@@ -112,6 +112,10 @@ def err(words):
 def warn(words):
     cprint(words, color='yellow')
 
+def hdr(words):
+    'print header line'
+    cprint(words, color='cyan', attrs=['bold'])
+
 
 class Stat(object):
     """
@@ -646,6 +650,39 @@ def ignore_one_line(line):  # noqa
     return False
 
 
+def merge_lines():
+    '把输入的多行文本合并成一行'
+    lines = []
+
+    hdr('输入的多行内容将合并成单行。')
+    print('  n 下一轮；\n  q 结束并退出。\n请输入：')
+    while True:
+        line = input()
+        if line == 'n':  # means finish inputs, start next round of inputs
+            err('输入结束')
+            break
+        elif line == 'q':
+            sys.exit(0)  # exit whole feature
+
+        lines.append(line)
+
+    # remove multiple newlines in end
+    debug(lines)
+    while lines and lines[-1].strip() == '':
+        lines.pop()
+
+    hdr('合并后的行:')
+    for line in lines:
+        line = line.strip()
+        if line:
+            print(line.strip(), end=' ')
+        else:
+            print('\n')  # leave one blank row
+    print()
+    cprint(' ' * os.get_terminal_size()[0], on_color='on_green')  # screen split bar
+    merge_lines()  # next round inputs
+
+
 def parse_arg_files(args):
     global QA_SCOPE
     # Single file(s)/subsys to debug, will be ignored if it's empty
@@ -847,6 +884,9 @@ if __name__ == "__main__":
     parser.add_argument('--yaml', action='store_true', default=False,
         help='比较配置选项文件，即 *.yaml.in 文件')
 
+    parser.add_argument('-m', action='store_true', default=False,
+        help='把输入的多行文本合并成一行，以便粘贴到翻译软件。附加功能。')
+
 
     parser.add_argument('paths', nargs='*', type=str,
         help='要翻译的文件')
@@ -862,6 +902,10 @@ if __name__ == "__main__":
         sys.exit()
     elif args.yaml:
         hook_yaml_files()
+    elif args.m:
+        merge_lines()
+        sys.exit(0)
+
     FILES = parse_arg_files(args)
 
     if args.n != OVERALL_SHOW_AMOUNT:
