@@ -435,6 +435,27 @@ def hl_row_diff(x):
     return colored(int(x) if x != 0 else '', color=c)
 
 
+def hook_check_errors():
+    '检查文档里的常见错误'
+    raise NotImplementedError('尚未实现: 检查文档里的常见错误')
+
+
+def hook_linkcheck():
+    '''
+    Check if link works, it's just a hook of:
+        cd /git/ceph && ./admin/zh_build-doc linkcheck
+    '''
+    os.chdir('/git/ceph')
+
+    cmd = './admin/zh_build-doc linkcheck'
+    cprint(f'执行命令: {cmd}', color='white', attrs=['bold'])
+    os.system(cmd)
+
+
+def hook_yaml_files():
+    pass
+
+
 def index_of_element(e, list_):
     "return index of specified element, None if not matched"
     try:
@@ -811,16 +832,36 @@ if __name__ == "__main__":
         help='"-s row_diff" 的快捷方式')
 
 
-    # TODO check feature:
-    # Check if link works, it's just a hook of ""
     # Filter out wrong tags in rst file, like ".. note:", which is actually
     # comment but intended to be a NOTE block.
+    parser.add_argument('--ce', action='store_true', default=False,
+        help='Check Errors, 检查常见的文档书写、格式错误；')
+
+    parser.add_argument('--linkcheck', action='store_true', default=False,
+        help='检查链接是否有效')
+
+    # yaml features:
+    # check/compare yaml option files.
+    # Option: update my copy with program.
+    # Get 'desc' of specified option name, from raw file.
+    parser.add_argument('--yaml', action='store_true', default=False,
+        help='比较配置选项文件，即 *.yaml.in 文件')
+
+
     parser.add_argument('paths', nargs='*', type=str,
         help='要翻译的文件')
 
     args = parser.parse_args()
     debug(f'args = {args}')
 
+    if args.ce:
+        hook_check_errors()
+        sys.exit()
+    elif args.linkcheck:
+        hook_linkcheck()
+        sys.exit()
+    elif args.yaml:
+        hook_yaml_files()
     FILES = parse_arg_files(args)
 
     if args.n != OVERALL_SHOW_AMOUNT:
