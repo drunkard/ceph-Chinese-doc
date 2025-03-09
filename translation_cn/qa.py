@@ -1,5 +1,7 @@
 #!/cc/bin/python3
 
+import argparse
+import numpy as np
 import os
 import pandas as pd
 import path
@@ -9,6 +11,7 @@ from termcolor import colored, cprint
 
 usage = f'''Counts file existence, row amount diffs, translated percentage.
 Without files specified, counts all files.
+
 Usage: {sys.argv[0]} [subsystem|subdir file_to_count ...]
 '''
 
@@ -66,28 +69,30 @@ SUBSYS = [
     'security',
 ]
 # flip original/translation when debug, mainly for seeing what translated looks like
-FLIP = False  # TODO rename to ONE_FILE__VERBOSE
+FLIP = False  # TODO move to QA_SCOPE=='file' + '-a'
 
 # 统计结果暂存
-TP = pd.DataFrame(
-    columns=['subsys', 'file', 'original', 'translated', 'total', 'pct', 'row_diff(cn-en)'],
-)
+TP_COLUMNS = ['subsys', 'file', 'original', 'translated', 'total', 'pct', 'row_diff(cn-en)']
+# remove column 'file', and remove '(cn-en)' in 'row_diff(cn-en)'
+TP_COLUMNS_SHOW = ', '.join(
+    [c.replace('(cn-en)', '') for c in TP_COLUMNS if c != 'file'])
+TP = pd.DataFrame(columns=TP_COLUMNS)
 # TP.style.format({'file': {'text-align': 'left'}})
-# TODO: left align 'file' when show_all
 # TP.style.set_properties(**{'text-align': 'left'})\
 #     .set_table_styles([ dict(selector='th', props=[('text-align', 'left')]) ])
 
 # Display related
-OVERALL_SHOW_AMOUNT = 30
-
+OVERALL_SHOW_AMOUNT = 20  # TODO remove this, use args.n instead.
+QA_SCOPE = 'all'  # could be: all / subsys / file
 
 DEBUG = False
 
+
 def debug(words, temp_enable=False):
     '''temp_enable: useful if debug just one place'''
-    if DEBUG or temp_enable:
+    global args
+    if DEBUG or args.debug or temp_enable:
         cprint(f'DEBUG: {words}', color='red')
-
 
 def debug_stat(si):
     'si: Stat instance'
@@ -100,6 +105,12 @@ def debug_stat(si):
         # 'lines', 'done_idxs',
     ]
     print(dict((a, getattr(si, a)) for a in attrs))
+
+def err(words):
+    cprint(words, color='red', attrs=['bold'])
+
+def warn(words):
+    cprint(words, color='yellow')
 
 
 class Stat(object):
@@ -345,13 +356,15 @@ def count_file_progress(f):  # noqa
 def count_files(files):
     global TP
     for f in files:
-        subsys = str(f.splitall()[1])
         debug(f'processing file: {f}')
+        subsys = str(f.splitall()[1])
         try:
             S = count_file_progress(f)
         except Exception as e:
-            print(f'Got error with file: {f}')
+            err(f'Got error with file: {f}')
             raise e
+        # debug('got data of: {f}:')
+        # print(' '*3, [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total), S.row_diff])  # debug
         TP.loc[f] = [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total), S.row_diff]
 
 
@@ -401,7 +414,7 @@ def get_indent(line, lineno=None):
 
     # Only show this warn when doing one file.
     if '\t' in line and lineno and FLIP:
-        msg_warn(f'Has TAB in line {lineno}: {line}')
+        warn(f'Has TAB in line {lineno}: {line}')
 
     return len(line) - len(line.lstrip())
 
@@ -416,6 +429,9 @@ def hl_row_diff(x):
         c = 'red'
     else:
         c = 'white'
+    # debug(f'x type is: {type(x)}, value={x}')
+    if x == np.nan:
+        x = 0
     return colored(int(x) if x != 0 else '', color=c)
 
 
@@ -520,6 +536,8 @@ def is_translated(line=None):
     以 [a-zA-Z] 打头的才计算；
     空行、[.-`*#:\\] 、\\s\\t 打头的不算；
     '''
+    global args, FLIP
+
     def false_return(line):
         # debug, to catch exceptions of re expr
         if len(FILES) == 1 and not FLIP:
@@ -530,6 +548,8 @@ def is_translated(line=None):
     line = line or S.line
     cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：、]')  # 匹配汉字
     if cn_char.search(line):
+        if args.a and QA_SCOPE == 'file':
+            cprint('{:<3}: {}'.format(S.i + 1, line), color='green')
         return True
     if is_title(S):
         if line.count(' ') <= 2:
@@ -604,12 +624,29 @@ def ignore_one_line(line):  # noqa
     return False
 
 
-def msg_warn(words):
-    cprint(words, color='yellow')
+def parse_arg_files(args):
+    global QA_SCOPE
+    # Single file(s)/subsys to debug, will be ignored if it's empty
+    FILES = []
+    if args.paths:
+        paths = [path.Path(p) for p in args.paths]
+        if all([p.is_dir() for p in paths]):
+            QA_SCOPE = 'subsys'
+        elif all([p.is_file() for p in paths]):
+            QA_SCOPE = 'file'
+        else:
+            # maybe it's mixed of files and dirs, just ignore that, be simple.
+            QA_SCOPE = 'all'
+        FILES = path_to_files(args.paths)
+    else:
+        QA_SCOPE = 'all'
+    debug(f'parse_arg_files(): QA_SCOPE={QA_SCOPE}  FILES = {FILES}')
+    return FILES
 
 
 def path_to_files(paths):
     '''Check path types of all element in 'paths', grab files for directories'''
+    # debug(f'path_to_files() arg: {paths}')
     files = []
     for p in paths:
         p = path.Path(p)
@@ -622,52 +659,133 @@ def path_to_files(paths):
             sys.exit(127)
         else:
             raise TypeError(f'Unknown file type: {p} type= {type(p)} cwd= {p.cwd()}')
+    # debug(f'path_to_files() result: {files}')
     return files
+
+
+def show_DataFrame_files(TP):
+    # 单行
+    if len(FILES) == 1:
+        print(TP)
+        return
+
+    # 多行
+    # 修饰
+    # remove rows which: pct == 100%
+    if args.sd or (args.sort_by_column and args.sort_by_column != ['row_diff']):
+        pass
+    elif OVERALL_SHOW_AMOUNT != 0:
+        # remove rows which: pct == 100%
+        # .where 只是筛选出了符合条件的，然后它们的值都被设置成了 np.nan ，
+        # dropna() 再删除这些数值为 np.nan 的行
+        TP = TP.where(TP.pct != 100).dropna()
+
+    # debug
+    # debug(TP)
+    '''
+    with pd.option_context(
+        'display.colheader_justify', 'center',  # left/center/right
+        'display.max_rows', None,
+    ):
+        print(TP.isna())
+        print(TP)
+    '''
+
+    TP['pct'] = TP['pct'].apply(hl_pct)  # highlight pct
+    TP['row_diff(cn-en)'] = TP['row_diff(cn-en)'].apply(hl_row_diff)  # highlight row_diff
+    TP = TP.astype({
+        "original": "int32",
+        "translated": "int32",
+        "total": "int32"
+    })
+    # style = TP.style.set_properties(subset=['pct', 'row_diff(cn-en)'], **{'text-align': 'right'})\
+    #     .set_table_styles([ dict(selector='th', props=[('text-align', 'right')] ) ])
+    # import ipdb; ipdb.set_trace()
+
+    # 打印
+    with pd.option_context(
+        'display.colheader_justify', 'center',  # left/center/right
+        'display.max_rows', OVERALL_SHOW_AMOUNT or None,
+    ):
+        # 这里不能直接打印，直接 print(TP) 会打印首尾，中间是 ...
+        # 而我要的效果是打印前 X 条。
+        # -1 / None 表示打印所有； 0 就不打印了，不是我要的效果。
+        print(TP.head(OVERALL_SHOW_AMOUNT or None))
+    # print(TP.where(TP.pct != 100).sort_values('original').dropna().head(OVERALL_SHOW_AMOUNT))
+
+
+def sort_DataFrame(df):
+    global args
+    if args.sort_by_column:
+        sort_col = args.sort_by_column[0]
+        # small fix, "()" causes trouble in shell.
+        if sort_col == 'row_diff':
+            sort_col = 'row_diff(cn-en)'
+    else:
+        sort_col = 'pct'  # default sort column
+
+    # '--sd' option gets high priority
+    if args.sd:
+        sort_col = 'row_diff(cn-en)'
+
+    # 升序/降序
+    ascending = False if args.r else True
+
+    # 没指定任何排序选项时
+    if not any([args.sort_by_column, args.r, args.sd]):
+        sort_col, ascending = 'pct', False
+
+    # last check
+    if sort_col not in TP_COLUMNS:
+        err(f'指定的排序列不存在: {sort_col}, 可用的有: {TP_COLUMNS_SHOW}')
+        sys.exit(2)
+
+    debug(f'sort option: sort_col={sort_col} ascending={ascending}')
+    # debug(df.describe())
+    df = df.sort_values(by=sort_col, ascending=ascending)  # ascending 升序
+    return df
 
 
 def to_pct(a, b):
     if a == b == 0:  # All zero, nothing to process, treat as done.
-        return 100.00
+        # When count on specified subsys, others is absent, so should be 0.
+        return 100.00 if QA_SCOPE == 'all' else 0
     return round(a / b * 100, 2)
 
 
 def translate_progress(files=None):
+    global QA_SCOPE
     global TP  # pandas DataFrame, translation progress
     if files:
         count_files(files)
     else:
-        print('Progress by subsys:')
         for subsys in SUBSYS:
-            print('{:<26}'.format(f'    {subsys}/'), end='')
             files = _get_file_list(subsys, only_rst=True)
             count_files(files)
+
+    # debug(f'translate_progress(): QA_SCOPE={QA_SCOPE}  FILES = {FILES}')
+
+    # show progress overall
+    if QA_SCOPE == 'all':
+        tp = TP.agg({'original': sum, 'translated': sum, 'total': sum})
+        print('Overall progress:   {}% ({} of {} rows to translate)'
+            .format(to_pct(tp.translated, tp.total), tp.original, tp.total))
+
+    # show subsys progress
+    # Only show when there's more than one subsys.
+    if QA_SCOPE == 'all' or (QA_SCOPE == 'subsys' and len(args.paths) > 1):
+        print('Progress by subsys:')
+        for subsys in SUBSYS:
             subsys_prog = TP[TP.subsys == subsys]
             r = subsys_prog.agg({'translated': sum, 'total': sum})
-            print('{}%'.format(to_pct(r.translated, r.total)))
+            print('{:<26}{}%'.format(f'    {subsys}/', to_pct(r.translated, r.total)))
 
-    # Progress overall
-    tp = TP.agg({'original': sum, 'translated': sum, 'total': sum})
-    print('Overall progress:   {}% ({} of {} rows to translate)'
-          .format(to_pct(tp.translated, tp.total), tp.original, tp.total))
-
-    # Progress by file
+    # show progress by file
+    print(F'Progress by file (near finished {OVERALL_SHOW_AMOUNT} files):')
     TP.set_index('file')
     TP = TP.drop('file', axis=1)
-    TP = TP.sort_values('pct', ascending=False)
-    print(F'Progress by file (near finished {OVERALL_SHOW_AMOUNT} files):')
-    if len(FILES) == 1:
-        print(TP)
-    else:
-        TP = TP.where(TP.pct != 100).dropna()  # remove completed
-        TP['pct'] = TP['pct'].apply(hl_pct)  # highlight pct
-        TP['row_diff(cn-en)'] = TP['row_diff(cn-en)'].apply(hl_row_diff)  # highlight row_diff
-        TP = TP.astype({"original": "int32", "translated": "int32", "total": "int32"})
-        # style = TP.style.set_properties(subset=['pct', 'row_diff(cn-en)'], **{'text-align': 'right'})\
-        #     .set_table_styles([ dict(selector='th', props=[('text-align', 'right')] ) ])
-        # import ipdb; ipdb.set_trace()
-        with pd.option_context('display.colheader_justify','right'):
-            print(TP.head(OVERALL_SHOW_AMOUNT))
-        # print(TP.where(TP.pct != 100).sort_values('original').dropna().head(OVERALL_SHOW_AMOUNT))
+    TP = sort_DataFrame(TP)
+    show_DataFrame_files(TP)
 
 
 if __name__ == "__main__":
@@ -677,12 +795,20 @@ if __name__ == "__main__":
         help='调试模式；默认关闭')
 
     # Show all file's progress, include done files
-    # Sort 'Progress by file' by specified column
-    # Sort reverse
     # When show one file's progress, also show translated row, in green.
+    parser.add_argument('-a', action=argparse.BooleanOptionalAction, default=False,
+        help='显示所有文件的进度，包括已完成文件的，相当于 "-n 0"； 查看单个文件时表示：显示已翻译的内容；')
+    parser.add_argument('-n', action='store', default=OVERALL_SHOW_AMOUNT, type=int,
+        help=f'显示整体翻译进度时，最后的表格里展示多少个文件，0 显示所有。默认 {OVERALL_SHOW_AMOUNT}')
+    # Sort reverse
+    parser.add_argument('-r', action=argparse.BooleanOptionalAction, default=False,
+        help='反向排序，默认升序')
+    # Sort 'Progress by file' by specified column
+    parser.add_argument('-s', action='store', dest='sort_by_column', nargs=1,
+        help=f'按指定列排序，支持的列有： {TP_COLUMNS_SHOW}')
+    parser.add_argument('--sd', action='store_true', default=False,
+        help='"-s row_diff" 的快捷方式')
 
-    # TODO translate using deepl.com, replace in-proper words using term table.
-    # Translate by blank-row splited section, ignore some sections.
 
     # TODO check feature:
     # Check if link works, it's just a hook of ""
@@ -696,6 +822,13 @@ if __name__ == "__main__":
 
     FILES = parse_arg_files(args)
 
+    if args.n != OVERALL_SHOW_AMOUNT:
+        OVERALL_SHOW_AMOUNT = args.n
+
+    # 效果一样
+    if args.a:
+        OVERALL_SHOW_AMOUNT = 0
+
     if not FILES:
         parser.print_help()
         print()
@@ -705,10 +838,4 @@ if __name__ == "__main__":
 
     # compare_file_length(files=FILES)
 
-    # DataFrame 显示所有数据
-    # pd.set_option('display.max_rows', 100)
-    # pd.set_option('display.max_columns', None)
-    # pd.set_option('display.width', None)
-    # pd.set_option('display.max_colwidth', None)
     translate_progress(files=FILES)
-    # TODO exit_code = 0 if pct == 1 else original, or total of original ?
