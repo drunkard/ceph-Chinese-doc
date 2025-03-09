@@ -475,6 +475,10 @@ def translation_file(fpath):
 
         # feature: only list contents got from rst file
         if args.l:
+            if args.e:
+                if not cn_char.search(p):
+                    print(f'{p}\n')
+                continue
             print(f'{p}\n')
             continue
 
@@ -518,6 +522,8 @@ if __name__ == '__main__':
 
     parser.add_argument('file_path', nargs='*', type=str,
         help='要翻译的文件')
+    parser.add_argument('-e', action=argparse.BooleanOptionalAction, default=False,
+        help='仅罗列英文，默认不区分中英文')
     parser.add_argument('-l', action=argparse.BooleanOptionalAction, default=False,
         help='仅罗列提取出的段落，不去翻译')
 
