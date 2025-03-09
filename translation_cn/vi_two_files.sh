@@ -77,4 +77,5 @@ else
 	-u 更新模式，中英文版文件完全相同时，仅提示不打开；
 	-o 强制覆盖，用英文版覆盖中文版；
 	EOF
+	# TODO previous 2 features
 fi
