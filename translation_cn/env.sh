@@ -57,3 +57,24 @@ PROGRESS_FILE="translation_cn/env.sh"
 # vim options
 # 64 if align chars strictly; 80 for split by sentence;
 VI_COLUMN=64,80
+
+
+# 删除文件的前缀路径，便于后续操作
+remove_prefix_path() {
+	local str="$@"
+	# $str could be:
+	#	a/doc/dev/osd_internals/log_based_pg.rst
+	#	b/radosgw/swift/auth.rst
+	grep -qe ^[ab]/ <<< "$str" && \
+		str=`sed -e 's:^[ab]/::' <<< "$str"`
+
+	grep -qe ^doc/ <<< "$str" && \
+		str=`sed -e 's:^doc/::' <<< "$str"`
+	grep -qe ^doc-en/ <<< "$str" && \
+		str=`sed -e 's:^doc-en/::' <<< "$str"`
+	grep -qe ^/git/ceph/doc-zh/ <<< "$str" && \
+		str=`sed -e 's:^/git/ceph/doc-zh/::' <<< "$str"`
+	grep -qe ^/data/git/ceph/doc/ <<< "$str" && \
+		str=`sed -e 's:^/data/git/ceph/doc/::' <<< "$str"`
+	echo -n "$str"
+}

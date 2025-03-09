@@ -65,26 +65,9 @@ open_files() {
 	vim -O +"set colorcolumn=$VI_COLUMN" $cn_doc $en_doc
 }
 
-remove_prefix() {
-	local str="$@"
-	# $str could be:
-	#	a/doc/dev/osd_internals/log_based_pg.rst
-	#	b/radosgw/swift/auth.rst
-	grep -qe ^[ab]/ <<< "$str" && \
-		str=`sed -e 's:^[ab]/::' <<< "$str"`
-
-	grep -qe ^doc/ <<< "$str" && \
-		str=`sed -e 's:^doc/::' <<< "$str"`
-	grep -qe ^doc-en/ <<< "$str" && \
-		str=`sed -e 's:^doc-en/::' <<< "$str"`
-	grep -qe ^/git/ceph/doc-zh/ <<< "$str" && \
-		str=`sed -e 's:^/git/ceph/doc-zh/::' <<< "$str"`
-	echo -n "$str"
-}
-
 if [ $# -ge 1 ]; then
 	for f in $@; do
-		f=`remove_prefix "$f"`
+		f=`remove_prefix_path "$f"`
 		open_files "$f"
 	done
 else
