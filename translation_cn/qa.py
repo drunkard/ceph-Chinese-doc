@@ -492,6 +492,7 @@ def is_code_blk(line):
         'list-table',  # will be rendered as table
         'toctree', 'literalinclude',
         'autoclass', 'automethod', 'automodule',
+        '|---|   unicode',
     ]
     for role in roles:
         if line.count(f'.. {role}::') > 0:
@@ -546,7 +547,7 @@ def is_translated(line=None):
 
     global S
     line = line or S.line
-    cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：、]')  # 匹配汉字
+    cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：；、]')  # 匹配汉字
     if cn_char.search(line):
         if args.a and QA_SCOPE == 'file':
             cprint('{:<3}: {}'.format(S.i + 1, line), color='green')
