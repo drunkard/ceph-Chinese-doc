@@ -14,7 +14,7 @@ cephfs/subtree-partitioning.svg
 
 dev/cephadm/design/mockups/OSD_Creation_device_mode.svg
 dev/cephadm/design/mockups/OSD_Creation_host_mode.svg
-dev/crimson/crimson_backfillmachine.svg
+dev/crimson/*.png
 dev/osd_internals/osdmap_versions.txt
 dev/peering_graph.generated.dot
 dev/peering_graph.generated.svg
