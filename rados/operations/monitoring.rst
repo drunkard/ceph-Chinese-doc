@@ -15,8 +15,7 @@
 --------
 .. Interactive mode
 
-要在交互模式下运行 ``ceph`` ，不要带参数运行 ``ceph`` ，
-例如：
+要在交互模式下运行 ``ceph`` ，不要带参数运行 ``ceph`` ，例如：
 
 .. prompt:: bash $
 
@@ -34,7 +33,8 @@
 ------------
 .. Non-default paths
 
-如果你的配置文件或密钥环不在默认位置内，可以手动指定其位置：
+如果你的配置文件或密钥环不在默认位置内，可以手动给 ``ceph`` 工具指定其位置，
+执行下列命令：
 
 .. prompt:: bash $
 
@@ -655,3 +655,86 @@ Ceph 管理套接字允许你通过套接字接口查询守护进程，
 
 .. _查看运行时配置: ../../configuration/ceph-conf#viewing-a-configuration-at-runtime
 .. _存储容量: ../../configuration/mon-config-ref#storage-capacity
+
+
+信使状态
+========
+.. Messenger Status
+
+Ceph 守护进程和 librados 客户端支持管理员套接字命令 ``messenger dump`` ，
+该命令可显示有关网络连接、套接字、绑定地址和内核 TCP 统计信息
+（通过 tcp(7) TCP_INFO ）这些运行时快照。
+
+.. note:: 在创建快照时，被查询的信使需要锁定连接数据结构。
+   这个锁定的持续时间大约为几十毫秒。这可能会干扰正常运行。
+   可以用 ``dumpcontents`` 参数限制转储的数据结构。
+
+
+实例
+----
+.. Examples
+
+执行命令却没指定要转储的信使时，会返回可用的信使列表：
+
+.. prompt:: bash $
+
+   ceph tell osd.0 messenger dump
+
+.. code-block:: javascript
+
+ {
+    "messengers": [
+        "client",
+        "cluster",
+        "hb_back_client",
+        "hb_back_server",
+        "hb_front_client",
+        "hb_front_server",
+        "ms_objecter",
+        "temp_mon_client"
+    ]
+  }
+
+``client`` 和 ``cluster`` 信使对应配置的客户端网络、集群网络
+（见 :doc:`/rados/configuration/network-config-ref` ）。
+带 ``hb_`` 前缀的信使是心跳系统的一部分。
+
+罗列出客户端信使上当前的所有连接：
+
+.. code-block:: bash
+
+	    ceph tell osd.0 messenger dump client \
+	       | jq -r '.messenger.connections[].async_connection |
+	                   [.conn_id, .socket_fd, .worker_id,
+			    if .status.connected then "connected" else "disconnected" end,
+			    .state,
+			    "\(.peer.type).\(.peer.entity_name.id).\(.peer.id)",
+			    .protocol.v2.con_mode, .protocol.v2.crypto.rx, .protocol.v2.compression.rx] |
+			   @tsv'
+
+.. code-block:: bash
+
+  249     102     0       connected       STATE_CONNECTION_ESTABLISHED    client.admin.6407       crc    PLAIN   UNCOMPRESSED
+  242     99      1       connected       STATE_CONNECTION_ESTABLISHED    client.rgw.8000.4473    crc     PLAIN   UNCOMPRESSED
+  248     89      1       connected       STATE_CONNECTION_ESTABLISHED    mgr..-1 secure  AES-128-GCM     UNCOMPRESSED
+  32      101     2       connected       STATE_CONNECTION_ESTABLISHED    client.rgw.8000.4483    crc     PLAIN   UNCOMPRESSED
+  3       86      2       connected       STATE_CONNECTION_ESTABLISHED    mon..-1 secure  AES-128-GCM     UNCOMPRESSED
+  244     102     0       connected       STATE_CONNECTION_ESTABLISHED    client.admin.6383       crc     PLAIN   UNCOMPRESSED
+
+打印活跃连接及其 TCP 往返时间和重传计数器：
+
+.. code-block:: bash
+
+	    ceph tell osd.0 messenger dump client --tcp-info \
+	       | jq -r '.messenger.connections[].async_connection |
+	                   select(.status.connected) |
+			   select(.peer.type != "client") |
+			   [.conn_id, .socket_fd, .worker_id,
+			    "\(.peer.type).\(.peer.global_id)",
+			    .tcp_info.tcpi_rtt_us, .tcp_info.tcpi_rttvar_us, .tcp_info.tcpi_total_retrans] |
+			    @tsv'
+
+.. code-block:: bash
+
+	248     89      1       mgr.0   863     1677    0
+	3       86      2       mon.0   230     278     0
