@@ -17,7 +17,7 @@ auto_sync() {
 	# exec translation_cn/auto_sync.sh
 	local s="translation_cn/auto_sync.sh"
 	if cd $ZH_REPO; then
-		echo -e "\nrunning $s ..."
+		echo -e "\nRunning $s ..."
 		sh $s
 		echo
 	else
@@ -27,9 +27,15 @@ auto_sync() {
 }
 
 ceph_pull_rebase() {
-	git -C $CEPH_REPO pull --rebase
-	git -C $CEPH_REPO submodule update
-	git -C $CEPH_REPO gc --quiet
+	run_cmd git -C $CEPH_REPO pull --rebase
+	run_cmd git -C $CEPH_REPO submodule update
+	run_cmd git -C $CEPH_REPO gc --quiet
+}
+
+run_cmd() {
+	cmd="$@"
+	echo -e "\nRunning command: $cmd"
+	$cmd
 }
 
 update_ceph_repo() {
@@ -38,9 +44,9 @@ update_ceph_repo() {
 	if [ $differ -ge $(( 86400 * $CEPH_REPO_OUTDATE_DAYS )) ]; then
 		echo "Ceph git repo outdated more than $CEPH_REPO_OUTDATE_DAYS days, updating ..."
 		if [[ `git -C $CEPH_REPO status -s` ]]; then
-			git -C $CEPH_REPO stash
+			run_cmd git -C $CEPH_REPO stash push -- doc/ src/common/options/
 			ceph_pull_rebase
-			git -C $CEPH_REPO stash pop --quiet
+			run_cmd git -C $CEPH_REPO stash pop --quiet
 		else
 			ceph_pull_rebase
 		fi
@@ -55,8 +61,7 @@ if cd $CEPH_REPO; then
 	# view "git log" using "tig"
 	# echo "There's `git log --oneline --since=${SYNC_TO} doc/ | wc -l` commits to sync"
 	cd $CEPH_REPO || exit 1
-	echo "command: tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/ src/common/options/"
-	tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/ src/common/options/
+	run_cmd tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/ src/common/options/
 else
 	echo "Failed to enter git repo for ceph: $CEPH_REPO"
 fi
