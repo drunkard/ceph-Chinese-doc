@@ -32,6 +32,18 @@ ceph_pull_rebase() {
 	run_cmd git -C $CEPH_REPO gc --quiet
 }
 
+has_enough_disk_space() {
+	# check if avail disk space is enough, exit if too low.
+	avail=`/bin/df --output=avail /git/ceph | tail -1`
+	at_least=$(( 100 * 1024 ))	# 100 MB
+	if [[ $avail ]] && [ $avail -gt $at_least ]; then
+		return 0
+	else
+		echo -e "\nAvail disk space too low, exit to avoid failure."
+		exit 1
+	fi
+}
+
 run_cmd() {
 	cmd="$@"
 	echo -e "\nRunning command: $cmd"
@@ -55,6 +67,7 @@ update_ceph_repo() {
 }
 
 if cd $CEPH_REPO; then
+	has_enough_disk_space
 	update_ceph_repo
 	auto_sync
 
