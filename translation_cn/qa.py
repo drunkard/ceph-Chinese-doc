@@ -659,6 +659,7 @@ def merge_lines():
     while True:
         line = input()
         if line == 'n':  # means finish inputs, start next round of inputs
+            os.system('clear -x')
             err('输入结束')
             break
         elif line == 'q':
@@ -674,12 +675,14 @@ def merge_lines():
     hdr('合并后的行:')
     for line in lines:
         line = line.strip()
+        line = line.replace('  ', ' ')
         if line:
-            print(line.strip(), end=' ')
+            line = colored(line.strip() + ' ', color='green', attrs=['bold'])
+            print(line, end='')
         else:
             print('\n')  # leave one blank row
-    print()
-    cprint(' ' * os.get_terminal_size()[0], on_color='on_green')  # screen split bar
+    print('\n')
+    # cprint(' ' * os.get_terminal_size()[0], on_color='on_green')  # screen split bar
     merge_lines()  # next round inputs
 
 
