@@ -6,22 +6,22 @@ updates="
 favicon.ico
 logo.png
 
-cephfs/cephfs-architecture.svg
 cephfs/cephfs-top.png
 cephfs/mds-state-diagram.dot
-cephfs/quiesce-set-states.svg
-cephfs/subtree-partitioning.svg
+cephfs/*.svg
 
+dev/*.svg
 dev/cephadm/design/mockups/OSD_Creation_device_mode.svg
 dev/cephadm/design/mockups/OSD_Creation_host_mode.svg
 dev/crimson/*.png
 dev/osd_internals/osdmap_versions.txt
 dev/peering_graph.generated.dot
-dev/peering_graph.generated.svg
 dev/PlanningImplementation.txt
 
 jaegertracing/osd_jaeger.png
 jaegertracing/rgw_jaeger.png
+
+mgr/*.png
 
 rados/command/list-inconsistent-obj.json
 rados/command/list-inconsistent-snap.json
@@ -47,6 +47,7 @@ releases/pacific.rst
 releases/quincy.rst
 releases/reef.rst
 releases/squid.rst
+releases/tentacle.rst
 
 releases/releases.yml
 
