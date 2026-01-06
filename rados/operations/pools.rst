@@ -211,7 +211,7 @@
 
    :类型: String
    :是否必需: No.
-   :默认值:  默认行为由 :confval:`osd_pool_default_pg_autoscale` 选项控制。
+   :默认值:  默认行为由 :confval:`osd_pool_default_pg_autoscale_mode` 选项控制。
 
 .. describe:: [expected-num-objects]
 
@@ -429,7 +429,7 @@
    :描述: 指定存储池的 PG 总数。注意 PG autoscaler ，
           如果在指定存储池上启用了，可能会覆盖手动分配的数值。
    :类型: 整数
-   :有效范围: ``0`` 到 ``mon_max_pool_pg_num`` 。如果设置为 ``0`` ，将采用 ``osd_pool_default_pg_autoscale`` 的值。
+   :有效范围: ``0`` 到 ``mon_max_pool_pg_num`` 。如果设置为 ``0`` ，将采用 ``osd_pool_default_pg_num`` 的值。
 
 .. _pgp_num:
 

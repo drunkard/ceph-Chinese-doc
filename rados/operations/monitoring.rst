@@ -297,6 +297,8 @@ Ceph OSD 会相互发送心跳 ping 消息，
         ...
 
 
+.. _rados-monitoring-muting-health-checks:
+
 屏蔽健康检查
 ------------
 .. Muting health checks
@@ -376,6 +378,8 @@ TTL 是可选的时间段参数，如下所示：
 如果又有一个或多个 OSD 出现故障，那么这个健康屏蔽就会失效。
 所有带有阈值的健康检查都会出现这种行为。
 
+
+.. _rados-monitoring-pool-usage:
 
 检查集群的使用情况
 ==================
@@ -738,3 +742,85 @@ Ceph 守护进程和 librados 客户端支持管理员套接字命令 ``messenge
 
 	248     89      1       mgr.0   863     1677    0
 	3       86      2       mon.0   230     278     0
+
+
+.. _data_availability_score:
+
+跟踪一个集群的数据可用性评分
+============================
+.. Tracking Data Availability Score of a Cluster
+
+Ceph internally tracks the data availability of each pool in a cluster.
+To check the data availability score of each pool in a cluster,
+the following command can be invoked:
+
+
+.. prompt:: bash #
+
+   ceph osd pool availability-status
+
+输出实例：
+
+::
+
+   POOL         UPTIME  DOWNTIME  NUMFAILURES  MTBF  MTTR  SCORE     AVAILABLE
+   rbd             2m     21s           1        2m   21s  0.888889     1
+   .mgr             86s     0s          0        0s   0s        1       1
+   cephfs.a.meta    77s     0s          0        0s   0s        1       1
+   cephfs.a.data    76s     0s          0        0s   0s        1       1
+
+The time values above are rounded for readability. To see the exact second
+values, use the option ``--format`` with ``json`` or ``json-pretty`` value.
+
+A pool is considered ``unavailable`` when at least one PG in the pool
+becomes inactive or there is at least one unfound object in the pool.
+Otherwise the pool is considered ``available``. Depending on the
+current and previous state of the pool we update ``uptime`` and
+``downtime`` values:
+
+================ =============== =============== =================
+ Previous State   Current State   Uptime Update   Downtime Update
+================ =============== =============== =================
+ Available        Available       +diff time      no update
+ Available        Unavailable     +diff time      no update
+ Unavailable      Available       +diff time      no update
+ Unavailable      Unavailable     no update       +diff time
+================ =============== =============== =================
+
+From the updated ``uptime`` and ``downtime`` values, we calculate
+the Mean Time Between Failures (MTBF) and Mean Time To Recover (MTTR)
+for each pool. The availability score is then calculated by finding
+the ratio of MTBF to the total time.
+
+The score is updated every one second. Transient changes to pools that
+occur and are reverted between successive updates will not be captured.
+It is possible to configure this interval with a command of the following
+form:
+
+.. prompt:: bash #
+
+   ceph config set mon pool_availability_update_interval 2
+
+This will set the update interval to two seconds. Please note that
+it is not possible to set this interval less than the config value set
+for ``paxos_propose_interval``.
+
+
+This feature is on by default. To turn the feature off, e.g. - for an expected
+downtime, the ``enable_availability_tracking`` config option can be set to ``false``.
+
+.. prompt:: bash #
+
+   ceph config set mon enable_availability_tracking false
+
+While the feature is turned off, the last calculated score will be preserved. The
+score will again start updating once the feature is turned on again.
+
+It's also possible to clear the data availability score for a specific
+pool if needed with a command of the following form:
+
+.. prompt:: bash #
+
+   ceph osd pool clear-availability-status <pool-name>
+
+.. note:: Clearing a score is not allowed if the feature itself is disabled.
