@@ -55,7 +55,6 @@ pygments_style = 'sphinx'
 html_theme = 'ceph'
 html_theme_options = {
     'logo_only': True,
-    'display_version': False,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
     'vcs_pageview_mode': 'edit',
@@ -132,7 +131,6 @@ extensions = [
     'ceph_confval',
     'sphinxcontrib.mermaid',
     'sphinxcontrib.openapi',
-    'sphinxcontrib.seqdiag',
 ]
 
 ditaa = shutil.which("ditaa")
@@ -251,10 +249,6 @@ for c in pybinds:
 # openapi
 openapi_logger = sphinx.util.logging.getLogger('sphinxcontrib.openapi.openapi30')
 openapi_logger.setLevel(logging.WARNING)
-
-# seqdiag
-seqdiag_antialias = True
-seqdiag_html_image_format = 'SVG'
 
 # ceph_confval
 ceph_confval_imports = glob.glob(os.path.join(top_level,
