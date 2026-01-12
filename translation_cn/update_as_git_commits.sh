@@ -34,13 +34,13 @@ ceph_pull_rebase() {
 
 has_enough_disk_space() {
 	# check if avail disk space is enough, exit if too low.
-	avail=`/bin/df --output=avail /git/ceph | tail -1`
-	at_least=$(( 100 * 1024 ))	# 100 MB
+	avail=`/bin/df --output=avail $CEPH_REPO | tail -1`
+	at_least=$(( 1000 * 1024 ))	# 1G, writing of gc pack needs a lot space.
 	if [[ $avail ]] && [ $avail -gt $at_least ]; then
 		return 0
 	else
-		echo -e "\nAvail disk space too low, exit to avoid failure."
-		exit 1
+		echo -e "$CEPH_REPO: avail disk space too low, won't pull, to avoid failure."
+		return 1
 	fi
 }
 
@@ -67,8 +67,7 @@ update_ceph_repo() {
 }
 
 if cd $CEPH_REPO; then
-	has_enough_disk_space
-	update_ceph_repo
+	has_enough_disk_space && update_ceph_repo
 	auto_sync
 
 	# view "git log" using "tig"
