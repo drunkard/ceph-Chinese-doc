@@ -29,7 +29,11 @@ auto_sync() {
 ceph_pull_rebase() {
 	run_cmd git -C $CEPH_REPO pull --rebase
 	run_cmd git -C $CEPH_REPO submodule update
-	run_cmd git -C $CEPH_REPO gc --quiet
+
+	GC_THRESHOLD=200
+	if cd $CEPH_REPO && [ `find .git/objects/[0-9a-f]* -type f | wc -l` -gt $GC_THRESHOLD ]; then
+		run_cmd git -C $CEPH_REPO gc --quiet
+	fi
 }
 
 has_enough_disk_space() {
