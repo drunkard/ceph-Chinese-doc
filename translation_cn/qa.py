@@ -31,7 +31,6 @@ IGNORE_FILES = [
 
     # directory
     '.git',
-    'scripts/__pycache__',
     'translation_cn',
     'zh_options',
 ]
@@ -398,6 +397,10 @@ def _get_file_list(directory, only_rst=False, relpath=False):
     # Exclude files in IGNORE_FILES
     efl = []
     for f in fl:
+        # Drop python cache files.
+        if f.endswith('.pyc'):
+            continue
+
         should_ignore = False
         for bname in IGNORE_FILES:
             if f.startswith(bname):
