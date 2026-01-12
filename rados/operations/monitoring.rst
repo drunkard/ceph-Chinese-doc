@@ -425,7 +425,7 @@ TTL 是可选的时间段参数，如下所示：
 - **RAW USED:** 用户数据、内部开销、和保留容量占用的原始存储空间。
 - **% RAW USED:** 已用原始存储空间比率。盯着这个数值，
   加上 ``backfillfull ratio`` 和 ``near full ratio`` 来防范集群达到用满阈值。
-  详情见\ `存储容量`_\ 。
+  详情见\ :ref:`storage-capacity` 。
 
 更加详细的信息可以用如下命令显示：
 
@@ -553,7 +553,7 @@ TTL 是可选的时间段参数，如下所示：
      1   ssd 1.00000         osd.1             up  1.00000 1.00000
      2   ssd 1.00000         osd.2             up  1.00000 1.00000
 
-个中详情见\ `监控 OSD 和归置组`_\ 。
+个中详情见\ :ref:`rados_operations_monitoring_osd_pg` 。
 
 
 检查监视器状态
