@@ -310,6 +310,10 @@ def count_file_progress(f):  # noqa
         if S.ignore_line():
             continue
 
+        # ignore table translation.
+        if is_table(S):
+            continue
+
         if is_ignore_blk(S.line):
             blk_flag = 1
             # init new block
@@ -481,12 +485,14 @@ def is_ignore_blk(line, indent=0):
     if is_code_blk(line):
         # print('is_ignore_blk:', line)
         return True
+
     # Command should be ignored
     # if the following paragraph is command, 0=not, 1=enter, 2=end
     # Decides if it's cmd by counting the leading spaces, reset blk_flag=0
     # if indent changed.
     if is_cmd(line):
         return True
+
     return False
 
 
@@ -525,6 +531,40 @@ def is_code_blk(line):
     for role in roles:
         if line.count(f'.. {role}::') > 0:
             return True
+    return False
+
+
+def is_table(stat_instance):
+    '''
+    table like this:
+
+    ================ =============== =============== =================
+     Previous State   Current State   Uptime Update   Downtime Update
+    ================ =============== =============== =================
+     Available        Available       +diff time      no update
+     Available        Unavailable     +diff time      no update
+     Unavailable      Available       +diff time      no update
+     Unavailable      Unavailable     no update       +diff time
+    ================ =============== =============== =================
+
+    If matched as table, the pointer "Stat.i" will move to end of table.
+    '''
+    # 正则表达式，一行里只有等号和空格，且等号和空格都必须存在
+    # table_bar = re.compile(r'^[=\s]+$')
+    table_bar = re.compile(r'^(?=.*=)(?=.*\s)[=\s]+$')
+
+    # 如果匹配到表头，就一直往下，找齐3个表头
+    if stat_instance.line.startswith('=') and table_bar.fullmatch(stat_instance.line):
+        bar_cnt = 1
+        debug(f'line {stat_instance.i + 1}: matched table bar, bar_cnt={bar_cnt}')
+        while bar_cnt < 3:
+            stat_instance.i += 1
+            if stat_instance.line.startswith('=') and table_bar.fullmatch(stat_instance.line):
+                bar_cnt += 1
+                debug(f'line {stat_instance.i + 1}: matched table bar, in loop; bar_cnt={bar_cnt}')
+
+        return True
+
     return False
 
 
