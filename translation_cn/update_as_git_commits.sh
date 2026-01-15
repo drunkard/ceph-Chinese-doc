@@ -52,6 +52,7 @@ run_cmd() {
 	cmd="$@"
 	echo -e "\nRunning command: $cmd"
 	$cmd
+	return $?
 }
 
 update_ceph_repo() {
@@ -60,9 +61,9 @@ update_ceph_repo() {
 	if [ $differ -ge $(( 86400 * $CEPH_REPO_OUTDATE_DAYS )) ]; then
 		echo "Ceph git repo outdated more than $CEPH_REPO_OUTDATE_DAYS days, updating ..."
 		if [[ `git -C $CEPH_REPO status -s` ]]; then
-			run_cmd git -C $CEPH_REPO stash push -- doc/ src/common/options/
-			ceph_pull_rebase
-			run_cmd git -C $CEPH_REPO stash pop --quiet
+			run_cmd git -C $CEPH_REPO stash push -- doc/ src/common/options/ || exit $?
+			ceph_pull_rebase || exit $?
+			run_cmd git -C $CEPH_REPO stash pop --quiet || exit $?
 		else
 			ceph_pull_rebase
 		fi
