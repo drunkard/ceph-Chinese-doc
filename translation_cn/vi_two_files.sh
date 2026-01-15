@@ -32,10 +32,20 @@ open_files() {
 		en_doc=$en_doc.rst
 	fi
 
-	if [ ! -f $cn_doc ]; then
+	if [ -f $cn_doc ]; then
+		if [ x$override == "xyes" -a -f $en_doc ]; then
+			echo -n "将覆盖原中文版文件 ... "
+			/bin/rm -f $cn_doc
+
+			mkdir -p `dirname $cn_doc`
+			cp -v $en_doc $cn_doc
+			sleep 1s;	# 让译者看一眼
+		fi
+	else
 		# Check if they are exist
 		if [ -f $en_doc ]; then
 			echo -n "中文版不存在，复制一个过来 ... "
+
 			mkdir -p `dirname $cn_doc`
 			cp -v $en_doc $cn_doc
 			sleep 1s;	# 让译者看一眼
@@ -50,8 +60,10 @@ open_files() {
 	}
 
 	# compare them, hint if they are the same
+	same_files="no"
 	if [ `diff -u $cn_doc $en_doc | wc -l` -eq 0 ]; then
 		echo -e "二者完全相同: $cn_doc == $en_doc\n"
+		same_files="yes"
 	fi
 
 	# Convert to relative path
@@ -62,20 +74,62 @@ open_files() {
 	vim -O +"set colorcolumn=$VI_COLUMN" $cn_doc $en_doc	# 垂直分割（默认）
 	vim -o +"set colorcolumn=$VI_COLUMN" $cn_doc $en_doc	# 水平分割
 	EOF
+
+	# apply options
+	if [ x$same_files == "xyes" ] && [ x$update_mode == "xyes" ]; then
+		echo "指定了更新模式，故不打开相同的文件"
+		return 0
+	fi
+
 	vim -O +"set colorcolumn=$VI_COLUMN" $cn_doc $en_doc
 }
 
-if [ $# -ge 1 ]; then
-	for f in $@; do
-		f=`remove_prefix_path "$f"`
-		open_files "$f"
-	done
-else
+
+print_help() {
 	cat <<-EOF
-	指定一个文件名即可同时打开文档的中文版和英文，指定多个文件则依次打开
+	指定一个文件名即可同时打开文档的中文版和英文原文，指定多个文件则依次打开
+	脚本会自己去除前面的路径前缀，见下例。
+
+	用法：
+	$0 architecture.rst index.rst		# 本地路径
+	$0 doc/architecture.rst index.rst	# 'git log' 内的路径或原文路径
+	$0 a/doc/architecture.rst index.rst	# 'git log/diff' 内的路径
 
 	-u 更新模式，中英文版文件完全相同时，仅提示不打开；
 	-o 强制覆盖，用英文版覆盖中文版；
 	EOF
-	# TODO previous 2 features
+}
+
+
+# Get options
+update_mode="no"
+override="no"
+while getopts "huo" opt; do
+	case $opt in
+		h)
+			print_help
+			;;
+		u)
+			update_mode="yes"
+			;;
+		o)
+			override="yes"
+			;;
+		\?)
+			echo "无效选项"
+			exit 2
+	esac
+done
+
+
+if [ $# -ge 1 ]; then
+	for f in $@; do
+		# skip option, it's not file
+		grep -q -- ^"-" <<< "$f" && continue
+
+		f=`remove_prefix_path "$f"`
+		open_files "$f"
+	done
+else
+	print_help
 fi
