@@ -754,6 +754,8 @@ def path_to_files(paths):
     # debug(f'path_to_files() arg: {paths}')
     files = []
     for p in paths:
+        p = remove_prefix_path(p)
+
         p = path.Path(p)
         if p.is_dir():
             files += _get_file_list(p, only_rst=True)
@@ -766,6 +768,31 @@ def path_to_files(paths):
             raise TypeError(f'Unknown file type: {p} type= {type(p)} cwd= {p.cwd()}')
     # debug(f'path_to_files() result: {files}')
     return files
+
+
+def remove_prefix_path(fpath):
+    "remove prefix of path, the input path is pasted from regular paths."
+    pattern = r'^[ab]/'
+    if re.findall(r'^[ab]/', fpath):
+        fpath = re.sub(r'^[ab]/', '', fpath)
+
+    pattern = '^doc/'
+    if re.findall(pattern, fpath):
+        fpath = re.sub(pattern, '', fpath)
+
+    pattern = '^doc-en/'
+    if re.findall(pattern, fpath):
+        fpath = re.sub(pattern, '', fpath)
+
+    pattern = f'^{doc_en}-zh/'
+    if re.findall(pattern, fpath):
+        fpath = re.sub(pattern, '', fpath)
+
+    pattern = f'^/data{doc_en}/'
+    if re.findall(pattern, fpath):
+        fpath = re.sub(pattern, '', fpath)
+
+    return fpath
 
 
 def show_DataFrame_files(TP):
