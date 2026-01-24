@@ -78,3 +78,33 @@ remove_prefix_path() {
 		str=`sed -e 's:^/data/git/ceph/doc/::' <<< "$str"`
 	echo -n "$str"
 }
+
+
+# Colorful output of scripts
+OFF=$'\033[0m'
+RED_BOLD=$'\033[1;31m'
+GREEN_BOLD=$'\033[1;32m'
+YELLOW_BOLD=$'\033[1;33m'
+WHITE_BOLD=$'\033[1;37m'
+OFF=$'\033[0m'
+
+err() {
+	echo -e "${RED_BOLD}Error: $@${OFF}"
+}
+
+run_cmd2() {
+	cmd="$@"
+	echo -e "\nRunning command: ${WHITE_BOLD}$cmd${OFF}    "
+	$cmd
+
+	# check return code
+	retval=$?
+	if [ $retval -eq 0 ]; then
+		# echo -e "${GREEN_BOLD}OK${OFF}"
+		true
+	else
+		echo -e "${RED_BOLD}failed${OFF}"
+	fi
+
+	return $retval
+}
