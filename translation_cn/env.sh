@@ -41,18 +41,20 @@ fi
 EN_YAML="$CEPH_REPO/src/common/options"
 ZH_YAML="$ZH_REPO/zh_options"
 
+
 # 当前的库同步到了哪里
 # Where we synced with ceph mainline. Note by date is more reliable than
 # commit ID, because there's too many criss-cross branches which is hard
 # for us to sync by branch/commit ID.
 # sync by $STEP days once, 0 to disable
-SYNC_TO="2023-04-23"
+SYNC_TO="2023-05-13"
 
 # 一次更新多少天的
 STEP=10
 SYNC_UNTIL=`date -d "$SYNC_TO +$STEP days" +%Y-%m-%d`
 
 PROGRESS_FILE="translation_cn/env.sh"
+
 
 # vim options
 # 64 if align chars strictly; 80 for split by sentence;

@@ -1789,7 +1789,7 @@ If Version （判断版本）
 然后评估文件系统体验是否因此得到改善。类似措施比如，
 禁用 volumes 插件启动的、用于克隆和清除垃圾的异步线程。
 有关详情见 :ref:`暂停清除线程 <pause-purge-threads>` 和
-:ref:`暂停克隆线程 <use-clone-threads`\ 。
+:ref:`暂停克隆线程 <pause-clone-threads>`\ 。
 
 .. note:: 直到 Tentacle ， CephFS 卷所属存储池命名空间的名字\
    都是按这个格式： "fsvolumens__<subvol-name>" 。然而，

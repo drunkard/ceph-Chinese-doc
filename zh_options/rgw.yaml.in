@@ -4168,3 +4168,96 @@ options:
   services:
   - rgw
   with_legacy: true
+- name: rgw_lua_max_runtime_per_state
+  type: uint
+  level: advanced
+  desc: Maximum runtime for each Lua state in milliseconds
+  long_desc: Sets the maximum runtime for each Lua state in milliseconds.
+    If exceeded, the script will be terminated. Defaults to 1000 milliseconds (1 second).
+    If set to zero, there is no limit.
+  default: 1000
+  services:
+  - rgw
+  with_legacy: true
+- name: rgw_lua_enable
+  type: bool
+  level: advanced
+  desc: Enable lua scripting.
+  default: true
+  services:
+  - rgw
+  flags:
+  - startup
+  see_also:
+  with_legacy: true
+- name: rgw_d4n_backend_address
+  type: str
+  level: advanced
+  desc: The backend address used by D4N cache 
+  default: 127.0.0.1:6379
+  services: 
+  - rgw
+  flags:
+  - startup
+  with_legacy: true
+- name: rgw_bucket_eexist_override
+  type: bool
+  level: advanced
+  desc: CreateBucket on an existing bucket of the same owner returns 409/EEXIST, regardless of region.
+  long_desc: Overrides the documented RGW behavior that treats multiple CreateBucket operations by the same
+      owner as idempotent
+  default: false
+  services:
+  - rgw
+- name: rgw_ratelimit_interval
+  type: uint
+  level: advanced
+  desc: Time window for rate limiting in seconds
+  long_desc: This option sets the time window for rate limiting accumulation in seconds.
+    Requests that exceed the configured rate limits within this time window will be rejected.
+    The default is a 60 second token bucket.
+  default: 60
+  min: 1
+  services:
+  - rgw
+  flags:
+  - startup
+  with_legacy: true
+- name: rgw_redis_connection_pool_size
+  type: int
+  level: basic
+  desc: RGW connection pool size for Redis operation per D4N
+  long_desc: This option sets the size of the connection pool for Redis operations
+    in D4N. It is used to manage the number of concurrent connections to Redis.
+    A larger pool size can improve performance when multiple threads are accessing
+    Redis simultaneously, but it also increases resource usage.
+  fmt_desc: The size of the redis connection pool.
+  default: 512
+  services:
+  - rgw
+  with_legacy: true
+- name: rgw_bucket_persistent_notif_num_shards
+  type: uint
+  level: advanced
+  desc: Number of shards for a persistent topic.
+  long_desc: Number of shards of persistent topics. The notifications will be sharded by a combination of 
+    the bucket and key name. Changing the number effect only new topics and does not change exiting ones.
+  default: 11
+  services: 
+    - rgw
+- name: rgw_usage_log_key_transition
+  type: bool
+  level: advanced
+  desc: Handle the co-existence of both old and new name-by-user keys
+  long_desc: The new usage log keyed by owner/payer ID has the prefix of "~"
+    for IDs starting with '0'.  This prefix is absent from the old scheme.
+    This option instructs RGW to handle the old keys if they still exist.
+    It should be set false when the old keys no longer exist to avoid
+    performance penalty.
+  fmt_desc: To handle the co-existence of both old and new name-by-user keys
+  default: true
+  services:
+  - rgw
+  see_also:
+  - rgw_enable_usage_log
+  with_legacy: true

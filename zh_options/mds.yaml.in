@@ -794,6 +794,21 @@ options:
   - mds
   with_legacy: true
 # multiple of size_max that triggers immediate split
+- name: mds_allow_batched_ops
+  type: bool
+  level: advanced
+  desc: allow MDS to batch lookup/getattr RPCs
+  long_desc: >
+    The MDS will batch a lookup or getattr RPC on the same inode when
+    possible to avoid repetitive locks on metadata and to bypass other
+    requests acquiring write locks. Generally, this should only
+    improve performance but this switch exists to provide a means to
+    turn this behavior off for comparison.
+  default: true
+  services:
+  - mds
+  flags:
+  - runtime
 - name: mds_bal_fragment_fast_factor
   type: float
   level: advanced
@@ -1739,4 +1754,22 @@ options:
   default: 16
   services:
   - mds
-  min: 8
+  min: 4
+- name: mds_file_blockdiff_max_concurrent_object_scans
+  type: uint
+  level: advanced
+  desc: Maximum number of concurrent object scans
+  long_desc: Maximum number of concurrent listsnaps operations sent to RADOS.
+  default: 16
+  services:
+  - mds
+  min: 1
+- name: subv_metrics_window_interval
+  type: secs
+  level: dev
+  desc: subvolume metrics sliding window interval, seconds
+  long_desc: interval in seconds to hold values in sliding window for subvolume metrics
+  default: 30
+  min: 30
+  services:
+  - mds
