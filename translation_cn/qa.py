@@ -381,6 +381,11 @@ def file_rows(*paths):
         return len(f.readlines())
 
 
+def force_update_files():
+    '用原版覆盖一点都没翻译过的中文版'
+    raise NotImplementedError
+
+
 def _get_file_list(directory, only_rst=False, relpath=False):
     """
     返回一目录下的所有普通文件列表，递归，排序好。
@@ -946,6 +951,8 @@ if __name__ == "__main__":
     # comment but intended to be a NOTE block.
     parser.add_argument('--ce', action='store_true', default=False,
         help='Check Errors, 检查常见的文档书写、格式错误；')
+    parser.add_argument('--force-update', action='store_true', default=False,
+        help='强制更新。比对所有文件，用原文覆盖一个汉字都没有的中文版')
 
     parser.add_argument('--linkcheck', action='store_true', default=False,
         help='检查链接是否有效')
@@ -967,8 +974,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
     debug(f'args = {args}')
 
+    # single feature options
     if args.ce:
         hook_check_errors()
+        sys.exit()
+    elif args.force_update:
+        force_update_files()
         sys.exit()
     elif args.linkcheck:
         hook_linkcheck()
