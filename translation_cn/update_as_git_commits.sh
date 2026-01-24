@@ -17,22 +17,22 @@ auto_sync() {
 	# exec translation_cn/auto_sync.sh
 	local s="translation_cn/auto_sync.sh"
 	if cd $ZH_REPO; then
-		echo -e "\nRunning $s ..."
+		echo -e "\nRunning script: ${WHITE_BOLD}$s${OFF} ..."
 		sh $s
 		echo
 	else
-		echo "$FUNCNAME: failed to exec $s"
+		err "$FUNCNAME: failed to exec $s"
 		exit 1
 	fi
 }
 
 ceph_pull_rebase() {
-	run_cmd git -C $CEPH_REPO pull --rebase
-	run_cmd git -C $CEPH_REPO submodule update
+	run_cmd2 git -C $CEPH_REPO pull --rebase
+	run_cmd2 git -C $CEPH_REPO submodule update
 
 	GC_THRESHOLD=200
 	if cd $CEPH_REPO && [ `find .git/objects/[0-9a-f]* -type f | wc -l` -gt $GC_THRESHOLD ]; then
-		run_cmd git -C $CEPH_REPO gc --quiet
+		run_cmd2 git -C $CEPH_REPO gc --quiet
 	fi
 }
 
@@ -43,7 +43,7 @@ has_enough_disk_space() {
 	if [[ $avail ]] && [ $avail -gt $at_least ]; then
 		return 0
 	else
-		echo -e "$CEPH_REPO: avail disk space too low, won't pull, to avoid failure."
+		err "$CEPH_REPO: avail disk space too low, won't pull, to avoid failure."
 		return 1
 	fi
 }
@@ -61,9 +61,9 @@ update_ceph_repo() {
 	if [ $differ -ge $(( 86400 * $CEPH_REPO_OUTDATE_DAYS )) ]; then
 		echo "Ceph git repo outdated more than $CEPH_REPO_OUTDATE_DAYS days, updating ..."
 		if [[ `git -C $CEPH_REPO status -s` ]]; then
-			run_cmd git -C $CEPH_REPO stash push -- doc/ src/common/options/ || exit $?
+			run_cmd2 git -C $CEPH_REPO stash push -- doc/ src/common/options/ || exit $?
 			ceph_pull_rebase || exit $?
-			run_cmd git -C $CEPH_REPO stash pop --quiet || exit $?
+			run_cmd2 git -C $CEPH_REPO stash pop --quiet || exit $?
 		else
 			ceph_pull_rebase
 		fi
@@ -78,7 +78,7 @@ if cd $CEPH_REPO; then
 	# view "git log" using "tig"
 	# echo "There's `git log --oneline --since=${SYNC_TO} doc/ | wc -l` commits to sync"
 	cd $CEPH_REPO || exit 1
-	run_cmd tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/ src/common/options/
+	run_cmd2 tig --date-order --reverse --since=${SYNC_TO} $tig_opts -- doc/ src/common/options/
 else
 	echo "Failed to enter git repo for ceph: $CEPH_REPO"
 fi
