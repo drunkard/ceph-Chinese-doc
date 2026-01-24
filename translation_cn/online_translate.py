@@ -193,6 +193,11 @@ def prepare_selenium():
     return BROWSER
 
 
+def translate_via_baidu_selenium(txt):
+    # TODO
+    pass
+
+
 def translate_via_deepl_json(txt):
     print('translating via json API ... ', end='', flush=True)
     # json style
