@@ -527,7 +527,7 @@ def is_code_blk(line):
         # TODO ignore the term row in 'glossary', explaination below it counts.
         'code', 'code-block', 'prompt',
         'py:class', 'py:currentmodule',
-        'ditaa', 'graphviz', 'image', 'raw',
+        'ditaa', 'graphviz', 'figure', 'image', 'raw',
         'list-table',  # will be rendered as table
         'toctree', 'literalinclude',
         'autoclass', 'automethod', 'automodule',
