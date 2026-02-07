@@ -121,6 +121,12 @@ while getopts "huo" opt; do
 	esac
 done
 
+# tig 在运行时，猜测正在更新，自动打开 -u 选项
+if [[ `pgrep tig` ]]; then
+	echo "检测到 tig 在运行，已开启更新模式"
+	update_mode="yes"
+fi
+
 
 if [ $# -ge 1 ]; then
 	for f in $@; do
