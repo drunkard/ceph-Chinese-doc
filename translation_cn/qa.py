@@ -1,6 +1,7 @@
 #!/cc/bin/python3
 
 import argparse
+import hashlib
 import numpy as np
 import os
 import pandas as pd
@@ -85,6 +86,12 @@ OVERALL_SHOW_AMOUNT = 20  # TODO remove this, use args.n instead.
 QA_SCOPE = 'all'  # could be: all / subsys / file
 
 DEBUG = False
+
+
+def clear_row():
+    'clear current row in terminal'
+    # os.system('echo -en "\r\\e[K\\e[0m"')
+    sys.stdout.write('\r\033[K')
 
 
 def debug(words, temp_enable=False):
@@ -375,15 +382,19 @@ def count_files(files):
         TP.loc[f] = [subsys, f, S.original, S.done, S.total, to_pct(S.done, S.total), S.row_diff]
 
 
+def file_has_cn_char(f):
+    "check if file content has cn char"
+    with open(f) as fcontent:
+        for line in fcontent.readlines():
+            if has_cn_char(line):
+                return True
+    return False
+
+
 def file_rows(*paths):
     "count file rows"
     with open(os.path.join(*paths)) as f:
         return len(f.readlines())
-
-
-def force_update_files():
-    '用原版覆盖一点都没翻译过的中文版'
-    raise NotImplementedError
 
 
 def _get_file_list(directory, only_rst=False, relpath=False):
@@ -433,6 +444,14 @@ def get_indent(line, lineno=None):
         warn(f'Has TAB in line {lineno}: {line}')
 
     return len(line) - len(line.lstrip())
+
+
+def has_cn_char(strings):
+    "check if 'strings' has cn char"
+    cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：；、]')  # 匹配汉字
+    if cn_char.search(strings):
+        return True
+    return False
 
 
 def hl_pct(x):
@@ -537,6 +556,12 @@ def is_code_blk(line):
         if line.count(f'.. {role}::') > 0:
             return True
     return False
+
+
+def is_same_file(f1, f2):
+    'check if file contents are the same'
+    with open(f1, 'rb') as f1c, open(f2, 'rb') as f2c:
+        return hashlib.file_digest(f1c, 'md5').hexdigest() == hashlib.file_digest(f2c, 'md5').hexdigest()
 
 
 def is_table(stat_instance):
@@ -732,6 +757,31 @@ def merge_lines():
     print('\n')
     # cprint(' ' * os.get_terminal_size()[0], on_color='on_green')  # screen split bar
     merge_lines()  # next round inputs
+
+
+def overwrite_untranslated():
+    '用原版覆盖一点都没翻译过的中文版'
+    global doc_en
+    cnfs = _get_file_list(doc_cn, only_rst=True, relpath=True)
+
+    for cnf in cnfs:
+        print(f'checking: {cnf} ', end='', flush=True)
+        if file_has_cn_char(cnf):
+            # TODO display if has arg -vv
+            clear_row()
+            continue
+
+        # overwrite with en file
+        doc_en = path.Path(doc_en)
+        enf = doc_en.joinpath(cnf)
+        # check if their contents are the same
+        if is_same_file(cnf, enf):
+            # TODO display if has arg -v
+            # cprint(' same', color='white')
+            clear_row()
+        else:
+            enf.copyfile(cnf)
+            cprint(' overwrited', color='green', attrs=['bold'])
 
 
 def parse_arg_files(args):
@@ -951,7 +1001,7 @@ if __name__ == "__main__":
     # comment but intended to be a NOTE block.
     parser.add_argument('--ce', action='store_true', default=False,
         help='Check Errors, 检查常见的文档书写、格式错误；')
-    parser.add_argument('--force-update', action='store_true', default=False,
+    parser.add_argument('--overwrite-untranslated-files', action='store_true', default=False,
         help='强制更新。比对所有文件，用原文覆盖一个汉字都没有的中文版')
 
     parser.add_argument('--linkcheck', action='store_true', default=False,
@@ -978,8 +1028,8 @@ if __name__ == "__main__":
     if args.ce:
         hook_check_errors()
         sys.exit()
-    elif args.force_update:
-        force_update_files()
+    elif args.overwrite_untranslated_files:
+        overwrite_untranslated()
         sys.exit()
     elif args.linkcheck:
         hook_linkcheck()
