@@ -85,6 +85,8 @@ TP = pd.DataFrame(columns=TP_COLUMNS)
 OVERALL_SHOW_AMOUNT = 20  # TODO remove this, use args.n instead.
 QA_SCOPE = 'all'  # could be: all / subsys / file
 
+cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：；、]')  # 匹配汉字
+
 DEBUG = False
 
 
@@ -448,7 +450,6 @@ def get_indent(line, lineno=None):
 
 def has_cn_char(strings):
     "check if 'strings' has cn char"
-    cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：；、]')  # 匹配汉字
     if cn_char.search(strings):
         return True
     return False
@@ -645,8 +646,8 @@ def is_translated(line=None):
 
     global S
     line = line or S.line
-    cn_char = re.compile(r'[\u4e00-\u9fa5“”（）…—！《》，。：；、]')  # 匹配汉字
-    if cn_char.search(line):
+    if has_cn_char(line):
+        # when qa on single file, with option -a, also show translated lines.
         if args.a and QA_SCOPE == 'file':
             cprint('{:<3}: {}'.format(S.i + 1, line), color='green')
         return True
