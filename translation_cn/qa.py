@@ -762,14 +762,17 @@ def merge_lines():
 
 def overwrite_untranslated():
     '用原版覆盖一点都没翻译过的中文版'
-    global doc_en
+    global doc_en, args
     cnfs = _get_file_list(doc_cn, only_rst=True, relpath=True)
 
     for cnf in cnfs:
         print(f'checking: {cnf} ', end='', flush=True)
         if file_has_cn_char(cnf):
-            # TODO display if has arg -vv
-            clear_row()
+            # display file if has arg -vv
+            if args.v >= 2:
+                cprint(' 有汉字', color='white')
+            else:
+                clear_row()
             continue
 
         # overwrite with en file
@@ -777,9 +780,11 @@ def overwrite_untranslated():
         enf = doc_en.joinpath(cnf)
         # check if their contents are the same
         if is_same_file(cnf, enf):
-            # TODO display if has arg -v
-            # cprint(' same', color='white')
-            clear_row()
+            # display file if has arg -v
+            if args.v >= 1:
+                cprint(' same', color='white')
+            else:
+                clear_row()
         else:
             enf.copyfile(cnf)
             cprint(' overwrited', color='green', attrs=['bold'])
@@ -981,6 +986,8 @@ if __name__ == "__main__":
         description=usage)
     parser.add_argument('--debug', action=argparse.BooleanOptionalAction, default=False,
         help='调试模式；默认关闭')
+    parser.add_argument('-v', action='count', default=0,
+        help='详细信息，-vv/-vvv 显示更多')
 
     # Show all file's progress, include done files
     # When show one file's progress, also show translated row, in green.
