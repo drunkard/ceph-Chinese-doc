@@ -239,7 +239,7 @@ options:
   fmt_desc: 一个 OSD 守护进程同时进行的\
     最大洗刷操作数。
   note: This setting is ignored when the mClock scheduler is used.
-  default: 1
+  default: 3
   with_legacy: true
 - name: osd_scrub_during_recovery
   type: bool

@@ -3641,16 +3641,19 @@ options:
   desc: Cost for scrub operations in work queue
   default: 50_M
   with_legacy: true
+- name: osd_scrub_event_cost
+  type: size
+  level: advanced
+  desc: Cost for each scrub operation, used when osd_op_queue=mclock_scheduler
+  default: 4_K
+  with_legacy: true
 # set requested scrub priority higher than scrub priority to make the
 # requested scrubs jump the queue of scheduled scrubs
 - name: osd_requested_scrub_priority
   type: uint
   level: advanced
   default: 120
-  fmt_desc: The priority set for user requested scrub on the work queue.  If
-    this value were to be smaller than ``osd_client_op_priority`` it
-    can be boosted to the value of ``osd_client_op_priority`` when
-    scrub is blocking client operations.
+  fmt_desc: deprecated.  Use ``osd_scrub_priority`` instead.
   with_legacy: true
 - name: osd_recovery_priority
   type: uint
@@ -5024,8 +5027,7 @@ options:
   type: bool
   level: dev
   desc: Perform DB compaction requests asynchronously
-  long_desc: 'How to perform DB compactions triggered either through async socket or
-    by OSD initialization procedure on start.'
+  long_desc: Should BlueStore accept DB compaction requests via the admin socket?
   default: true
 - name: bluestore_qfsck_on_mount
   type: bool
@@ -5723,7 +5725,6 @@ options:
   level: dev
   default: false
   fmt_desc: 调试同步检查，这个操作代价大。
-
   with_legacy: true
 - name: filestore_omap_header_cache_size
   type: size
@@ -6417,3 +6418,39 @@ options:
   desc: Enables exception throwing instead of process abort on transaction submission error.
   default: false
   with_legacy: false
+- name: ceph_assert_supresssions
+  type: str
+  desc: Suppress specific ceph_assert instances to let the execution continue with unknown, potentially DESTRUCTIVE consequences.
+  fmt_desc: Comma-separated list of locations of ceph_assert in the source code.
+    The format is ``{file}:{line} [, {file}:{line}]``
+  level: dev
+  with_legacy: false
+- name: ec_extent_cache_size
+  type: uint
+  level: advanced
+  desc: Size of the per-shard extent cache
+  default: 10485760
+  services:
+  - osd
+- name: ec_pdw_write_mode
+  type: uint
+  level: dev
+  default: 0
+  desc: When EC writes should generate PDWs (development only) 0=optimal 1=never 2=when possible
+- name: service_unique_id
+  type: str
+  level: advanced
+  desc: Unique string to be returned in PerfCounters
+  fmt_desc: A unique id to be created by orchestration software or the
+    administrator upon initial setup of a service. Enforcing uniqueness
+    is entirely the responsibility of the process used to create and
+    manage the cluster. A unique id will be unique within the scope of
+    the entire cluster across all services if they are chosen to be so.
+  note: If this is empty no uniquifier is provided.
+  tags:
+  - service
+  services:
+  - common
+  flags:
+  - no_mon_update
+  - startup
