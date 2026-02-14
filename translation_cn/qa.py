@@ -389,6 +389,7 @@ def file_has_cn_char(f):
     with open(f) as fcontent:
         for line in fcontent.readlines():
             if has_cn_char(line):
+                # if f == path.Path('dev/developer_guide/dash-devel.rst'): debug(line)
                 return True
     return False
 
@@ -765,6 +766,10 @@ def overwrite_untranslated():
     global doc_en, args
     cnfs = _get_file_list(doc_cn, only_rst=True, relpath=True)
 
+    if args.debug:
+        print(f'All files to check:\n{cnfs}')
+        # sys.exit()
+
     for cnf in cnfs:
         print(f'checking: {cnf} ', end='', flush=True)
         if file_has_cn_char(cnf):
@@ -1019,6 +1024,7 @@ if __name__ == "__main__":
     # check/compare yaml option files.
     # Option: update my copy with program.
     # Get 'desc' of specified option name, from raw file.
+    # list options whose desc should translate, count translate progress.
     parser.add_argument('--yaml', action='store_true', default=False,
         help='比较配置选项文件，即 *.yaml.in 文件')
 
